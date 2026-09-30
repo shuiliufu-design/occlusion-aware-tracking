@@ -102,6 +102,12 @@ origin 已配置；首次推送仍需执行并验证。视频和 `.venv` 默认�
 当本地 main 分支准备好时，首次上传使用 `git push -u origin main`；
 `-u` 建立本地与远程分支的对应关系，以后可使用 `git push`。
 
+当前首次推送因命令行缺少 GitHub 认证而失败，网页登录不代表 Git 已认证。
+可以在本机安装 GitHub CLI 后，执行 `gh auth login --hostname github.com --git-protocol https --web`，
+按终端提示完成浏览器登录，再执行 `gh auth setup-git` 与 `git push -u origin main`。
+参考 [GitHub CLI 官方认证说明](https://cli.github.com/manual/gh_auth_login)。
+认证信息只在本机与 GitHub 的登录流程中处理，不复制到学习记录或聊天。
+
 第一阶段无需选择开源许可证；如希望允许他人复用，之后再选择适合的许可证。
 引入模型或第三方代码后，应保留出处并核对其许可证。
 
