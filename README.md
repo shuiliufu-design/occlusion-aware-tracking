@@ -5,8 +5,8 @@
 面向机器人感知的视觉跟踪学习项目：逐步研究遮挡与物体位移后的
 跟踪失效判断和目标恢复。第一阶段使用固定相机、单个主要桌面目标。
 
-**当前阶段：M0 读取验收通过；YOLO11n + 原始 ByteTrack 已在补拍视频上跑通，并保存逐帧结果。**
-尚未添加失效判断与恢复策略，也未实现 3D 定位或机器人控制。
+**当前阶段：M1 基线已验证；M2 第一步已在纸板遮挡片段输出指定目标、丢失与恢复候选状态。**
+候选未经身份核验，不绑定原目标；身份恢复、对照评价、3D 定位与机器人控制尚未实现。
 
 ## 快速开始
 
@@ -91,12 +91,31 @@ curl -fL https://github.com/ultralytics/assets/releases/download/v8.3.0/yolo11n.
 本次 984 帧均处理并重新解码检查通过。纸板遮挡前 ID 4，重现后 ID 5；还保留了挂包附近误检为瓶子的 ID 3。
 详细证据和边界见 [基线说明](docs/baseline_m1.md)。没有新增恢复模块；检测分数、相同 ID 或再次出现框都不能证明目标身份正确。
 
+## M2 第一步：目标丢失与候选报告
+
+复用 v2 检测/跟踪记录及原视频，不需要 GPU 或新依赖。初始化帧与人工框为原视频帧号及原图 xyxy 像素坐标；本次配置来自对 f600 红盖瓶子的画面查看，不是正式真值标注。
+
+```bash
+.venv/bin/python scripts/run_target_state.py --baseline outputs/tabletop_02_baseline_v2 --source data/tabletop_02.mp4 --output outputs/tabletop_02_m2_step1 --init-frame 600 --init-box 180 450 305 870 --missing-frames 10 --init-iou 0.5
+.venv/bin/python scripts/review_target_state.py --output outputs/tabletop_02_m2_step1 --frames 600 693 694 702 703 844 845 848
+.venv/bin/python -m unittest discover -s tests -v
+```
+
+复跑请换新输出目录。`--end-frame` 可指定原视频结束帧（不含该帧），默认到结尾。初始化只接受与人工框唯一匹配的已关联瓶子，未硬编码 ID 或遮挡时间。
+
+输出 `status.mp4`、`frames.jsonl`、`events.jsonl` 与配置/核查 JSON。视频从初始化帧开始；记录保留原帧索引和时间，另存从 0 开始的 `output_frame_index`。
+本次输出 384 帧并通过重解码核查，f703 进入 LOST，f845 报告 RECOVERY_CANDIDATE；8 项状态逻辑检查通过。
+
+连续缺失达到可配置阈值前保持 TRACKING 决策，但无本帧目标观察时立即清空当前框、显示位置未知。确认丢失后所有同类检测只作 UNVERIFIED 候选，包含原 ID 再现的情况，不自动回 TRACKING。
+关闭新增模块时直接查看原始 v2 视频/记录；M1 入口与全部输出保持原状。详细数据字段、阈值、状态转换与限制见 [M2 第一步说明](docs/target_state_m2_step1.md)。
+
 ## 学习路线
 
 - [x] 第 1 步：真实视频读取（首段 656 帧、补拍 984 帧；用户已确认补拍检查完成）
 - [x] 第 2 步：预训练目标检测基线，保存逐帧检测结果
 - [x] 第 3 步：跟踪基线，观察遮挡后的 ID 变化与误检轨迹
-- [ ] 第 4 步：失效判断与恢复策略，设置公平对照实验
+- [x] 第 4a 步：指定目标、连续缺失判断与未经身份核验的恢复候选
+- [ ] 第 4b 步：有身份依据的恢复，设置公平对照实验
 - [ ] 后续研究：可靠性估计、3D 位姿跟踪与机器人仿真验证
 
 ## 文件说明
@@ -111,8 +130,12 @@ curl -fL https://github.com/ultralytics/assets/releases/download/v8.3.0/yolo11n.
 | `scripts/make_sample_video.py` | 生成不需下载的 I/O 自检视频 |
 | `scripts/run_baseline.py` | 固定版本 YOLO11n + ByteTrack，保存带框视频与逐帧记录 |
 | `scripts/review_baseline.py` | 核查逐帧关联记录与输出视频，生成预览 |
+| `scripts/run_target_state.py` | 复用基线，输出目标状态、候选与事件 |
+| `scripts/review_target_state.py` | 核查 M2 状态记录、候选、事件及视频 |
+| `tests/test_target_state.py` | 状态边界与未经身份核验不得绑定的回归检查 |
 | `requirements-baseline.txt` | M1 核心依赖版本，包含原视频 I/O 依赖 |
 | `docs/baseline_m1.md` | 原始基线能力、实际观察与失败案例 |
+| `docs/target_state_m2_step1.md` | 目标初始化、状态规则、实际结果与限制 |
 | `data/` | 本地输入视频，默认不上传 |
 | `outputs/` | 本地生成结果，默认不上传 |
 | `docs/lesson01.md` | 第一课讲解与操作步骤 |

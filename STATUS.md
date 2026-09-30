@@ -1,12 +1,13 @@
 # 项目状态
 
-更新日期：2026-10-01（Asia/Shanghai）。协调聊天：00｜项目总控；02｜环境与跟踪基线已交付 M1；下一项开发任务归属 03｜失效检测与恢复，接手前需重新读取本次记录和 v2 输出。
+更新日期：2026-10-01（Asia/Shanghai）。协调聊天：00｜项目总控；02 已交付 M1；03 已交付 M2 第一步（目标指定、丢失判断与候选报告）。接手聊天需重新读取记录与实际输出。
 
 ## 当前结论
 
 M0 已验收：02 重新读取两段视频并核对本次首帧，用户明确说明“补拍视频已检查”，作为补拍方向与内容确认。补拍后半段包含背景持续可见的瓶子遮挡与位移。
 M1 已实际跑通并通过输出核查：YOLO11n + 未修改的 Ultralytics ByteTrack，补拍视频的 984 帧均处理、记录并重新解码检查一致。有效结果为 `outputs/tabletop_02_baseline_v2/`。
-纸板遮挡前 ID 4，长遮挡与位移后输出新 ID 5；保留背景挂包附近误检为瓶子的 ID 3。当前没有新增失效判断或恢复策略，也没有身份/遮挡标注与对照实验结论。两段当前都用作开发输入，尚无独立测试集。
+纸板遮挡前 ID 4，长遮挡与位移后输出新 ID 5；保留背景挂包附近误检为瓶子的 ID 3。
+M2 第一步已实际运行：复用 v2 与原视频，人工框配置初始化目标，输出 TRACKING / LOST / RECOVERY_CANDIDATE。有效新增输出为 `outputs/tabletop_02_m2_step1/`，384 条记录与状态视频重解码一致；f703 确认丢失，f845 出现未经身份核验的候选。候选不会自动绑定，当前目标位置仍未知；没有实现身份恢复，也没有身份/遮挡标注与对照实验结论。两段当前都用作开发输入，尚无独立测试集；M2 尚未全部验收。
 
 ## 已完成与证据
 
@@ -20,6 +21,7 @@ M1 已实际跑通并通过输出核查：YOLO11n + 未修改的 Ultralytics Byt
 | 真实视频 I/O | 02 重新运行原脚本，退出码 0；新结果 `outputs/tabletop_01_02_check/`：720×1280、名义约 28.7545 FPS、656 帧、估算 22.814 秒，与旧记录一致；已查看本次首帧 |
 | 补拍视频 I/O | 02 重新运行原脚本，退出码 0；新结果 `outputs/tabletop_02_02_check/`：720×1280、984 帧、名义约 29.0377 FPS、估算 33.887 秒；本次首帧与既有抽帧预览已查看；用户说明补拍已检查 |
 | M1 基线与核查 | `scripts/run_baseline.py` 实际处理 984 帧；`scripts/review_baseline.py` 核对记录/ID 映射/统计与视频重解码，退出码 0；有效输出为 v2。已查看带框首帧、每秒预览及 f227/f845/f848 |
+| M2 第一步与核查 | `scripts/run_target_state.py` 复用原始记录、顺序解码 984 帧并输出 f600—983 共 384 帧；`review_target_state.py` 核查记录/阈值/事件/候选/视频，退出码 0；8 项 unittest 通过；v2 全部 14 个文件运行前后校验一致 |
 | 基线依赖 | 接手时已有 torch 2.8.0+cu128、torchvision 0.23.0+cu128 和权重；本次补充 ultralytics 8.3.221、lap 0.5.12 等依赖，未重建环境或更换 OpenCV/NumPy；`pip check` 通过，固定核心版本见 `requirements-baseline.txt` |
 | 交接文件 | 00 已建立 `AGENTS.md`、`SPEC.md`、`STATUS.md` 并同步 README；02 接手时已重新读取并核对代码与实际输入 |
 | Git | 已有公开仓库与两段视频检查记录同步历史见下方；02 本轮按里程碑进行本地提交，不执行推送。视频、权重、环境、缓存与输出被忽略，保留本地 |
@@ -40,6 +42,7 @@ M1 已实际跑通并通过输出核查：YOLO11n + 未修改的 Ultralytics Byt
 - 02 重新读取结果：`outputs/tabletop_01_02_check/`、`outputs/tabletop_02_02_check/`，各含 `first_frame.jpg` 与 `video_info.json`，旧结果保留。
 - 可用基线：`outputs/tabletop_02_baseline_v2/annotated.mp4`、`frames.jsonl`、`run_info.json`、`bytetrack.yaml`、`first_frame.jpg`、`contact_sheet.jpg`、`review.json`、关键帧 `frame_*.jpg`。
 - 基线实现与说明：`scripts/run_baseline.py`、`scripts/review_baseline.py`、`requirements-baseline.txt`、`docs/baseline_m1.md`；README 已补运行入口。
+- M2 第一步实现与说明：`scripts/run_target_state.py`、`scripts/review_target_state.py`、`tests/test_target_state.py`、`docs/target_state_m2_step1.md`；结果 `outputs/tabletop_02_m2_step1/` 含 `status.mp4`、`frames.jsonl`、`events.jsonl`、`run_info.json`、`review.json`、关键帧/预览及 `baseline_preservation.json`。
 
 02 首次接手实际运行命令（历史；当时真实输入缺失）：
 
@@ -83,19 +86,46 @@ M0/M1 交付完成；没有添加恢复策略。尚无测试集与身份/事件�
 .venv/bin/python scripts/run_baseline.py --device cpu --source data/not_present.mp4 --output outputs/baseline_missing_input_check
 ```
 
-## 下一项任务：进入 M2 第一步
+## 下一项任务：观看 M2 状态视频并记录观察
 
 用户已反馈观看视频、未发现问题（2026-10-01），已记录于 `docs/learning_log.md`。此前讲解了“无框”和新轨迹 ID 的含义；用户理解不由 Codex 代填，后续结合 03 的代码继续学习。
-随后由 03 执行 SPEC.md 已确定的 M2 第一步：聚焦后半段纸板遮挡，人工初始化目标，保存 TRACKING / LOST / RECOVERY_CANDIDATE 状态、逐帧记录、事件与带状态视频，先不绑定未经身份验证的候选。04 在可检查实现后审查。
+M2 第一步现已完成。用户下一项任务：观看 `outputs/tabletop_02_m2_step1/status.mp4`，确认瓶子消失后当前框为空、位置 UNKNOWN，纸板移开后黄框标为 UNVERIFIED；将简短观察与一个疑问记入 `docs/learning_log.md`。
+目的：理解“出现恢复候选”与“确认原目标身份恢复”的区别。交付为简短观察；验收为能说明新框/ID 没有被绑定为原目标。用户理解仍待本人记录，不由 Codex 代填。
+随后由 00 结合证据确定 M2 第二步的身份依据与判定规则，再由 03 实现；本轮不增加身份恢复范围。04 可针对本步实现和真实输出进行审查。
 
 ## 待办与交接
 
-1. 用户已观看基线并反馈未发现问题；03/04 接手前必须重新读取记录，并使用 v2 结果，第一轮结果不可用于实验。
+1. 用户已观看基线并反馈未发现问题；下一项为观看 M2 第一步状态视频。03/04 接手前必须重新读取记录，原始对照使用 v2，第一轮无效基线不可用于实验。
 2. 本轮 M1 代码、依赖与说明本地提交消息为 `feat: add verified YOLO11n ByteTrack baseline`，用 `git log -1 --oneline` 查看；后续每个可运行里程碑仍检查变更并提交。原视频、权重和输出不加入提交。
 3. GitHub 代码与两段视频检查说明均已上传并核对；用户已明确授权公开本次检查记录。视频、模型权重和虚拟环境保留本地。
 4. 03—05 在基线可检查后按需进入；01 可结合当前读取脚本学习。
 
-未解决问题：长遮挡后未延续目标 ID；存在检测误检；没有正式身份/事件标注、独立测试集与恢复评价；输出为 mp4v、无音频，CPU 速度尚未实测。
+未解决问题：尚无身份恢复（所有候选未绑定）；类别候选可能包含误检/其他瓶子；TRACKING 依赖原生连续性，仍可能跟错；缺失阈值未调优；没有正式身份/事件标注、独立测试集与恢复评价；输出为 mp4v、无音频，未进行端到端速度对比。
+
+## 03 本轮 M2 第一步交付（2026-10-01）
+
+已重新读取 AGENTS.md、SPEC.md、完整状态与 `docs/baseline_m1.md`，核对 M1 实现、v2 配置/核查和全部记录。接手时工作区干净，HEAD 为 `a7029b5`。本轮沿用现有环境和依赖，不运行模型，不修改原始 M1 脚本或 SPEC.md。更新记录前重新读取并保留了学习聊天新增的“用户已观看基线”反馈。
+
+查看原视频 f600 后，以配置 `--init-frame 600 --init-box 180 450 305 870` 指定红盖瓶子；不是用户已确认的真值标注。人工框与检测框 IoU 约 0.8896，唯一匹配原生轨迹；ID 4/5 和遮挡帧号均未硬编码在状态逻辑中。
+连续缺失阈值为可配置的 10 帧，按名义 FPS 估算约 0.3444 秒，尚未调优。达到阈值前保留 TRACKING 决策及 `pending_loss` 标志，但无观察时立即清空当前框；确认丢失后锁定，所有同类检测（即使是原 ID）均仅作未核验候选，不再自动回 TRACKING。
+
+实际成功运行命令（项目根目录，退出码均 0）：
+
+```bash
+.venv/bin/python scripts/run_target_state.py --baseline outputs/tabletop_02_baseline_v2 --source data/tabletop_02.mp4 --output outputs/tabletop_02_m2_step1 --init-frame 600 --init-box 180 450 305 870 --missing-frames 10 --init-iou 0.5
+.venv/bin/python scripts/review_target_state.py --output outputs/tabletop_02_m2_step1 --frames 600 693 694 702 703 844 845 848
+.venv/bin/python -m unittest discover -s tests -v
+```
+
+- 顺序解码原视频全部 984 帧；保存 f600—983 共 384 帧，原帧号、估算时间、源时间及检测/轨迹均保留。状态视频从 f600 开始，播放器 0 秒对应原 f600。
+- TRACKING=103 帧（f600—693 有观察，f694—702 是 9 帧缺失宽限期）；LOST=142（f703—844）；RECOVERY_CANDIDATE=139（f845—983）。事件为 f600 初始化、f703 确认丢失、f845 候选出现。f845 候选没有轨迹 ID，f848 的 ID 5 仍未绑定；所有候选均 `identity_check.performed=false`，`bound_to_target=false`，没有恢复成功结论。
+- 记录、缺失阈值、空位置、候选与状态事件、384 帧视频重解码均核查通过。已查看原始初始化帧和 f600/f693/f694/f702/f703/f844/f845/f848 状态预览。
+- 8 项状态逻辑 unittest 通过，涵盖阈值边界、宽限期位置未知、其他 ID 不重置缺失、短缺失原生连续性、确认丢失后同 ID 不绑定、未关联/多候选、无效/歧义初始化及任意初始 ID。这些合成输入不是模型效果证据。
+- 经 subprocess 实际执行非空输出、人工框不匹配、原视频与基线校验不符的三条错误路径，均退出码 1；无效初始化/错误源视频未创建输出目录。准确命令见 `docs/target_state_m2_step1.md`。
+- v2 的全部 14 个文件运行前后 SHA-256 一致，记录保存在新增输出的 `baseline_preservation.json`。关闭新增模块直接使用原始 v2 视频/记录；原始基线入口仍可运行。本轮无身份标注、对照评测、GPU 推理或速度基准。
+- 本轮本地提交消息为 `feat: add target loss states and unverified recovery candidates`；用 `git log -1 --oneline` 查看完成后的哈希。不执行远程推送；视频、输出与环境保持 Git 忽略。
+
+详细状态规则、字段、配置、准确命令、实际结果与限制见 `docs/target_state_m2_step1.md`。下一项用户任务见上方：观看状态视频并记录对候选和身份恢复区别的理解。
 
 ## 历史交接记录
 
