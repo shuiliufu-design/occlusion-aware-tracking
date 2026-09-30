@@ -1,0 +1,35 @@
+# Python environments and caches
+.venv/
+.venv-*/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+*.egg-info/
+
+# Local data, model weights and experiment outputs
+data/*
+!data/README.md
+!data/.gitkeep
+outputs/*
+!outputs/.gitkeep
+weights/
+*.pt
+*.pth
+*.onnx
+*.mp4
+*.mov
+*.MOV
+*.avi
+*.mkv
+
+# Local configuration and editor files
+.env
+.env.*
+!.env.example
+.DS_Store
+.idea/
+.vscode/
+.agents/
+.aws/
+.codex/
