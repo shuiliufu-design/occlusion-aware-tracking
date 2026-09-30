@@ -1,0 +1,8 @@
+# M1 baseline; preserve the video I/O dependencies in requirements.txt.
+-r requirements.txt
+torch==2.8.0
+torchvision==0.23.0
+ultralytics==8.3.221
+lap==0.5.12
+PyYAML==6.0.3
+scipy==1.18.1

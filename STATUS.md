@@ -1,26 +1,28 @@
 # 项目状态
 
-更新日期：2026-09-30（Asia/Shanghai）。协调聊天：00｜项目总控；当前技术任务归属：02｜环境与跟踪基线；03｜失效检测与恢复、04｜实验与独立审查已完成接手检查，等待基线交付。
+更新日期：2026-09-30（Asia/Shanghai）。协调聊天：00｜项目总控；02｜环境与跟踪基线已交付 M1；03｜失效检测与恢复、04｜实验与独立审查接手前需重新读取本次记录和 v2 输出。
 
 ## 当前结论
 
-M0 的真实视频读取与 Codex 画面核对已完成：两段视频均可读取；补拍 `data/tabletop_02.mp4` 的后半段包含背景持续可见的瓶子遮挡与位移。用户对生成预览的确认仍待补充。
-已有输入可进入 M1；下一项技术任务归属 02：在补拍视频上运行轻量预训练检测与现成跟踪基线，输出带框视频和逐帧结果。
-检测、跟踪、失效判断、恢复与对照实验均未实现。两段当前都用作开发输入，尚无独立测试集。
+M0 已验收：02 重新读取两段视频并核对本次首帧，用户明确说明“补拍视频已检查”，作为补拍方向与内容确认。补拍后半段包含背景持续可见的瓶子遮挡与位移。
+M1 已实际跑通并通过输出核查：YOLO11n + 未修改的 Ultralytics ByteTrack，补拍视频的 984 帧均处理、记录并重新解码检查一致。有效结果为 `outputs/tabletop_02_baseline_v2/`。
+纸板遮挡前 ID 4，长遮挡与位移后输出新 ID 5；保留背景挂包附近误检为瓶子的 ID 3。当前没有新增失效判断或恢复策略，也没有身份/遮挡标注与对照实验结论。两段当前都用作开发输入，尚无独立测试集。
 
 ## 已完成与证据
 
 | 内容 | 状态与依据 |
 | --- | --- |
 | 项目结构与环境 | 已有 `.venv`、`requirements.txt`、README、教学文档、视频读取/合成脚本 |
-| 02 接手环境检查 | 再次运行 `.venv/bin/python scripts/check_env.py`，退出码 0；Python 3.12.3、OpenCV 4.12.0（opencv-python 4.12.0.88）、NumPy 2.2.6，解释器位于项目 `.venv`；沿用原环境，未安装新依赖 |
+| 02 环境检查 | 本轮再次运行 `.venv/bin/python scripts/check_env.py`，退出码 0；Python 3.12.3、OpenCV 4.12.0（opencv-python 4.12.0.88）、NumPy 2.2.6，解释器位于项目 `.venv`；沿用原环境 |
 | 用户本机环境 | `docs/learning_log.md` 记录用户本机检查通过；交接背景为 Ubuntu 24.04、RTX 4070 Laptop 8GB，记录中显存 8188 MiB、驱动 580.178.04 |
-| GPU 验证边界 | 本次受限会话无法查询 NVIDIA GPU；不推翻用户本机记录。PyTorch GPU 运算仍未验证 |
+| GPU 验证边界 | 沙箱内 CUDA 不可见；02 在沙箱外验证现有 torch 2.8.0+cu128 的 CUDA 矩阵乘法（32×32 全一矩阵，结果 32），并在 RTX 4070 Laptop 上跑完模型推理，实际 GPU 运算已验证 |
 | 合成视频 I/O | 02 实际重跑读取检查，退出码 0；新结果 `outputs/synthetic_io_02_check/video_info.json` 记录 640×360、20 FPS、100 帧、估算 5 秒。既有结果保留；此前读写与错误路径检查见 `docs/lesson01.md`，02 未重跑错误路径检查 |
-| 真实视频 I/O | 已运行原有读取脚本，退出码 0；`outputs/tabletop_01/video_info.json` 记录 720×1280、名义约 28.7545 FPS、656 帧、估算 22.814 秒。首帧与每秒抽帧预览已查看；主要为镜头遮挡，用户确认待补充 |
-| 补拍视频 I/O | 原有脚本退出码 0；`outputs/tabletop_02/video_info.json` 记录 720×1280、名义约 29.0377 FPS、984 帧、估算 33.887 秒。已查看抽帧预览：后半段纸板挡住瓶子、背景仍可见，随后瓶子在新位置重现 |
+| 真实视频 I/O | 02 重新运行原脚本，退出码 0；新结果 `outputs/tabletop_01_02_check/`：720×1280、名义约 28.7545 FPS、656 帧、估算 22.814 秒，与旧记录一致；已查看本次首帧 |
+| 补拍视频 I/O | 02 重新运行原脚本，退出码 0；新结果 `outputs/tabletop_02_02_check/`：720×1280、984 帧、名义约 29.0377 FPS、估算 33.887 秒；本次首帧与既有抽帧预览已查看；用户说明补拍已检查 |
+| M1 基线与核查 | `scripts/run_baseline.py` 实际处理 984 帧；`scripts/review_baseline.py` 核对记录/ID 映射/统计与视频重解码，退出码 0；有效输出为 v2。已查看带框首帧、每秒预览及 f227/f845/f848 |
+| 基线依赖 | 接手时已有 torch 2.8.0+cu128、torchvision 0.23.0+cu128 和权重；本次补充 ultralytics 8.3.221、lap 0.5.12 等依赖，未重建环境或更换 OpenCV/NumPy；`pip check` 通过，固定核心版本见 `requirements-baseline.txt` |
 | 交接文件 | 00 已建立 `AGENTS.md`、`SPEC.md`、`STATUS.md` 并同步 README；02 接手时已重新读取并核对代码与实际输入 |
-| Git | 用户已明确同意公开两段视频的检查记录（尺寸、遮挡时间观察、校验信息）；已推送到公开仓库 `shuiliufu-design/occlusion-aware-tracking`，远程 main 与本地均核对为 `813a522`。后续同步本次完成记录；视频及预览保留本地 |
+| Git | 已有公开仓库与两段视频检查记录同步历史见下方；02 本轮按里程碑进行本地提交，不执行推送。视频、权重、环境、缓存与输出被忽略，保留本地 |
 
 合成结果只证明 I/O，不证明目标检测、跟踪或恢复效果。
 
@@ -35,39 +37,69 @@ M0 的真实视频读取与 Codex 画面核对已完成：两段视频均可读�
 - 拍摄说明：`data/README.md`；学习理解继续写入 `docs/learning_log.md`。
 - 真实输入：`data/tabletop_01.mp4`；结果：`outputs/tabletop_01/first_frame.jpg`、`video_info.json`、`contact_sheet.jpg`。历史接手记录中的输入缺失描述保留为当时状态。
 - 补拍输入：`data/tabletop_02.mp4`；结果：`outputs/tabletop_02/first_frame.jpg`、`video_info.json`、`contact_sheet.jpg`。
+- 02 重新读取结果：`outputs/tabletop_01_02_check/`、`outputs/tabletop_02_02_check/`，各含 `first_frame.jpg` 与 `video_info.json`，旧结果保留。
+- 可用基线：`outputs/tabletop_02_baseline_v2/annotated.mp4`、`frames.jsonl`、`run_info.json`、`bytetrack.yaml`、`first_frame.jpg`、`contact_sheet.jpg`、`review.json`、关键帧 `frame_*.jpg`。
+- 基线实现与说明：`scripts/run_baseline.py`、`scripts/review_baseline.py`、`requirements-baseline.txt`、`docs/baseline_m1.md`；README 已补运行入口。
 
-02 本次实际运行命令（项目根目录）：
+02 首次接手实际运行命令（历史；当时真实输入缺失）：
 
 ```bash
 .venv/bin/python scripts/check_env.py
 .venv/bin/python scripts/inspect_video.py --source data/synthetic_io.avi --output outputs/synthetic_io_02_check
 ```
 
-工程代码未修改；真实视频缺失，因此未运行真实视频检查，也未加入检测或跟踪模型。
+当时工程代码未修改、真实输入缺失；本轮新增基线与运行结果见下一节。
 
-## 下一项任务：M1 检测与跟踪基线
+## 02 本轮 M0/M1 交付（2026-09-30）
 
-目的：在真实输入上检查模型能否找到瓶子，以及现成跟踪器在遮挡与位移后如何关联目标。
-由 02 先重新读取项目记录，沿用 `.venv`，再选择并记录轻量预训练检测模型与现成跟踪器，检查实际 GPU 运算或记录 CPU 回退。
-使用 `data/tabletop_02.mp4` 输出带框视频及逐帧结果；重点查看后半段纸板遮挡，记录前半段镜头遮挡与画面移动，不能混作同一事件类型。
-交付与验收按 SPEC.md 的 M1：模型/跟踪器/依赖版本与准确命令、帧索引和时间依据、框、类别、检测分数、跟踪 ID、可检查的视频。此时先保存原始基线，不新增恢复策略。
+已重新读取规则/规格/状态，检查现有脚本、输入与旧输出。接手时 `.gitignore` 的缓存忽略项和未提交的 `run_baseline.py` 已存在，本轮核对后沿用并修正输出索引映射；未创建另一套项目或环境。
 
-补拍读取已实际运行：
+本次实际运行的成功命令（项目根目录）：
 
 ```bash
-.venv/bin/python scripts/inspect_video.py --source data/tabletop_02.mp4 --output outputs/tabletop_02
+.venv/bin/python scripts/check_env.py
+.venv/bin/python scripts/inspect_video.py --source data/tabletop_01.mp4 --output outputs/tabletop_01_02_check
+.venv/bin/python scripts/inspect_video.py --source data/tabletop_02.mp4 --output outputs/tabletop_02_02_check
+.venv/bin/python -m pip install ultralytics==8.3.221 lap==0.5.12 --index-url https://pypi.tuna.tsinghua.edu.cn/simple --timeout 60 --cache-dir .cache/pip
+curl -fL --retry 2 --connect-timeout 10 https://github.com/ultralytics/assets/releases/download/v8.3.0/yolo11n.pt -o weights/yolo11n_official_verify.pt
+sha256sum weights/yolo11n.pt weights/yolo11n_official_verify.pt
+.venv/bin/python -c 'import torch; print("torch", torch.__version__, "cuda", torch.cuda.is_available()); x=torch.ones((32,32),device="cuda:0"); print("GPU",torch.cuda.get_device_name(0),"matmul",(x@x)[0,0].item())'
+.venv/bin/python scripts/run_baseline.py --source data/tabletop_02.mp4 --output outputs/tabletop_02_baseline_v2 --model weights/yolo11n.pt --device 0 --imgsz 640 --conf 0.1 --iou 0.7
+.venv/bin/python scripts/review_baseline.py --output outputs/tabletop_02_baseline_v2 --frames 227 693 694 844 845 847 848
+.venv/bin/python -m pip check
+.venv/bin/python -m compileall -q scripts
 ```
 
-已保存补拍首帧、视频信息和抽帧预览，原输出保留；重复检查须换新目录。时长按帧数/名义 FPS 估算，不能单独证明完整性。
+沙箱内网络解析失败；沙箱外官方 PyPI 下载又超时，最终用清华镜像安装相同固定版本成功。下载/GPU 命令在沙箱外执行；环境检查和读取/输出核查在沙箱内成功。
+第一轮基线命令同上但 `--output outputs/tabletop_02_baseline`；实际跑完 984 帧，核查却在 f227 失败：分数子集索引误用为完整检测索引。第一轮保留但不作基线；只修正记录映射后重新运行 v2，原 ByteTrack 与 YAML 未改，验证通过。
+
+实际观察：默认缓冲 30 帧；纸板段 f694—844 连续 151 帧无瓶子检测（估算 23.90—29.10 秒），此前 ID 4，f848 起 ID 5（约 29.20 秒）。f223—229 的 ID 3 是挂包附近误检，已查看 f227。详细证据、版本、算法能力与限制见 `docs/baseline_m1.md`。
+650 帧有检测、643 帧有轨迹；本次循环计时约 10.30 秒、95.53 FPS，包含解码/首次推理初始化/关联/绘制/记录/写视频，排除模型加载、GPU 校验与最终编码释放。未做严谨速度基准或身份准确率评价。
+M0/M1 交付完成；没有添加恢复策略。尚无测试集与身份/事件标注，ID 变化不能单独作为身份判定或恢复评价。
+另实际执行以下错误路径命令，均按预期退出码 1：非空输出拒绝覆盖、缺失输入拒绝运行，旧结果保持原状。
+
+```bash
+.venv/bin/python scripts/run_baseline.py --device cpu --source data/tabletop_02.mp4 --output outputs/tabletop_02_baseline_v2
+.venv/bin/python scripts/run_baseline.py --device cpu --source data/not_present.mp4 --output outputs/baseline_missing_input_check
+```
+
+## 下一项任务：亲自核对原始基线
+
+用户观看 `outputs/tabletop_02_baseline_v2/annotated.mp4` 的约 23—31 秒，核对遮挡前 ID 4、遮挡时无框、重现后 ID 5；将观察与疑问记入 `docs/learning_log.md`。
+目的：理解“重新检测到瓶子”和“恢复同一目标身份”的区别。交付为简短观察；验收为能指出遮挡前后 ID 变化，并说明新 ID 不能直接叫恢复成功。随后由 00/03 结合这份原始基线确定身份依据与下一步状态/恢复设计；04 可先审查 M1。
 
 ## 待办与交接
 
-1. 02 使用补拍视频推进 M1；用户查看补拍预览确认内容，当前无需继续补拍。
-2. 后续每个可运行里程碑完成后检查变更并提交 Git；当前环境与合成 I/O 已纳入首次本地提交。
+1. 用户核对基线纸板段；03/04 接手前必须重新读取记录，并使用 v2 结果，第一轮结果不可用于实验。
+2. 本轮 M1 代码、依赖与说明本地提交消息为 `feat: add verified YOLO11n ByteTrack baseline`，用 `git log -1 --oneline` 查看；后续每个可运行里程碑仍检查变更并提交。原视频、权重和输出不加入提交。
 3. GitHub 代码与两段视频检查说明均已上传并核对；用户已明确授权公开本次检查记录。视频、模型权重和虚拟环境保留本地。
 4. 03—05 在基线可检查后按需进入；01 可结合当前读取脚本学习。
 
-未解决问题：用户预览确认待补充；GPU 运算未验证；基线方案与评测规则尚未确定。
+未解决问题：长遮挡后未延续目标 ID；存在检测误检；没有正式身份/事件标注、独立测试集与恢复评价；输出为 mp4v、无音频，CPU 速度尚未实测。
+
+## 历史交接记录
+
+以下各段保留当时的输入、Git 与实现状态；它们不表示当前进度，当前结论与本轮交付见上方。
 
 ## 05 接手检查（2026-09-30）
 
