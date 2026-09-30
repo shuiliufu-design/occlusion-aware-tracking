@@ -80,11 +80,11 @@ python scripts/inspect_video.py --source data/synthetic_io.avi --output outputs/
 Git 在本地记录代码版本；GitHub 保存远程仓库。
 `.gitignore` 定义哪些本地文件不进入版本管理。用 `git status` 查看待提交内容。
 
-当前已准备好适合上传的源文件，但尚未创建 GitHub 仓库、连接远程或上传。
-已有仓库时，需要确认具体链接；没有仓库时，建议命名 `occlusion-aware-tracking`。
-先检查并提交代码，视频和 `.venv` 默认不上传。
+当前已准备好适合上传的源文件，已有首次本地提交。
+用户已创建 [GitHub 项目仓库](https://github.com/shuiliufu-design/occlusion-aware-tracking)，
+origin 已配置；首次推送仍需执行并验证。视频和 `.venv` 默认不上传。
 
-现在可以亲自完成仓库创建：
+以下是新项目创建空仓库的方法（当前项目已完成这一步）：
 
 1. 登录 GitHub，打开 [新建仓库页面](https://github.com/new)。
 2. Owner 选择自己的账号，Repository name 填 `occlusion-aware-tracking`。
@@ -96,6 +96,11 @@ Git 在本地记录代码版本；GitHub 保存远程仓库。
 这符合 [GitHub 官方创建说明](https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-new-repository)：
 上传已有本地项目时不要预先填充远程文件，以避免产生两套初始历史。
 下一步再确认提交内容、设置远程地址并上传，不需要在聊天中提供密码或 token。
+
+本项目已经配置远程地址，之后可以用 `git remote -v` 查看。
+`git commit` 将选定变更保存为本地版本，`git push` 将提交上传到远程。
+当本地 main 分支准备好时，首次上传使用 `git push -u origin main`；
+`-u` 建立本地与远程分支的对应关系，以后可使用 `git push`。
 
 第一阶段无需选择开源许可证；如希望允许他人复用，之后再选择适合的许可证。
 引入模型或第三方代码后，应保留出处并核对其许可证。
