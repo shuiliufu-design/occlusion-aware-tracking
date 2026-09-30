@@ -80,9 +80,8 @@ python scripts/inspect_video.py --source data/synthetic_io.avi --output outputs/
 Git 在本地记录代码版本；GitHub 保存远程仓库。
 `.gitignore` 定义哪些本地文件不进入版本管理。用 `git status` 查看待提交内容。
 
-当前已准备好适合上传的源文件，已有首次本地提交。
-用户已创建 [GitHub 项目仓库](https://github.com/shuiliufu-design/occlusion-aware-tracking)，
-origin 已配置；首次推送仍需执行并验证。视频和 `.venv` 默认不上传。
+源文件已成功上传至 [GitHub 项目仓库](https://github.com/shuiliufu-design/occlusion-aware-tracking)，
+首次上传后已核对远程 main 与本地 HEAD 一致。本地 main 已跟踪 origin/main；视频和 `.venv` 默认不上传。
 
 以下是新项目创建空仓库的方法（当前项目已完成这一步）：
 
@@ -95,16 +94,16 @@ origin 已配置；首次推送仍需执行并验证。视频和 `.venv` 默认�
 
 这符合 [GitHub 官方创建说明](https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-new-repository)：
 上传已有本地项目时不要预先填充远程文件，以避免产生两套初始历史。
-下一步再确认提交内容、设置远程地址并上传，不需要在聊天中提供密码或 token。
+新项目创建仓库后，再确认提交内容、设置远程地址并上传，不需要在聊天中提供密码或 token。
 
 本项目已经配置远程地址，之后可以用 `git remote -v` 查看。
 `git commit` 将选定变更保存为本地版本，`git push` 将提交上传到远程。
 当本地 main 分支准备好时，首次上传使用 `git push -u origin main`；
 `-u` 建立本地与远程分支的对应关系，以后可使用 `git push`。
 
-当前首次推送因命令行缺少 GitHub 认证而失败，网页登录不代表 Git 已认证。
-可以在本机安装 GitHub CLI 后，执行 `gh auth login --hostname github.com --git-protocol https --web`，
-按终端提示完成浏览器登录，再执行 `gh auth setup-git` 与 `git push -u origin main`。
+本项目首次推送曾因命令行缺少 GitHub 认证而失败，用户完成 GitHub CLI 登录后已成功上传。
+如果以后在新电脑上配置认证，可以安装 GitHub CLI 后，执行 `gh auth login --hostname github.com --git-protocol https --web`，
+按终端提示完成浏览器登录，再执行 `gh auth setup-git`；已设置上游分支的项目可用 `git push` 同步后续提交。
 参考 [GitHub CLI 官方认证说明](https://cli.github.com/manual/gh_auth_login)。
 认证信息只在本机与 GitHub 的登录流程中处理，不复制到学习记录或聊天。
 

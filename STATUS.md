@@ -17,7 +17,7 @@
 | GPU 验证边界 | 本次受限会话无法查询 NVIDIA GPU；不推翻用户本机记录。PyTorch GPU 运算仍未验证 |
 | 合成视频 I/O | 02 实际重跑读取检查，退出码 0；新结果 `outputs/synthetic_io_02_check/video_info.json` 记录 640×360、20 FPS、100 帧、估算 5 秒。既有结果保留；此前读写与错误路径检查见 `docs/lesson01.md`，02 未重跑错误路径检查 |
 | 交接文件 | 00 已建立 `AGENTS.md`、`SPEC.md`、`STATUS.md` 并同步 README；02 接手时已重新读取并核对代码与实际输入 |
-| Git | 已有首次本地提交 `bb7cc53` 和文档提交 `c2491da`；本地分支已改名 main。用户已创建公开仓库 `shuiliufu-design/occlusion-aware-tracking`，HTTPS origin 已配置。首次推送因命令行缺少 GitHub 认证失败，代码尚未上传 |
+| Git | 已成功上传至公开仓库 `shuiliufu-design/occlusion-aware-tracking`；本地 main 已跟踪 origin/main。首次上传后核对远程 main 与本地 HEAD，均为 `f51130e`；后续说明更新继续提交并推送 |
 
 合成结果只证明 I/O，不证明目标检测、跟踪或恢复效果。
 
@@ -62,7 +62,7 @@
 
 1. 完成真实视频读取检查并更新本文件，再由 02 推进轻量检测与跟踪基线。
 2. 后续每个可运行里程碑完成后检查变更并提交 Git；当前环境与合成 I/O 已纳入首次本地提交。
-3. GitHub origin 已配置为 `https://github.com/shuiliufu-design/occlusion-aware-tracking.git`；用户需完成 GitHub 命令行认证，再执行 `git push -u origin main` 并验证远程。代码尚未上传，不阻塞视频任务。
+3. GitHub 首次上传与版本核对已完成；后续里程碑检查提交内容后使用 `git push` 同步。视频、模型权重和虚拟环境保留本地。
 4. 03—05 在基线可检查后按需进入；01 可结合当前读取脚本学习。
 
 未解决问题：缺少真实输入；GPU 运算未验证；基线方案与评测规则尚未确定。
@@ -138,3 +138,11 @@ GitHub 连接器可读取仓库元数据，但返回 `push: false`；命令行�
 提示无法读取 HTTPS GitHub 用户名；本会话缺少可用命令行认证，尚未上传任何提交。
 下一步由用户在本机完成 GitHub CLI 登录；无需在聊天中提供密码、token 或验证码。
 认证完成后重试 `git push -u origin main`，再比较远程 main 与本地 HEAD。
+
+## 00 GitHub 首次上传完成（2026-09-30）
+
+用户完成 GitHub CLI 登录后，联网执行 `gh auth status --hostname github.com`，确认账号为 `shuiliufu-design`，HTTPS 认证有效。
+执行 `env GIT_TERMINAL_PROMPT=0 git push -u origin main`，退出码 0，远程 main 创建成功，本地 main 已跟踪 origin/main。
+执行 `git ls-remote origin refs/heads/main` 与 `git rev-parse HEAD`，均返回 `f51130e4cd8f899e896615bac58423e010e80c87`，确认首次上传内容与本地提交一致。
+随后更新本文件与第一课 GitHub 说明，并提交、推送说明更新。工程代码与依赖未修改，无需重跑已有 I/O 检查。
+下一项任务：用户准备 `data/tabletop_01.mp4`，由 02 完成真实视频读取验收，再推进跟踪基线。
