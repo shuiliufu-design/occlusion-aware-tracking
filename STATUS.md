@@ -4,8 +4,9 @@
 
 ## 当前结论
 
-处于 M0：环境与合成视频 I/O 已有验证，真实桌面视频尚未放入项目。
-检测、跟踪、失效判断、恢复与对照实验均未实现。下一项技术任务只有“准备真实桌面视频并完成读取检查”。
+处于 M0：环境与合成视频 I/O 已有验证，首段真实视频已复制到项目并成功解码 656 帧；已查看首帧与抽帧预览，待用户确认。
+首段主要覆盖镜头、导致整幅画面消失，保留为画面中断开发样例；下一项用户任务是补拍背景持续可见、仅瓶子被遮挡的 `data/tabletop_02.mp4`。
+检测、跟踪、失效判断、恢复与对照实验均未实现。已有首段可交给 02 作为基线开发输入。
 
 ## 已完成与证据
 
@@ -16,6 +17,7 @@
 | 用户本机环境 | `docs/learning_log.md` 记录用户本机检查通过；交接背景为 Ubuntu 24.04、RTX 4070 Laptop 8GB，记录中显存 8188 MiB、驱动 580.178.04 |
 | GPU 验证边界 | 本次受限会话无法查询 NVIDIA GPU；不推翻用户本机记录。PyTorch GPU 运算仍未验证 |
 | 合成视频 I/O | 02 实际重跑读取检查，退出码 0；新结果 `outputs/synthetic_io_02_check/video_info.json` 记录 640×360、20 FPS、100 帧、估算 5 秒。既有结果保留；此前读写与错误路径检查见 `docs/lesson01.md`，02 未重跑错误路径检查 |
+| 真实视频 I/O | 已运行原有读取脚本，退出码 0；`outputs/tabletop_01/video_info.json` 记录 720×1280、名义约 28.7545 FPS、656 帧、估算 22.814 秒。首帧与每秒抽帧预览已查看；主要为镜头遮挡，用户确认待补充 |
 | 交接文件 | 00 已建立 `AGENTS.md`、`SPEC.md`、`STATUS.md` 并同步 README；02 接手时已重新读取并核对代码与实际输入 |
 | Git | 已成功上传至公开仓库 `shuiliufu-design/occlusion-aware-tracking`；本地 main 已跟踪 origin/main。首次上传后核对远程 main 与本地 HEAD，均为 `f51130e`；后续说明更新继续提交并推送 |
 
@@ -30,7 +32,7 @@
 - 既有结果：`outputs/synthetic_io/first_frame.jpg`、`outputs/synthetic_io/video_info.json`。
 - 02 本次结果：`outputs/synthetic_io_02_check/first_frame.jpg`、`outputs/synthetic_io_02_check/video_info.json`。
 - 拍摄说明：`data/README.md`；学习理解继续写入 `docs/learning_log.md`。
-- 本次检查 `data/`，没有真实桌面视频；未检查项目以外的个人视频目录。
+- 真实输入：`data/tabletop_01.mp4`；结果：`outputs/tabletop_01/first_frame.jpg`、`video_info.json`、`contact_sheet.jpg`。历史接手记录中的输入缺失描述保留为当时状态。
 
 02 本次实际运行命令（项目根目录）：
 
@@ -41,31 +43,31 @@
 
 工程代码未修改；真实视频缺失，因此未运行真实视频检查，也未加入检测或跟踪模型。
 
-## 下一项任务：真实视频读取检查
+## 下一项任务：补充仅遮挡目标的视频
 
 目的：确认后续检测与跟踪使用的真实输入可以解码，并包含无遮挡、遮挡和遮挡期间位移的过程。
 
-用户准备一段约 15—25 秒的固定相机桌面视频：前几秒目标可见，遮挡约 2 秒后显露，再遮挡并移动目标，最后保持可见。
-优先使用杯子或瓶子、720p/1080p、约 30 FPS、H.264 MP4，放为 `data/tabletop_01.mp4`。
+首段已检查；用户再准备约 15—25 秒的固定机位瓶子视频：前几秒可见，用靠近瓶子的手或纸板遮挡约 2 秒后显露，再遮挡并移动目标，最后保持可见。背景应始终可见。
+保留首段，补拍放为 `data/tabletop_02.mp4`；竖屏可以运行。
 
 输入到位后在项目根目录执行（以下尚未运行）：
 
 ```bash
-.venv/bin/python scripts/inspect_video.py --source data/tabletop_01.mp4 --output outputs/tabletop_01
+.venv/bin/python scripts/inspect_video.py --source data/tabletop_02.mp4 --output outputs/tabletop_02
 ```
 
-交付：`outputs/tabletop_01/first_frame.jpg`、`outputs/tabletop_01/video_info.json`。
+补拍交付：`outputs/tabletop_02/first_frame.jpg`、`outputs/tabletop_02/video_info.json`。
 验收：命令成功、解码帧数大于零、宽高/FPS 已记录；用户确认首帧方向与视频内容正确。
 输出目录必须为空；如已有结果，使用新目录名并在此记录实际路径。估算时长和读取停止不能单独证明视频完整性。
 
 ## 待办与交接
 
-1. 完成真实视频读取检查并更新本文件，再由 02 推进轻量检测与跟踪基线。
+1. 用户确认首段预览并补拍仅遮挡目标的场景；02 可先使用已有首段推进轻量检测与跟踪基线。
 2. 后续每个可运行里程碑完成后检查变更并提交 Git；当前环境与合成 I/O 已纳入首次本地提交。
 3. GitHub 首次上传与版本核对已完成；后续里程碑检查提交内容后使用 `git push` 同步。视频、模型权重和虚拟环境保留本地。
 4. 03—05 在基线可检查后按需进入；01 可结合当前读取脚本学习。
 
-未解决问题：缺少真实输入；GPU 运算未验证；基线方案与评测规则尚未确定。
+未解决问题：缺少仅遮挡目标的真实场景与用户预览确认；GPU 运算未验证；基线方案与评测规则尚未确定。
 
 ## 05 接手检查（2026-09-30）
 
@@ -146,3 +148,12 @@ GitHub 连接器可读取仓库元数据，但返回 `push: false`；命令行�
 执行 `git ls-remote origin refs/heads/main` 与 `git rev-parse HEAD`，均返回 `f51130e4cd8f899e896615bac58423e010e80c87`，确认首次上传内容与本地提交一致。
 随后更新本文件与第一课 GitHub 说明，并提交、推送说明更新。工程代码与依赖未修改，无需重跑已有 I/O 检查。
 下一项任务：用户准备 `data/tabletop_01.mp4`，由 02 完成真实视频读取验收，再推进跟踪基线。
+
+## 00 首段真实视频检查（2026-09-30）
+
+- 用户提供 `video_2026-09-30_21-59-11.mp4`；复制为 `data/tabletop_01.mp4`，原文件保留。两份文件 SHA-256 均为 `2b620011fa6b79619d1faadde76400e23a798e1f88872e4e8bf938808bb3db5c`。
+- 实际执行 `.venv/bin/python scripts/inspect_video.py --source data/tabletop_01.mp4 --output outputs/tabletop_01`，退出码 0；成功解码 656 帧，720×1280，名义 28.7544977606 FPS，估算 22.814 秒。沿用既有环境与工程代码，未安装新依赖。
+- 另用一次性 OpenCV 脚本顺序解码，每约一秒按帧索引/名义 FPS 抽取一帧，生成 23 张缩略图组成的 `outputs/tabletop_01/contact_sheet.jpg`。已查看首帧和该预览：竖屏方向正常，目标为红盖瓶子；约 6—7 秒、14—17 秒几乎整幅画面被遮住，约 18 秒后瓶子出现在更远的新位置。上述时间是抽帧估算，不能当作事件标注或模型效果。
+- 保留首段用于基线开发及画面中断样例。M0 的脚本读取部分已通过，用户对首帧和内容的确认仍待补充；主要目标遮挡场景还需补拍。
+- `git check-ignore` 已确认视频及全部检查输出被忽略，仅提交说明更新。视频读取停止仍可能为正常结尾或解码失败，未做完整性保证。
+- 下一项用户任务：按 `data/README.md` 补拍 `data/tabletop_02.mp4`，手/纸板靠近瓶子、只遮住目标，背景保持可见。由 02 重新读取本记录，检查补拍并推进 M1；无需重新初始化 Git 或环境。
