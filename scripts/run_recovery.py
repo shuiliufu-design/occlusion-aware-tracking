@@ -11,8 +11,12 @@ import sys
 import cv2
 import numpy as np
 
-from appearance_recovery import DEFAULT_CONFIG_PATH, RecoveryState, load_config, public_feature
-from run_target_state import TargetState, load_baseline, sha256, write_json
+try:
+    from .appearance_recovery import DEFAULT_CONFIG_PATH, RecoveryState, load_config, public_feature
+    from .run_target_state import TargetState, load_baseline, sha256, write_json
+except ImportError:
+    from appearance_recovery import DEFAULT_CONFIG_PATH, RecoveryState, load_config, public_feature
+    from run_target_state import TargetState, load_baseline, sha256, write_json
 
 
 def draw(frame, row):
@@ -140,7 +144,10 @@ def run(args):
                    'references_json_sha256': sha256(args.output / 'references.json'),
                    'width': info['width'], 'height': info['height'], 'nominal_fps': info['nominal_fps'],
                    'source_decoded_frames': index, 'frames_processed': count, 'state_frame_counts': dict(states),
-                   'candidate_decision_counts': dict(counts), 'loss_episodes': machine.loss_episodes,
+                   # 第一阶段确认丢失后永不自动恢复，因此关闭分支最多一段丢失。
+                   # 候选消失/重现的状态切换不开始新的丢失段。
+                   'candidate_decision_counts': dict(counts),
+                   'loss_episodes': int(disabled.loss_latched) if disabled else machine.loss_episodes,
                    'recovery_attempts': machine.attempts, 'program_accepts': machine.accepts,
                    'events': len(events), 'output_video': 'status.mp4',
                    'notes': ['参考只用初始化后的因果合格观察；轨迹仍在时跳过低质量帧，首次轨迹缺失/确认丢失即冻结；候选及恢复画面不更新。',

@@ -9,7 +9,10 @@ from pathlib import Path
 import cv2
 import numpy as np
 
-from run_target_state import box_iou, sha256, write_json
+try:
+    from .run_target_state import box_iou, sha256, write_json
+except ImportError:
+    from run_target_state import box_iou, sha256, write_json
 
 
 def read_rows(path):
@@ -158,6 +161,11 @@ def review(output, selected_frames, annotations=None):
         previous_state = row['state']
     if dict(counts) != info['state_frame_counts']:
         raise ValueError('状态计数不一致')
+    if not info['recovery_enabled']:
+        confirmed_losses = {row['confirmed_lost_frame'] for row in rows
+                            if row['confirmed_lost_frame'] is not None}
+        if info['loss_episodes'] != len(confirmed_losses):
+            raise ValueError('关闭分支丢失次数与逐帧确认丢失记录不一致')
     actual_transitions = [(e['frame_index'], e['from_state'], e['to_state']) for e in events if e['event_type'] == 'STATE_TRANSITION']
     if actual_transitions != transition_keys:
         raise ValueError('状态事件与记录不一致')
