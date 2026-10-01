@@ -1,0 +1,131 @@
+{
+  "schema_version": 1,
+  "scope": "M2 restricted development evaluation; not M3 or a configuration freeze",
+  "match_iou_min": 0.5,
+  "cases": [
+    {
+      "case_id": "original_return",
+      "split": "development",
+      "annotations": "outputs/m2_step2_identity_review/identity_annotations.json",
+      "annotations_sha256": "3b6a6749e3266873f638911653a4be8e0a92583b2e141f3505f5599ada92269c",
+      "episode_id": "tabletop_02_cardboard_return_1",
+      "event_type": "ORIGINAL_RETURN",
+      "expected_return": true,
+      "physical_identity": "T1",
+      "evaluation_interval": {
+        "start_frame": 600,
+        "end_frame_exclusive": 984
+      },
+      "interval_basis": "从人工初始化原帧到片尾覆盖后半段一次纸板遮挡与返回；评价边界不是精确遮挡起止，也不使用算法丢失帧。",
+      "recognizable_reappearance_frame": 847,
+      "target_absent_intervals": [],
+      "visible_controls": [],
+      "runs": [
+        {
+          "run_id": "positive_enabled",
+          "output": "outputs/tabletop_02_m2_step2_v3",
+          "recovery_enabled": true,
+          "code_revision": "3163e39f8c438201b4917558f6f16116aebf3f79"
+        },
+        {
+          "run_id": "positive_disabled",
+          "output": "outputs/tabletop_02_m2_step2_disabled_v2",
+          "recovery_enabled": false,
+          "code_revision": "a167bbaa3382497e40c9b559030234e983a07a4b"
+        }
+      ]
+    },
+    {
+      "case_id": "different_bottle_replacement",
+      "split": "development",
+      "annotations": "outputs/tabletop_wrong_bottle_01_input/identity_annotations.json",
+      "annotations_sha256": "56c97f96d1df5fa4f29a27b4674352c00e014c62dbc7023b75b5a5f983e8743c",
+      "episode_id": "wrong_bottle_replacement_1",
+      "event_type": "DIFFERENT_BOTTLE_REPLACEMENT",
+      "expected_return": false,
+      "physical_identity": "T1 removed; OTHER_BOTTLE visible",
+      "evaluation_interval": {
+        "start_frame": 0,
+        "end_frame_exclusive": 633
+      },
+      "interval_basis": "整片一次替换事件；原目标无返回机会来自拍摄者确认，不来自检测或 LOST 次数。替代瓶子覆盖仅用旧人工区间 [485,633)。",
+      "recognizable_reappearance_frame": null,
+      "target_absent_intervals": [
+        {
+          "start_frame": 485,
+          "end_frame_exclusive": 633,
+          "basis": "拍摄者确认原瓶子被取走且不再入镜；旧人工记录在此区间确认替代瓶子清楚可见。"
+        }
+      ],
+      "visible_controls": [
+        {
+          "start_frame": 180,
+          "end_frame_exclusive": 181,
+          "identity": "T1",
+          "annotator": "Codex 原画面复核；沿用04已确认误报",
+          "basis": "原始 f180 红盖、红白标签及瓶身仍可辨认；手与纸板尚未遮住瓶子。单个诊断点，不代表全片可见性标注。",
+          "evidence": "outputs/m2_step2_04_review/tabletop_wrong_bottle_01_m2_step2_raw_000180.jpg",
+          "evidence_sha256": "fe66e54ac270e648577784aacf8e869425bef4e4141c01a42b452ab351f9b3b7"
+        }
+      ],
+      "runs": [
+        {
+          "run_id": "negative_enabled",
+          "output": "outputs/tabletop_wrong_bottle_01_m2_step2",
+          "recovery_enabled": true,
+          "code_revision": "3e557e62ca5b6d056fa245b78e3e1a6c8eeff417"
+        },
+        {
+          "run_id": "negative_disabled",
+          "output": "outputs/tabletop_wrong_bottle_01_m2_disabled_v2",
+          "recovery_enabled": false,
+          "code_revision": "a167bbaa3382497e40c9b559030234e983a07a4b"
+        }
+      ]
+    }
+  ],
+  "evidence": [
+    {
+      "path": "outputs/m2_step2_identity_review/identity_annotations.json",
+      "sha256": "3b6a6749e3266873f638911653a4be8e0a92583b2e141f3505f5599ada92269c"
+    },
+    {
+      "path": "outputs/tabletop_wrong_bottle_01_input/identity_annotations.json",
+      "sha256": "56c97f96d1df5fa4f29a27b4674352c00e014c62dbc7023b75b5a5f983e8743c"
+    },
+    {
+      "path": "outputs/m2_step2_04_review/acceptance_and_findings.json",
+      "sha256": "d89c118ce1bfffdd283174e01ed7fe3c6ca307bb6ef132644650dd1ea8f379b6"
+    },
+    {
+      "path": "outputs/m2_step2_04_review/audit_evidence.json",
+      "sha256": "61b3886f3fd80aa4ca624b27109a6fd59af9c06e8a44bb3275ad0f3287f103a4"
+    },
+    {
+      "path": "outputs/m2_step2_04_review/preservation_before.json",
+      "sha256": "5ef14cd7bcfea7e7780d2d24aaffdc9eb52ab00a181a321ea49f7b37bde1aed7"
+    },
+    {
+      "path": "outputs/m2_disabled_stats_fix/fix_report.json",
+      "sha256": "4439e2ceff381e5d8611d3ad983648a34cb9c710cb5fa3daea70513755fbcdae"
+    },
+    {
+      "path": "outputs/tabletop_wrong_bottle_01_m2_step2/wrong_bottle_validation_v2.json",
+      "sha256": "2634b339398a972a66c805776ab49fb3950bcd6e70778619d96817eac161442f"
+    }
+  ],
+  "unverified_scopes": [
+    "真实双瓶歧义",
+    "同包装实体替换",
+    "背景持续可见的不同瓶子负例",
+    "标签独立贡献",
+    "M3独立保留测试",
+    "严格速度对照"
+  ],
+  "annotation_limits": [
+    "两片均为已查看开发数据；事件数量不能由候选帧数扩增。",
+    "正例重现/接受框沿用独立关键帧；延迟从人工保守f847计算，尚非用户逐帧时间标注。",
+    "负例[485,633)是固定人工区域和关键帧核对，非148个逐帧精确框；旧区间端点不改变。",
+    "可见控制只补记f180；全片误报率、完整可见/遮挡区间与错位置率未评价。"
+  ]
+}

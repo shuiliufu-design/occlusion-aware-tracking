@@ -130,7 +130,15 @@ curl -fL https://github.com/ultralytics/assets/releases/download/v8.3.0/yolo11n.
 
 复跑报告也须换新路径。新视频在遮挡时挡住整个镜头；瓶盖门槛也失败，未隔离标签模块贡献；f180 原瓶子仍可见时，检测框变化导致纹理门控提前清空位置。保留这些限制，不将单段负例零误绑定推广为准确率。真实双瓶歧义、同包装替换均待验证。准确命令与证据见 [真实负例说明](docs/wrong_bottle_m2_validation.md)；初次实现记录见 [M2 第二步说明](docs/appearance_recovery_m2_step2.md)。
 
-04 发现旧关闭报告的 `loss_episodes=0` 汇总错误，03 已修复。当前关闭结果为 `outputs/tabletop_02_m2_step2_disabled_v2/`、`outputs/tabletop_wrong_bottle_01_m2_disabled_v2/`，各正确记录1次丢失；384/633帧记录、事件、视频与旧结果完全一致。当前35项测试通过，旧184个输出文件保全。通用评价口径与f180提前UNKNOWN仍是已知问题。修复命令与证据见 [关闭统计修复](docs/m2_disabled_statistics_fix.md)。历史运行输出的代码校验对应当时提交，当前新代码核查使用新关闭目录。
+04 发现旧关闭报告的 `loss_episodes=0` 汇总错误，03 已修复。当前关闭结果为 `outputs/tabletop_02_m2_step2_disabled_v2/`、`outputs/tabletop_wrong_bottle_01_m2_disabled_v2/`，各正确记录1次丢失；384/633帧记录、事件、视频与旧结果完全一致。统计修复时35项测试通过，旧184个输出文件保全。修复命令与证据见 [关闭统计修复](docs/m2_disabled_statistics_fix.md)。历史运行输出的代码校验对应当时提交。
+
+统一评价现在使用独立人工返回/替换事件，旧通用评价保留但不参与新汇总：正例开启正确恢复1次，关闭未恢复1次；两组负例原目标无返回机会，不能算恢复失败。开启负例人工区间148个合格拒绝帧属于一次替换事件，全程149候选另列；关闭组外观核验不适用。f180可见却UNKNOWN继续作为失败证据，全片误报率未评价。54项测试通过，准确口径、标注覆盖与历史来源核查见 [统一离线评价](docs/offline_evaluation_m2.md)。
+
+```bash
+.venv/bin/python scripts/evaluate_offline.py --protocol configs/m2_evaluation.json --output outputs/m2_evaluation_v1
+```
+
+复跑换空的新目录。结果位于 `outputs/m2_evaluation_v1/summary.json` 与 `per_event_results.json`；本次没有修改恢复行为、冻结配置或启动M3。
 
 ## 学习路线
 
@@ -139,7 +147,7 @@ curl -fL https://github.com/ultralytics/assets/releases/download/v8.3.0/yolo11n.
 - [x] 第 3 步：跟踪基线，观察遮挡后的 ID 变化与误检轨迹
 - [x] 第 4a 步：指定目标、连续缺失判断与未经身份核验的恢复候选
 - [x] 第 4b 步：04确认受限开发恢复/拒绝验收，03修复关闭统计；困难例仍未验证
-- [ ] 第 5 步：由00确定M3的最小对照范围和剩余问题处理顺序
+- [ ] 第 5 步：由00核对评价交付，处理f180后确认冻结，再启动M3最小对照
 - [ ] 后续研究：可靠性估计、3D 位姿跟踪与机器人仿真验证
 
 ## 文件说明
@@ -162,12 +170,17 @@ curl -fL https://github.com/ultralytics/assets/releases/download/v8.3.0/yolo11n.
 | `scripts/review_recovery.py` | 核对恢复证据、视频、原始输出保全与独立身份评价 |
 | `scripts/validate_recovery_fixture.py` | 挂包真实裁剪与构造 LOST/等分候选的模块验证 |
 | `scripts/validate_wrong_bottle.py` | 用人工身份区间核查真实瓶子拒绝，逐帧重算原像素证据 |
+| `scripts/evaluate_offline.py` | 以共用人工事件统一开启/关闭的返回、拒绝与误报评价 |
+| `scripts/evaluation_sources.py` | 严格核对历史Git代码SHA，在临时目录复核旧结果 |
+| `configs/m2_evaluation.json` | 当前两段开发视频的独立事件/标注适配与来源清单 |
+| `tests/test_offline_evaluation.py` | 无返回机会、缺标注接受、覆盖/区间与来源边界测试 |
 | `configs/recovery.json` | 外观/质量/竞争/确认参数，沿用 SPEC.md 起始值 |
 | `tests/test_appearance_recovery.py` | 外观与身份门控、参考冻结和再次丢失回归检查 |
 | `requirements-baseline.txt` | M1 核心依赖版本，包含原视频 I/O 依赖 |
 | `docs/baseline_m1.md` | 原始基线能力、实际观察与失败案例 |
 | `docs/target_state_m2_step1.md` | 目标初始化、状态规则、实际结果与限制 |
 | `docs/appearance_recovery_m2_step2.md` | 第二步规则、实际验证、身份依据与待补负例 |
+| `docs/offline_evaluation_m2.md` | 统一评价口径、准确命令、四组开发结果与未评价范围 |
 | `data/` | 本地输入视频，默认不上传 |
 | `outputs/` | 本地生成结果，默认不上传 |
 | `docs/lesson01.md` | 第一课讲解与操作步骤 |
@@ -176,8 +189,8 @@ curl -fL https://github.com/ultralytics/assets/releases/download/v8.3.0/yolo11n.
 ## 复现与结果
 
 `requirements.txt` 固定第一课依赖版本。实验视频、模型文件和输出不进入 Git。
-真实视频已运行原始检测与跟踪；尚无独立测试集及身份/事件标注，当前没有准确率或恢复性能结论。
-后续将补充数据来源、评测协议、对照实验及实际结果。
+真实视频已运行原始检测与跟踪，并有受限开发身份/事件依据和四组评价；尚无独立保留测试或泛化性能结论。
+后续按SPEC.md收尾f180与冻结，再补独立小规模对照。
 
 ## 参考
 

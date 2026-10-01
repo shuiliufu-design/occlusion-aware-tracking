@@ -1,6 +1,6 @@
 # 项目状态
 
-更新日期：2026-10-02（Asia/Shanghai）。协调聊天：00｜项目总控；00采纳04的M2第二步受限开发验收，核对03关闭统计修复有效。当前只做M3评价准备，暂不启动正式保留测试；唯一优先任务交03统一离线评价口径。随后处理f180开发失败，再确定冻结与M3启动。真实困难例和M3独立测试未验证。接手聊天需重新读取记录与实际输出。
+更新日期：2026-10-02（Asia/Shanghai）。协调聊天：00｜项目总控；00采纳04的M2第二步受限开发验收，核对03关闭统计修复有效。03统一离线评价口径已实际交付，待00核对；随后处理f180开发失败，再确定冻结与M3启动。暂不启动正式保留测试；配置未冻结，真实困难例和M3独立测试未验证。接手聊天需重新读取记录与实际输出。
 
 ## 当前结论
 
@@ -18,6 +18,8 @@ M2 第二步已按 SPEC.md 实现并运行，参数沿用起始值：冻结 f600
 03本轮仅修复关闭统计：当前结果 `outputs/tabletop_02_m2_step2_disabled_v2/`、`outputs/tabletop_wrong_bottle_01_m2_disabled_v2/`，确认丢失帧f703/f191，各loss_episodes=1、0尝试/接受。384/633帧的全部记录、事件、视频SHA与旧输出一致；新核查和35项测试通过，旧输出及04审查证据184文件未变。详见 `docs/m2_disabled_statistics_fix.md`、`outputs/m2_disabled_stats_fix/fix_report.json`。
 
 00本轮已读取04审查与修复证据，独立核对审查JSON校验、新关闭run_info/review校验及逐帧确认丢失集合；两组确实各1次。SPEC.md已写入处理顺序、评价任务验收与M3预定三片/三组协议；并未实施评价修复、f180修正、配置冻结或M3实验。
+
+03随后完成统一评价入口，实际输出 `outputs/m2_evaluation_v1/`：正例开启正确恢复1、关闭未恢复1；负例两组均无返回机会、不计恢复失败，开启148帧合格拒绝属于1个事件、全程149候选另列，关闭外观核验不适用。f180失败与未标注全片误报率分别记FAIL/UNEVALUATED；54项测试通过，历史来源与旧输出保全通过。详见下方本轮交付及 `docs/offline_evaluation_m2.md`。
 
 ## 已完成与证据
 
@@ -60,6 +62,7 @@ M2 第二步已按 SPEC.md 实现并运行，参数沿用起始值：冻结 f600
 
 - 新真实负例：`data/tabletop_wrong_bottle_01.mp4`；读取/原始预览/身份记录 `outputs/tabletop_wrong_bottle_01_input/`；原始模型结果 `outputs/tabletop_wrong_bottle_01_baseline/`；恢复结果 `outputs/tabletop_wrong_bottle_01_m2_step2/`；关闭结果 `outputs/tabletop_wrong_bottle_01_m2_disabled/`。
 - 真实负例核查：`scripts/validate_wrong_bottle.py`、`tests/test_wrong_bottle_validation.py`、`docs/wrong_bottle_m2_validation.md`；当前专项报告为 `wrong_bottle_validation_v2.json`，早期报告保留；汇总/关闭等价/旧84文件保全见 `comparison_and_preservation.json`。
+- 当前统一离线评价：`scripts/evaluate_offline.py`、`scripts/evaluation_sources.py`、`configs/m2_evaluation.json`、`tests/test_offline_evaluation.py`、`docs/offline_evaluation_m2.md`；结果 `outputs/m2_evaluation_v1/`，旧 `evaluation.json` 不参与新汇总。
 
 02 首次接手实际运行命令（历史；当时真实输入缺失）：
 
@@ -103,7 +106,7 @@ M0/M1 交付完成；没有添加恢复策略。尚无测试集与身份/事件�
 .venv/bin/python scripts/run_baseline.py --device cpu --source data/not_present.mp4 --output outputs/baseline_missing_input_check
 ```
 
-## 唯一优先任务：03统一离线评价口径
+## 03统一离线评价口径（已交付，待00核对）
 
 目的：让“原目标应当恢复”和“已被取走、正确不恢复”使用独立人工事件判断，纠正固定PENDING_INPUT/整体false的报告范围，并记录可见目标误报。评价先行，才能判断后续f180修正的得失。
 
@@ -117,12 +120,44 @@ M0/M1 交付完成；没有添加恢复策略。尚无测试集与身份/事件�
 
 ## 待办与交接
 
-1. 唯一优先任务为03统一评价口径，目的/输入/交付/验收见上方和SPEC.md。当前关闭统计用新disabled_v2目录，旧错误报告仅供溯源；评价修复与f180均未完成，尚未冻结或启动M3正式测试。
+1. 03统一评价口径已实际交付，结果与验证见下方本轮记录；用户将交付交00核对，再按已确定顺序安排f180开发处理。本次未修f180、未冻结配置或启动M3。当前关闭统计用新disabled_v2目录，旧错误报告仅供溯源。
 2. 本轮 M1 代码、依赖与说明本地提交消息为 `feat: add verified YOLO11n ByteTrack baseline`，用 `git log -1 --oneline` 查看；后续每个可运行里程碑仍检查变更并提交。原视频、权重和输出不加入提交。
 3. GitHub 代码与两段视频检查说明均已上传并核对；用户已明确授权公开本次检查记录。视频、模型权重和虚拟环境保留本地。
 4. 03—05 在基线可检查后按需进入；01 可结合当前读取脚本学习。
 
-已知问题与限制：旧两组关闭报告错误零计数已另存新v2修复，不能再用于指标汇总；通用evaluation固定PENDING_INPUT/整体验收false不能作为本轮汇总；真实竞争歧义、同包装替换、背景持续可见的不同瓶子负例尚未验证；同外观实体可能误认；新片f180原目标仍可见时因检测框/纹理变化提前UNKNOWN；瓶盖门槛也失败，未隔离标签贡献；尚无独立保留测试或严格速度对比；可辨认帧/区域为Codex画面核对，尚非用户逐帧标注；输出mp4v、无音频。
+已知问题与限制：旧两组关闭报告错误零计数已另存新v2修复；旧通用evaluation固定PENDING_INPUT/整体验收false已由独立新评价入口替代，原文件保留，不参与新汇总。真实竞争歧义、同包装替换、背景持续可见的不同瓶子负例尚未验证；同外观实体可能误认；新片f180原目标仍可见时因检测框/纹理变化提前UNKNOWN，已明确记FAIL但未修；瓶盖门槛也失败，未隔离标签贡献；尚无独立保留测试或严格速度对比；全片可见/遮挡标注不足，误报率未评价；可辨认帧/区域为Codex画面核对，尚非用户逐帧标注；输出mp4v、无音频。
+
+## 03统一离线评价交付（2026-10-02）
+
+接手HEAD为 `a5185df`、工作区干净；重新读取规则、规格、状态、关闭统计修复说明、04审查及fix_report、旧独立身份记录和实际四组输出。执行期间00另追加的路线说明保留。本轮仅新增评价/来源核查入口、开发事件适配、说明和必要测试；检测/跟踪、外观核心、`configs/recovery.json`、状态行为及所有旧输出均未修改。
+
+实现：`scripts/evaluate_offline.py`、`scripts/evaluation_sources.py`、`configs/m2_evaluation.json`、`tests/test_offline_evaluation.py`；口径/复跑说明为 `docs/offline_evaluation_m2.md`，README补新入口。开启/关闭共用独立episode_id与expected_return；不使用算法丢失次数作返回机会分母，不用旧PASS字符串或外观门槛作人工真值。
+
+本轮实际执行（项目根目录）：
+
+```bash
+.venv/bin/python -m unittest discover -s tests -v
+.venv/bin/python scripts/evaluate_offline.py --protocol configs/m2_evaluation.json --output outputs/m2_evaluation_v1
+.venv/bin/python -m compileall -q scripts tests
+git diff --check
+```
+
+新目录 `outputs/m2_evaluation_v1/` 含 `per_event_results.json`、四组 `summary.json`、`candidate_coverage.jsonl`、协议/命令/输入/代码SHA、历史来源核查与前后保全清单；逐项验收断言保存 `acceptance_checks.json`。另实际重复同一评价命令测试非空保护，按预期退出码1，原结果不变；复跑必须换新空目录。
+
+| 组别 | 人工返回机会 | 正确恢复 | 未恢复 | 错误接受 | 身份/拒绝范围 |
+| --- | --- | --- | --- | --- | --- |
+| 正例开启v3 | 1 | 1（f852） | 0 | 0 | 人工同一瓶子确认与接受框IoU约0.8692 |
+| 正例关闭v2 | 1 | 0 | 1 | 0 | 不绑定；外观核验不适用 |
+| 负例开启 | 0 | 0 | 0 | 0 | 人工[485,633)148帧合格候选全部外观拒绝，1次替换事件；全程149候选另列 |
+| 负例关闭v2 | 0 | 0 | 0 | 0 | 同区间148帧有候选、不绑定；合格/外观拒绝数量null，不计核验通过 |
+
+正例f847→852延迟5帧，名义FPS0.1721898148秒、源时间0.1899888889秒；其余组延迟不适用。两组负例恢复成功率/延迟NOT_APPLICABLE，原瓶子未再出现不算恢复失败。检测缺失、检测但非候选、质量暂缓、合格外观拒绝分开；开启正例候选2帧质量暂缓、6帧合格外观通过，全程8个候选观察（接受帧也保留候选证据）。缺身份的接受单列UNEVALUATED；真实双瓶/同包装等缺真实输入范围UNVERIFIED。
+
+实际来源与保全核查：旧code_sha与Git对象逐文件匹配（正例3163e39、负例3e557e6、两组关闭a167bba），未修改旧SHA或跳过检查；历史脚本在临时目录核查四组记录/参考/配置/视频，重新解码384/384/633/633帧；两组关闭由当时TargetState回放384/633帧、全部原字段/事件一致，确认丢失各1次（f703/f191）。开启负例重新解码源633帧并重算人工区间148帧原像素外观证据；04已有独立重算证据SHA与统计修复引用一致，另复核04清单185个旧输出。评价前后362个任务输入/代码文件SHA一致；核心、参数、原视频、旧输出及审查证据保全。没有重跑推理或04完整独立审查。
+
+本轮54项unittest实际通过（原35+新增19），compileall与验收断言通过。f180原始图已重新查看：原瓶子仍清楚可辨、检测分数约0.922、纹理NCC约0.480导致UNKNOWN；尽管主状态仍TRACKING，新报告记该可见控制点FAIL。关闭组同一控制点仍给位置。只有这一诊断点有明确控制标注，全片误报率及完整可见/遮挡评价为null/UNEVALUATED；不能据此假报全片零误报。
+
+本任务评价口径验收通过；算法f180失败、全镜头遮挡负例、标签贡献未隔离、真实双瓶/同包装/背景持续可见负例未验证、独立测试/速度对照未验证等边界均保留。配置未冻结，M3未启动。本地提交消息为 `feat: unify offline recovery evaluation with manual events`，不推送；输出/视频继续忽略。下一项用户任务：把本段及新summary交00，要求重新读取记录、核对评价口径交付后安排已确定的f180开发处理；无需新增拍摄或先启动M3。
 
 ## 00 M2收尾与M3入口决策（2026-10-02）
 
@@ -322,6 +357,13 @@ git diff --check
 ```
 
 本地提交消息为 `fix: report confirmed loss in disabled recovery runs`，不推送；输出/视频继续Git忽略。下一项是用户交给00结合04受限验收和本次修复，决定M3最小范围及f180/P3的处理顺序，不把未运行事项写为已解决。
+
+## 00 完成效果与后续路线说明（2026-10-02）
+
+- 用户询问第一版完成后的可见效果与后续发展。本轮重读项目规则、规格、状态、M2实现说明与配置，核对恢复代码、正例事件记录、旧负例评价及实际f852恢复截图；未重跑推理、恢复流程或测试。
+- 第一版完成目标沿用M0—M4：可复现离线二维Demo，显示目标已观察/位置未知、候选核验、恢复或拒绝，并交付独立小规模对照及失败分析。现有开发正负例不代表独立测试性能；旧负例评价入口的问题仍按当前优先任务修复。
+- 后续建议为先建立更充分的评价与身份/可靠性方法对照，再视兴趣与资源选择3D位姿及仿真闭环；动作条件世界模型作为闭环阶段候选。这是发展建议，未新增已批准范围、修改SPEC或启动后续实现。
+- 本轮只更新交接说明；无新增可运行里程碑。验证为`git diff --check`。唯一下一项任务仍为03统一离线评价口径，交付与验收继续按SPEC/本文件执行；不额外要求用户拍摄或重复观看。
 
 ## 历史交接记录
 
