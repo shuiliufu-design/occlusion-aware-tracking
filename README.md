@@ -5,8 +5,8 @@
 面向机器人感知的视觉跟踪学习项目：逐步研究遮挡与物体位移后的
 跟踪失效判断和目标恢复。第一阶段使用固定相机、单个主要桌面目标。
 
-**当前阶段：M1 与 M2 第一步已验证；M2 第二步外观恢复已在开发正例接受一次，挂包模块负例拒绝/暂缓通过。**
-真实错误瓶子拒绝仍待补拍，第二步为部分完成；独立对照评价、3D 定位与机器人控制尚未实现。
+**当前阶段：M1 与 M2 第一步已验证；M2 第二步已有正确恢复与真实不同瓶子拒绝的开发证据，待 00/04 复核验收。**
+真实双瓶歧义、同包装替换和独立对照评价尚未验证；3D 定位与机器人控制尚未实现。
 
 ## 快速开始
 
@@ -122,7 +122,13 @@ curl -fL https://github.com/ultralytics/assets/releases/download/v8.3.0/yolo11n.
 本次有效结果为 `outputs/tabletop_02_m2_step2_v3/`，384 帧核查通过；f848—852 连续通过后接受，物理身份依据来自用户无替换的操作确认与独立画面核对。
 23 项状态/门控测试通过；挂包真实裁剪中 2 帧外观拒绝、5 帧质量暂缓，0 绑定。v2 与第一步共 29 个文件保持不变。
 
-这些是开发正例与模块夹具结果，实际不同瓶子、真实双瓶歧义和同包装替换均待验证。相同包装可能被误接受，不宣称解决通用身份识别。准确命令、冻结参考、人工依据、指标口径与拍摄任务见 [M2 第二步说明](docs/appearance_recovery_m2_step2.md)。
+新视频 `data/tabletop_wrong_bottle_01.mp4` 的真实不同瓶子验证已运行：633 帧读取/基线/状态视频核查一致；人工清楚可见区间 f485—632 的 148 帧均有合格候选并外观拒绝，0 绑定。用户确认换成另一只瓶子，原瓶子未再入镜。原视频像素逐帧重算一致；当前共 31 项测试通过，旧 84 个输出文件保持不变。
+
+```bash
+.venv/bin/python scripts/validate_wrong_bottle.py --output outputs/tabletop_wrong_bottle_01_m2_step2 --annotations outputs/tabletop_wrong_bottle_01_input/identity_annotations.json --report outputs/tabletop_wrong_bottle_01_m2_step2/wrong_bottle_validation_v2.json
+```
+
+复跑报告也须换新路径。新视频在遮挡时挡住整个镜头；瓶盖门槛也失败，未隔离标签模块贡献；f180 原瓶子仍可见时，检测框变化导致纹理门控提前清空位置。保留这些限制，不将单段负例零误绑定推广为准确率。真实双瓶歧义、同包装替换均待验证。准确命令与证据见 [真实负例说明](docs/wrong_bottle_m2_validation.md)；初次实现记录见 [M2 第二步说明](docs/appearance_recovery_m2_step2.md)。
 
 ## 学习路线
 
@@ -130,7 +136,7 @@ curl -fL https://github.com/ultralytics/assets/releases/download/v8.3.0/yolo11n.
 - [x] 第 2 步：预训练目标检测基线，保存逐帧检测结果
 - [x] 第 3 步：跟踪基线，观察遮挡后的 ID 变化与误检轨迹
 - [x] 第 4a 步：指定目标、连续缺失判断与未经身份核验的恢复候选
-- [ ] 第 4b 步：外观恢复已在开发正例验证，待实际不同瓶子拒绝与公平对照实验
+- [ ] 第 4b 步：恢复与真实不同瓶子拒绝的开发证据齐备，待 00/04 复核；公平对照在 M3 完成
 - [ ] 后续研究：可靠性估计、3D 位姿跟踪与机器人仿真验证
 
 ## 文件说明
@@ -152,6 +158,7 @@ curl -fL https://github.com/ultralytics/assets/releases/download/v8.3.0/yolo11n.
 | `scripts/run_recovery.py` | 保存第二步视频、参考、事件与配置，支持关闭恢复 |
 | `scripts/review_recovery.py` | 核对恢复证据、视频、原始输出保全与独立身份评价 |
 | `scripts/validate_recovery_fixture.py` | 挂包真实裁剪与构造 LOST/等分候选的模块验证 |
+| `scripts/validate_wrong_bottle.py` | 用人工身份区间核查真实瓶子拒绝，逐帧重算原像素证据 |
 | `configs/recovery.json` | 外观/质量/竞争/确认参数，沿用 SPEC.md 起始值 |
 | `tests/test_appearance_recovery.py` | 外观与身份门控、参考冻结和再次丢失回归检查 |
 | `requirements-baseline.txt` | M1 核心依赖版本，包含原视频 I/O 依赖 |

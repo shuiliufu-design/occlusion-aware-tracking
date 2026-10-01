@@ -1,6 +1,6 @@
 # 项目状态
 
-更新日期：2026-10-01（Asia/Shanghai）。协调聊天：00｜项目总控；02 已交付 M1；03 已交付 M2 第一步，第二步代码与已有输入验证完成，真实错误瓶子验证待补，第二步为部分完成。接手聊天需重新读取记录与实际输出。
+更新日期：2026-10-01（Asia/Shanghai）。协调聊天：00｜项目总控；02 已交付 M1；03 已交付 M2 第一步，第二步恢复/拒绝已有开发证据，待 00/04 复核验收。真实双瓶歧义、同包装替换与 M3 独立测试仍未验证。接手聊天需重新读取记录与实际输出。
 
 ## 当前结论
 
@@ -9,7 +9,9 @@ M1 已实际跑通并通过输出核查：YOLO11n + 未修改的 Ultralytics Byt
 纸板遮挡前 ID 4，长遮挡与位移后输出新 ID 5；保留背景挂包附近误检为瓶子的 ID 3。
 M2 第一步已实际运行：复用 v2 与原视频，人工框配置初始化目标，输出 TRACKING / LOST / RECOVERY_CANDIDATE。有效输出为 `outputs/tabletop_02_m2_step1/`，384 条记录与状态视频重解码一致；f703 确认丢失，f845 出现未经身份核验的候选。该步保留为仅候选对照，不执行自动恢复。两段当前都用作开发输入，尚无独立测试集；M2 尚未全部验收。
 00 已独立核对本步记录、事件、视频重解码与关键帧预览，M2 第一步达到预定实现要求。用户已反馈本步视频约 3.24 秒位置 UNKNOWN、3.55 秒进入 LOST、8.44 秒出现 UNVERIFIED 候选；03 核对已有记录一致。用户也已明确说明候选可能为其他瓶子或误检，分数/ID 不能单独确认身份，本步观看与理解核对均已完成。
-M2 第二步已按 SPEC.md 实现并运行，参数沿用起始值：冻结 f600—609 的 10 个参考，候选多项外观门控、竞争排除与连续 5 帧确认，恢复后继续门控。有效输出 `outputs/tabletop_02_m2_step2_v3/`：f848—852 连续合格，f852 接受并将 T1 关联到新原生 ID；用户确认遮挡期间只移动原瓶子、未替换，独立身份记录支持该开发正例正确接受 1 次。挂包模块负例 2 帧外观拒绝、5 帧质量暂缓、0 绑定；构造等分候选暂缓。23 项测试与视频/证据核查通过，关闭模块退回第一步。真实错误瓶子、真实双瓶歧义、同包装困难例仍待输入，不能验收完整恢复/拒绝能力。
+M2 第二步已按 SPEC.md 实现并运行，参数沿用起始值：冻结 f600—609 的 10 个参考，候选多项外观门控、竞争排除与连续 5 帧确认，恢复后继续门控。有效输出 `outputs/tabletop_02_m2_step2_v3/`：f848—852 连续合格，f852 接受并将 T1 关联到新原生 ID；用户确认遮挡期间只移动原瓶子、未替换，独立身份记录支持该开发正例正确接受 1 次。挂包模块负例 2 帧外观拒绝、5 帧质量暂缓、0 绑定；构造等分候选暂缓。23 项测试与视频/证据核查通过，关闭模块退回第一步。这是初次交付时的证据，新增真实不同瓶子验证见下一段；真实双瓶歧义、同包装困难例仍未验证。
+
+用户新提供 `video_2026-10-01_22-41-54.mp4`，确认换成另一只瓶子且原瓶子未再入镜。复制为 `data/tabletop_wrong_bottle_01.mp4`，633 帧读取/固定条件基线/状态视频一致；输出 `outputs/tabletop_wrong_bottle_01_m2_step2/`。人工清楚可见区间 f485—632 的 148 帧都有质量合格候选且全部外观拒绝，0 接受、0 错误当前位置，原像素重算一致；整次含 f484 共149个拒绝候选。关闭模块与原 TargetState 的633帧原字段逐项相同，旧84个输出文件不变，31项测试通过。参数/核心代码与原正例一致。开发正例与真实不同瓶子拒绝已有依据，待00/04复核；本片全镜头遮挡、瓶盖门槛也失败及f180可见目标提前UNKNOWN的限制保留，不推广为可靠性结论。
 
 ## 已完成与证据
 
@@ -24,7 +26,8 @@ M2 第二步已按 SPEC.md 实现并运行，参数沿用起始值：冻结 f600
 | 补拍视频 I/O | 02 重新运行原脚本，退出码 0；新结果 `outputs/tabletop_02_02_check/`：720×1280、984 帧、名义约 29.0377 FPS、估算 33.887 秒；本次首帧与既有抽帧预览已查看；用户说明补拍已检查 |
 | M1 基线与核查 | `scripts/run_baseline.py` 实际处理 984 帧；`scripts/review_baseline.py` 核对记录/ID 映射/统计与视频重解码，退出码 0；有效输出为 v2。已查看带框首帧、每秒预览及 f227/f845/f848 |
 | M2 第一步与核查 | `scripts/run_target_state.py` 复用原始记录、顺序解码 984 帧并输出 f600—983 共 384 帧；`review_target_state.py` 核查记录/阈值/事件/候选/视频，退出码 0；8 项 unittest 通过；v2 全部 14 个文件运行前后校验一致 |
-| M2 第二步部分交付 | 最终 v3 输出/重解码各 384 帧，开发正例尝试/程序接受/有独立依据正确接受各 1；挂包模块负例 2 拒绝、5 暂缓、0 接受；关闭恢复与第一步逐项一致；23 项 unittest 通过；v2 与第一步共 29 个文件校验一致 |
+| M2 第二步初次开发验证 | 最终 v3 输出/重解码各 384 帧，开发正例尝试/程序接受/有独立依据正确接受各 1；挂包模块负例 2 拒绝、5 暂缓、0 接受；关闭恢复与第一步逐项一致；23 项 unittest 通过；v2 与第一步共 29 个文件校验一致 |
+| M2 真实不同瓶子验证 | 新片633帧；人工区间148个合格候选均拒绝，原像素逐帧重算一致，0绑定/错误当前位置；用户替换操作确认独立于分数；新旧固定条件一致，旧84文件保全，31项测试通过。见 `wrong_bottle_validation_v2.json` |
 | 基线依赖 | 接手时已有 torch 2.8.0+cu128、torchvision 0.23.0+cu128 和权重；本次补充 ultralytics 8.3.221、lap 0.5.12 等依赖，未重建环境或更换 OpenCV/NumPy；`pip check` 通过，固定核心版本见 `requirements-baseline.txt` |
 | 交接文件 | 00 已建立 `AGENTS.md`、`SPEC.md`、`STATUS.md` 并同步 README；02 接手时已重新读取并核对代码与实际输入 |
 | Git | 已有公开仓库与两段视频检查记录同步历史见下方；02 本轮按里程碑进行本地提交，不执行推送。视频、权重、环境、缓存与输出被忽略，保留本地 |
@@ -48,6 +51,9 @@ M2 第二步已按 SPEC.md 实现并运行，参数沿用起始值：冻结 f600
 - M2 第一步实现与说明：`scripts/run_target_state.py`、`scripts/review_target_state.py`、`tests/test_target_state.py`、`docs/target_state_m2_step1.md`；结果 `outputs/tabletop_02_m2_step1/` 含 `status.mp4`、`frames.jsonl`、`events.jsonl`、`run_info.json`、`review.json`、关键帧/预览及 `baseline_preservation.json`。
 - M2 第二步实现：`scripts/appearance_recovery.py`、`scripts/run_recovery.py`、`scripts/review_recovery.py`、`scripts/validate_recovery_fixture.py`、`configs/recovery.json`、`tests/test_appearance_recovery.py`；说明 `docs/appearance_recovery_m2_step2.md`。
 - M2 第二步有效结果：`outputs/tabletop_02_m2_step2_v3/`（状态视频、逐帧/事件、参考 PNG/NPZ、配置/校验、核查/身份评价）；关闭结果 `outputs/tabletop_02_m2_step2_disabled/`；模块验证 `outputs/m2_step2_module_validation_v2/`；独立身份记录 `outputs/m2_step2_identity_review/identity_annotations.json`。早期运行结果保留，最终核查以 v3 为准。
+
+- 新真实负例：`data/tabletop_wrong_bottle_01.mp4`；读取/原始预览/身份记录 `outputs/tabletop_wrong_bottle_01_input/`；原始模型结果 `outputs/tabletop_wrong_bottle_01_baseline/`；恢复结果 `outputs/tabletop_wrong_bottle_01_m2_step2/`；关闭结果 `outputs/tabletop_wrong_bottle_01_m2_disabled/`。
+- 真实负例核查：`scripts/validate_wrong_bottle.py`、`tests/test_wrong_bottle_validation.py`、`docs/wrong_bottle_m2_validation.md`；当前专项报告为 `wrong_bottle_validation_v2.json`，早期报告保留；汇总/关闭等价/旧84文件保全见 `comparison_and_preservation.json`。
 
 02 首次接手实际运行命令（历史；当时真实输入缺失）：
 
@@ -91,23 +97,20 @@ M0/M1 交付完成；没有添加恢复策略。尚无测试集与身份/事件�
 .venv/bin/python scripts/run_baseline.py --device cpu --source data/not_present.mp4 --output outputs/baseline_missing_input_check
 ```
 
-## 下一项任务：拍摄实际错误瓶子的负例
+## 下一项任务：观看真实负例的拒绝输出
 
-用户已反馈观看视频、未发现问题（2026-10-01），已记录于 `docs/learning_log.md`。此前讲解了“无框”和新轨迹 ID 的含义；用户理解不由 Codex 代填，后续结合 03 的代码继续学习。
-M2 第一步现已完成，用户对状态视频的三处观察已保存至 `docs/learning_log.md`。这些是状态视频的播放器时间，原视频帧号仍保留在逐帧记录中。
-用户已用自己的话正确说明候选与身份确认的区别，原话见 `docs/learning_log.md`。
-下一项用户任务只有拍摄 `data/tabletop_wrong_bottle_01.mp4`，约 15—20 秒：固定相机和光照，原红盖瓶子清楚可见约 5 秒；纸板只遮住瓶子、背景持续可见；遮挡期间取走原瓶子，换上同样红盖但标签明显不同的瓶子；移开纸板，让替代瓶子清楚可见至少 5 秒，原瓶子不再入镜。附一句说明替换操作。
-目的：检验不只凭红色瓶盖接受身份；交付为视频与操作说明；拍摄验收为瓶盖与标签清楚、镜头不被遮住。输入到位后由 03 检查读取并沿用固定检测条件，确认替代瓶子确实形成质量合格候选，再核查拒绝。没有检测到假瓶子不能算外观拒绝通过。
-真实不同瓶子拒绝有人工依据后，才能验收本步恢复/拒绝交付；实际双瓶歧义与同包装困难例仍保留待验证。04 可先审查当前代码/输出。接手需重读记录，不把外观启发式称为确定物理身份。
+用户已提供真实不同瓶子输入并确认替换操作，03 已完成固定条件运行与实际拒绝核查。原正例与新负例都为已查看开发数据，不是 M3 保留测试。第一步观看与候选理解已完成；尚未收到用户对新负例状态视频的观看反馈。
+用户现在只需观看 `outputs/tabletop_wrong_bottle_01_m2_step2/status.mp4` 约16—21秒：观察有拒绝候选框时，T1 仍显示 UNKNOWN，且没有 T1 绿色已绑定框。目的为亲自核对检测到另一只瓶子与恢复原目标的区别；交付为一句观看反馈，验收为画面表现与逐帧拒绝/空位置记录一致。
+00/04 可重新读取规则、规格、本记录与实际输出，复核第二步恢复/拒绝交付。真实双瓶歧义、同包装困难例和背景持续可见的不同瓶子负例保留未验证，下一阶段对照范围由总控安排。
 
 ## 待办与交接
 
-1. 用户已完成第一步观看与理解，第二步已完成已有输入的实现/验证；下一项为补拍实际错误瓶子。03/04 接手前必须重新读取记录，原始对照使用 v2，第一轮无效基线不可用于实验。
+1. 用户已完成第一步观看与理解，第二步已有正确恢复与真实不同瓶子拒绝的开发证据；下一项为观看新负例输出，00/04 再复核验收。接手前重新读取记录；旧输入对照使用 v2，新输入对照使用固定条件新基线，不使用首轮无效输出。
 2. 本轮 M1 代码、依赖与说明本地提交消息为 `feat: add verified YOLO11n ByteTrack baseline`，用 `git log -1 --oneline` 查看；后续每个可运行里程碑仍检查变更并提交。原视频、权重和输出不加入提交。
 3. GitHub 代码与两段视频检查说明均已上传并核对；用户已明确授权公开本次检查记录。视频、模型权重和虚拟环境保留本地。
 4. 03—05 在基线可检查后按需进入；01 可结合当前读取脚本学习。
 
-未解决问题：实际错误瓶子、真实竞争歧义、同包装替换尚未验证；同外观实体可能误认；质量门槛可能把真实目标暂时判为不可靠；阈值未调优、尚无独立保留测试；可辨认重现帧为 Codex 画面核对，尚非用户逐帧时间标注；输出为 mp4v、无音频，未进行端到端速度对比。
+未解决问题：真实竞争歧义、同包装替换、背景持续可见的不同瓶子负例尚未验证；同外观实体可能误认；新片f180原目标仍可见时因检测框/纹理变化提前UNKNOWN；瓶盖门槛也失败，未隔离标签贡献；尚无独立保留测试或严格速度对比；可辨认帧/区域为Codex画面核对，尚非用户逐帧标注；输出mp4v、无音频。
 
 ## 03 本轮 M2 第一步交付（2026-10-01）
 
@@ -194,6 +197,37 @@ M2 第一步现已完成，用户对状态视频的三处观察已保存至 `doc
 - 本轮本地提交消息为 `feat: add frozen appearance recovery with validation evidence`；视频、参考、标注、报告等运行输出按 Git 忽略留本地，不推送远程。准确配置、输出字段、结果与限制见 `docs/appearance_recovery_m2_step2.md`。
 
 本步为部分完成：缺少真实不同瓶子合格候选的拒绝验证，真实双瓶歧义/同包装替换与 M3 独立测试仍未运行。用户下一项只有拍摄上方不同标签瓶子的替换负例，不把未运行项目写为通过。
+
+## 03 真实不同瓶子验证交付（2026-10-01）
+
+接手工作区干净，HEAD为 `3163e39`，已重读规则、规格、状态及实际实现。用户新视频原件保留，副本/原件SHA-256一致：`585f9ba9048b672fd39acabdaa8b5164e1a2d45be965d741081e9e8e2322b51f`。用户确认“是，换成了另一只瓶子，原瓶子未再入镜”，另存人工身份记录，不由算法分数生成真值。
+
+- 原始读取与顺序抽帧均633帧，720×1280、29.91038名义FPS、约21.163秒。已查看首帧、逐秒预览、原始重现f480/485/490/495/500、f180与最终状态拼图。
+- 固定YOLO11n/ByteTrack原条件首次运行此输入，在原有GPU实际校验和推理通过；模型/版本/推理/跟踪配置与旧v2一致。恢复后处理复用新基线633条记录，不改核心脚本、配置或依赖。
+- 初始化原f0人工框 `[290,280,510,1040]`，因果参考f0—9共10个后冻结。f180纹理门控失败清空位置、f189确认LOST、f484候选出现；全程0接受。原瓶子仍可见时的提前UNKNOWN如实保留。
+- 人工清楚可见区间f485—632共148帧，以独立人工空间区域匹配蓝标签另一瓶子；每帧都质量合格且特征可算，全部REJECTED_APPEARANCE，0缺检测/质量暂缓、0绑定/错误当前位置。原像素重算质量/最佳参考/门槛逐项相同。含区间前f484的整次候选共149个。
+- 代表f500检测分数约0.9303、新原生ID已关联，但标签距离约0.8699、纹理NCC约-0.2142、S约0.3038，拒绝。瓶盖距离约0.6414也未过门槛，所以不单独归因标签模块或声称消除了红盖依赖。
+- 新增真实负例核查入口，每次重新核查当前记录与视频，在临时目录保留原核查输出；只凭合格候选实际门槛判断，不信缓存布尔值/拒绝字符串。补8项负例评价测试，与原23项合计31项通过；compileall通过。
+- 关闭模块另存633帧，逐帧调用原TargetState比较全部原字段一致；旧正例/第一步/关闭/模块与身份记录共84个文件前后SHA未变，新基线15个文件保全。汇总见 `comparison_and_preservation.json`。
+- 通用评价器的真实负例字段仍固定PENDING_INPUT、unrecovered_events=1，仅记录接受/未接受，不能表示本片待输入或负例失败；实际拒绝以专项 `wrong_bottle_validation_v2.json` 为准，原报告保留。
+- 真实替代瓶子拒绝PASS与已有正例正确接受1次、挂包模块拒绝2帧共同支持开发恢复/拒绝交付，待00/04复核验收；全镜头遮挡、双瓶/同包装/独立测试等限制保留。没有推断普遍准确率，没有进行速度基准。
+
+准确成功命令（GPU基线沙箱外；其余沙箱内）：
+
+```bash
+.venv/bin/python scripts/inspect_video.py --source data/tabletop_wrong_bottle_01.mp4 --output outputs/tabletop_wrong_bottle_01_input
+.venv/bin/python scripts/run_baseline.py --source data/tabletop_wrong_bottle_01.mp4 --output outputs/tabletop_wrong_bottle_01_baseline --model weights/yolo11n.pt --device 0 --imgsz 640 --conf 0.1 --iou 0.7
+.venv/bin/python scripts/review_baseline.py --output outputs/tabletop_wrong_bottle_01_baseline --frames 0 9 180 190 480 485 500 632
+.venv/bin/python scripts/run_recovery.py --source data/tabletop_wrong_bottle_01.mp4 --baseline outputs/tabletop_wrong_bottle_01_baseline --output outputs/tabletop_wrong_bottle_01_m2_step2 --init-frame 0 --init-box 290 280 510 1040 --missing-frames 10 --config configs/recovery.json
+.venv/bin/python scripts/review_recovery.py --output outputs/tabletop_wrong_bottle_01_m2_step2 --frames 0 9 179 180 181 189 480 484 485 500 600 632
+.venv/bin/python scripts/validate_wrong_bottle.py --output outputs/tabletop_wrong_bottle_01_m2_step2 --annotations outputs/tabletop_wrong_bottle_01_input/identity_annotations.json --report outputs/tabletop_wrong_bottle_01_m2_step2/wrong_bottle_validation_v2.json
+.venv/bin/python scripts/run_recovery.py --source data/tabletop_wrong_bottle_01.mp4 --baseline outputs/tabletop_wrong_bottle_01_baseline --output outputs/tabletop_wrong_bottle_01_m2_disabled --init-frame 0 --init-box 290 280 510 1040 --missing-frames 10 --config configs/recovery.json --disable-recovery
+.venv/bin/python scripts/review_recovery.py --output outputs/tabletop_wrong_bottle_01_m2_disabled --frames 0 181 182 191 484 485 500 632
+.venv/bin/python -m unittest discover -s tests -v
+.venv/bin/python -m compileall -q scripts tests
+```
+
+本轮只新增验证入口/测试及更新文档，本地提交消息为 `feat: validate real different-bottle rejection`，不推送；视频、原始输出与身份记录继续Git忽略。说明见 `docs/wrong_bottle_m2_validation.md`。用户下一项仅观看末段输出给反馈；后续验收与M3范围由00/04重新读取记录安排。
 
 ## 历史交接记录
 
