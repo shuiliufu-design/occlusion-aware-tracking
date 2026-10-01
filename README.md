@@ -5,8 +5,8 @@
 面向机器人感知的视觉跟踪学习项目：逐步研究遮挡与物体位移后的
 跟踪失效判断和目标恢复。第一阶段使用固定相机、单个主要桌面目标。
 
-**当前阶段：M1 基线已验证；M2 第一步已在纸板遮挡片段输出指定目标、丢失与恢复候选状态。**
-候选未经身份核验，不绑定原目标；身份恢复、对照评价、3D 定位与机器人控制尚未实现。
+**当前阶段：M1 与 M2 第一步已验证；M2 第二步外观恢复已在开发正例接受一次，挂包模块负例拒绝/暂缓通过。**
+真实错误瓶子拒绝仍待补拍，第二步为部分完成；独立对照评价、3D 定位与机器人控制尚未实现。
 
 ## 快速开始
 
@@ -109,13 +109,28 @@ curl -fL https://github.com/ultralytics/assets/releases/download/v8.3.0/yolo11n.
 连续缺失达到可配置阈值前保持 TRACKING 决策，但无本帧目标观察时立即清空当前框、显示位置未知。确认丢失后所有同类检测只作 UNVERIFIED 候选，包含原 ID 再现的情况，不自动回 TRACKING。
 关闭新增模块时直接查看原始 v2 视频/记录；M1 入口与全部输出保持原状。详细数据字段、阈值、状态转换与限制见 [M2 第一步说明](docs/target_state_m2_step1.md)。
 
+## M2 第二步：冻结外观参考与恢复关联
+
+复用同一 v2 记录与原视频，参考只从初始化后的合格观察建立并冻结。候选通过瓶盖/标签颜色、标签纹理、形状、竞争差值与连续 5 帧确认后，才将原项目目标 `T1` 关联到当前原生 ID；原生 ID 不改写。参数见 `configs/recovery.json`。
+
+```bash
+.venv/bin/python scripts/run_recovery.py --source data/tabletop_02.mp4 --baseline outputs/tabletop_02_baseline_v2 --step1-output outputs/tabletop_02_m2_step1 --output outputs/tabletop_02_m2_step2_v3 --init-frame 600 --init-box 180 450 305 870 --missing-frames 10 --config configs/recovery.json
+.venv/bin/python scripts/review_recovery.py --output outputs/tabletop_02_m2_step2_v3 --annotations outputs/m2_step2_identity_review/identity_annotations.json --frames 600 609 691 692 701 845 847 848 851 852 900 983
+```
+
+重复运行须换新目录。身份记录仅本地保存；缺少独立记录时省略 `--annotations`，程序接受保留为未评价。新增 `--disable-recovery` 并换新输出目录可退回第一步仅候选行为。
+本次有效结果为 `outputs/tabletop_02_m2_step2_v3/`，384 帧核查通过；f848—852 连续通过后接受，物理身份依据来自用户无替换的操作确认与独立画面核对。
+23 项状态/门控测试通过；挂包真实裁剪中 2 帧外观拒绝、5 帧质量暂缓，0 绑定。v2 与第一步共 29 个文件保持不变。
+
+这些是开发正例与模块夹具结果，实际不同瓶子、真实双瓶歧义和同包装替换均待验证。相同包装可能被误接受，不宣称解决通用身份识别。准确命令、冻结参考、人工依据、指标口径与拍摄任务见 [M2 第二步说明](docs/appearance_recovery_m2_step2.md)。
+
 ## 学习路线
 
 - [x] 第 1 步：真实视频读取（首段 656 帧、补拍 984 帧；用户已确认补拍检查完成）
 - [x] 第 2 步：预训练目标检测基线，保存逐帧检测结果
 - [x] 第 3 步：跟踪基线，观察遮挡后的 ID 变化与误检轨迹
 - [x] 第 4a 步：指定目标、连续缺失判断与未经身份核验的恢复候选
-- [ ] 第 4b 步：有身份依据的恢复，设置公平对照实验
+- [ ] 第 4b 步：外观恢复已在开发正例验证，待实际不同瓶子拒绝与公平对照实验
 - [ ] 后续研究：可靠性估计、3D 位姿跟踪与机器人仿真验证
 
 ## 文件说明
@@ -133,9 +148,16 @@ curl -fL https://github.com/ultralytics/assets/releases/download/v8.3.0/yolo11n.
 | `scripts/run_target_state.py` | 复用基线，输出目标状态、候选与事件 |
 | `scripts/review_target_state.py` | 核查 M2 状态记录、候选、事件及视频 |
 | `tests/test_target_state.py` | 状态边界与未经身份核验不得绑定的回归检查 |
+| `scripts/appearance_recovery.py` | 冻结外观参考、候选门控与连续确认状态 |
+| `scripts/run_recovery.py` | 保存第二步视频、参考、事件与配置，支持关闭恢复 |
+| `scripts/review_recovery.py` | 核对恢复证据、视频、原始输出保全与独立身份评价 |
+| `scripts/validate_recovery_fixture.py` | 挂包真实裁剪与构造 LOST/等分候选的模块验证 |
+| `configs/recovery.json` | 外观/质量/竞争/确认参数，沿用 SPEC.md 起始值 |
+| `tests/test_appearance_recovery.py` | 外观与身份门控、参考冻结和再次丢失回归检查 |
 | `requirements-baseline.txt` | M1 核心依赖版本，包含原视频 I/O 依赖 |
 | `docs/baseline_m1.md` | 原始基线能力、实际观察与失败案例 |
 | `docs/target_state_m2_step1.md` | 目标初始化、状态规则、实际结果与限制 |
+| `docs/appearance_recovery_m2_step2.md` | 第二步规则、实际验证、身份依据与待补负例 |
 | `data/` | 本地输入视频，默认不上传 |
 | `outputs/` | 本地生成结果，默认不上传 |
 | `docs/lesson01.md` | 第一课讲解与操作步骤 |
