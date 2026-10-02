@@ -188,6 +188,15 @@ class CoverageAndSourceTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             coverage([row(0, candidates=[candidate('DEFERRED_QUALITY', True)])], True)
 
+    def test_good_crop_without_computable_comparison_is_evidence_deferred(self):
+        item = candidate('DEFERRED_QUALITY', True)
+        item['best_reference'] = None
+        item['reasons'] = ['NONFINITE_COMPARISON']
+        data = coverage([row(0, candidates=[item])], True)
+        self.assertEqual(data['candidate_counts']['INSUFFICIENT_EVIDENCE'], 1)
+        self.assertEqual(data['qualified_candidate_observations'], 0)
+        self.assertEqual(data['appearance_rejected_observations'], 0)
+
     def test_counts_must_match_rows_events_and_cannot_import_bad_loss_count(self):
         rows = [row(0)]
         info = {'config': {'init_frame': 0, 'end_frame_exclusive': 1}, 'frames_processed': 1,

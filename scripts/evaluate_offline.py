@@ -83,6 +83,9 @@ def candidate_category(candidate, enabled):
         if not quality or best is None or best['appearance_passed'] or all(best['gates'].values()):
             raise ValueError('拒绝字符串与质量/外观证据矛盾')
     if decision == 'DEFERRED_QUALITY':
+        if quality and best is None:
+            # 参考不足或没有合法/有限纹理比较：裁剪质量不是失败原因。
+            return 'INSUFFICIENT_EVIDENCE'
         if quality:
             raise ValueError('质量暂缓却质量合格')
         return 'QUALITY_DEFERRED'
