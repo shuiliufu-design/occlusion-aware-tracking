@@ -16,12 +16,15 @@ except ImportError:
 
 DEFAULT_CONFIG_PATH = Path(__file__).resolve().parents[1] / 'configs/recovery.json'
 ARRAY_KEYS = ('cap_hist', 'label_hist', 'texture', 'crop')
+ALIGNMENT_KEYS = {'texture_alignment_enabled', 'texture_max_shift_fraction_x',
+                  'texture_max_shift_fraction_y', 'texture_min_overlap_fraction'}
 
 
 def load_config(path=DEFAULT_CONFIG_PATH):
     config = json.loads(Path(path).read_text(encoding='utf-8'))
     expected = json.loads(DEFAULT_CONFIG_PATH.read_text(encoding='utf-8'))
-    if config.keys() != expected.keys():
+    extra = config.keys() - expected.keys()
+    if not expected.keys() <= config.keys() or extra - ALIGNMENT_KEYS or (extra and extra != ALIGNMENT_KEYS):
         raise ValueError('恢复配置缺项或含未知项')
     integer_keys = ('reference_target_samples', 'reference_min_samples', 'reference_wait_frames',
                     'min_width', 'min_height', 'h_bins', 's_bins', 'min_color_pixels',
@@ -53,6 +56,15 @@ def load_config(path=DEFAULT_CONFIG_PATH):
             raise ValueError(f'{key} 必须为正面积归一化区域')
     if config['resize_interpolation'] != 'INTER_AREA' or config['pixel_rounding'] != 'floor lower, ceil upper':
         raise ValueError('本版本只实现 INTER_AREA 及 floor/ceil 取整规则')
+    if extra:
+        if type(config['texture_alignment_enabled']) is not bool:
+            raise ValueError('纹理对齐开关必须为布尔值')
+        for key in ('texture_max_shift_fraction_x', 'texture_max_shift_fraction_y'):
+            if not math.isfinite(config[key]) or not 0 <= config[key] <= 0.10:
+                raise ValueError('本开发版本平移范围须在 [0,0.10]，不得扩大搜索')
+        overlap = config['texture_min_overlap_fraction']
+        if not math.isfinite(overlap) or not 0.80 <= overlap <= 1:
+            raise ValueError('共同区域比例须在 [0.80,1]')
     return config
 
 
@@ -112,6 +124,48 @@ def extract_feature(frame, detection, config):
     return feature
 
 
+def align_texture(candidate, reference, config):
+    """整数平移只比较两侧真实共同区域；shift表示参考索引=候选索引+shift。"""
+    if (candidate.ndim != 2 or candidate.shape != reference.shape or
+            candidate.dtype != reference.dtype or candidate.dtype not in (np.uint8, np.float32) or
+            not np.isfinite(candidate).all() or not np.isfinite(reference).all()):
+        return None
+    height, width = candidate.shape
+    if not height or not width:
+        return None
+    mx = math.floor(config['texture_max_shift_fraction_x'] * width)
+    my = math.floor(config['texture_max_shift_fraction_y'] * height)
+    shifts = sorted(((dx, dy) for dy in range(-my, my + 1) for dx in range(-mx, mx + 1)),
+                    key=lambda shift: (abs(shift[0]) + abs(shift[1]), shift[1], shift[0]))
+    best, zero, valid = None, None, 0
+    for dx, dy in shifts:
+        x0, x1 = max(0, -dx), min(width, width - dx)
+        y0, y1 = max(0, -dy), min(height, height - dy)
+        a = candidate[y0:y1, x0:x1]
+        b = reference[y0+dy:y1+dy, x0+dx:x1+dx]
+        overlap = a.size / candidate.size
+        if not a.size or overlap < config['texture_min_overlap_fraction']:
+            continue
+        a_std, b_std = float(a.std()), float(b.std())
+        if min(a_std, b_std) < config['min_gray_std']:
+            continue
+        ncc = float(cv2.matchTemplate(a, b, cv2.TM_CCOEFF_NORMED)[0, 0])
+        if not math.isfinite(ncc):
+            continue
+        valid += 1
+        if dx == dy == 0:
+            zero = ncc
+        if best is None or ncc > best['ncc']:
+            best = {'ncc': ncc, 'shift_xy': [dx, dy], 'overlap_fraction': overlap,
+                    'candidate_gray_std': a_std, 'reference_gray_std': b_std,
+                    'candidate_region_xyxy': [x0, y0, x1, y1],
+                    'reference_region_xyxy': [x0+dx, y0+dy, x1+dx, y1+dy]}
+    if best is None:
+        return None
+    return {'mode': 'BOUNDED_TRANSLATION', 'zero_shift_ncc': zero,
+            'max_shift_xy': [mx, my], 'tested_shifts': len(shifts), 'valid_shifts': valid, **best}
+
+
 def compare_feature(feature, references, config):
     comparisons = []
     for reference in references:
@@ -120,15 +174,26 @@ def compare_feature(feature, references, config):
             continue
         cap = float(cv2.compareHist(feature['cap_hist'], other['cap_hist'], cv2.HISTCMP_BHATTACHARYYA))
         label = float(cv2.compareHist(feature['label_hist'], other['label_hist'], cv2.HISTCMP_BHATTACHARYYA))
-        ncc = float(cv2.matchTemplate(feature['texture'], other['texture'], cv2.TM_CCOEFF_NORMED)[0, 0])
+        alignment = None
+        if config.get('texture_alignment_enabled', False):
+            alignment = align_texture(feature['texture'], other['texture'], config)
+            if alignment is None:
+                continue
+            ncc = alignment['ncc']
+        else:
+            # 旧配置和显式关闭均保留原数值/字段，不改变旧模式记录。
+            ncc = float(cv2.matchTemplate(feature['texture'], other['texture'], cv2.TM_CCOEFF_NORMED)[0, 0])
         if not all(math.isfinite(v) for v in (cap, label, ncc)):
             continue
         ratio = feature['aspect_ratio'] / other['aspect_ratio']
         wc, wl, wt = config['score_weights']
         score = wc * (1 - cap) + wl * (1 - label) + wt * ((ncc + 1) / 2)
-        comparisons.append({'reference_frame_index': reference['frame_index'], 'cap_distance': cap,
+        comparison = {'reference_frame_index': reference['frame_index'], 'cap_distance': cap,
                             'label_distance': label, 'texture_ncc': ncc, 'aspect_ratio_relative': ratio,
-                            'score': score})
+                            'score': score}
+        if alignment is not None:
+            comparison['texture_alignment'] = alignment
+        comparisons.append(comparison)
     if not comparisons:
         return None, []
     best = max(comparisons, key=lambda item: item['score'])

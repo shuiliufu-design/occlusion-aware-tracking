@@ -35,6 +35,27 @@ def check_appearance(judgment, config):
         score = wc * (1 - cap) + wl * (1 - label) + wt * ((ncc + 1) / 2)
         if not math.isclose(score, comparison['score'], abs_tol=1e-10):
             raise ValueError('外观排序分数错误')
+        if config.get('texture_alignment_enabled', False):
+            alignment = comparison['texture_alignment']
+            dx, dy = alignment['shift_xy']
+            width, height = config['texture_width'], config['texture_height']
+            mx, my = math.floor(config['texture_max_shift_fraction_x'] * width), math.floor(config['texture_max_shift_fraction_y'] * height)
+            a, b = alignment['candidate_region_xyxy'], alignment['reference_region_xyxy']
+            expected_a = [max(0, -dx), max(0, -dy), min(width, width-dx), min(height, height-dy)]
+            expected_b = [a[0]+dx, a[1]+dy, a[2]+dx, a[3]+dy]
+            overlap = (a[2]-a[0]) * (a[3]-a[1]) / (width*height)
+            if (type(dx) is not int or type(dy) is not int or abs(dx) > mx or abs(dy) > my or
+                    alignment['mode'] != 'BOUNDED_TRANSLATION' or alignment['max_shift_xy'] != [mx, my] or
+                    a != expected_a or b != expected_b or
+                    not math.isclose(overlap, alignment['overlap_fraction'], abs_tol=1e-12) or
+                    overlap < config['texture_min_overlap_fraction'] or
+                    min(alignment['candidate_gray_std'], alignment['reference_gray_std']) < config['min_gray_std'] or
+                    not all(math.isfinite(alignment[key]) for key in ('ncc', 'candidate_gray_std', 'reference_gray_std')) or
+                    alignment['ncc'] != ncc or not 0 < alignment['valid_shifts'] <= alignment['tested_shifts']):
+                raise ValueError('有界纹理对齐证据非法')
+            zero = alignment['zero_shift_ncc']
+            if zero is not None and (not math.isfinite(zero) or ncc < zero):
+                raise ValueError('零位移/最佳对齐NCC矛盾')
     gates = {'cap_color': best['cap_distance'] <= config['cap_distance_max'],
              'label_color': best['label_distance'] <= config['label_distance_max'],
              'label_texture': best['texture_ncc'] >= config['texture_ncc_min'],
@@ -146,6 +167,9 @@ def review(output, selected_frames, annotations=None):
                 previous_digest = bank['sha256']
             for judgment in row['recovery_candidates']:
                 check_appearance(judgment, info['appearance_config'])
+            active = row.get('active_track_evidence')
+            if active and active.get('best_reference'):
+                check_appearance({**active, 'confirmation_count': 0}, info['appearance_config'])
             ranked = sorted([c for c in row['recovery_candidates'] if c['best_reference'] is not None], key=lambda c:c['best_reference']['score'], reverse=True)
             progressing = [c for c in row['recovery_candidates'] if c['confirmation_count']]
             if progressing:
