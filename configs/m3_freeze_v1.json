@@ -1,0 +1,402 @@
+{
+  "status": "FROZEN",
+  "git_revision": "572de8fb5196d7873f6e7f41c33f178dc008ed9b",
+  "shared_policy": {
+    "groups": [
+      "A",
+      "B",
+      "C"
+    ],
+    "recovery_configuration": {
+      "path": "configs/recovery_m3_v1.json",
+      "sha256": "3e66affe0fbac2bf3bb138bb81d515e54c4f37f2489108da182178d6e2989721"
+    },
+    "selected_configuration_source": {
+      "path": "configs/recovery_f180_dev.json",
+      "sha256": "3e66affe0fbac2bf3bb138bb81d515e54c4f37f2489108da182178d6e2989721"
+    },
+    "original_configuration": {
+      "path": "configs/recovery.json",
+      "sha256": "83540958e65f6337cd325930efd11a2821b333ddd10f0c3fe27421086cd77c18"
+    },
+    "missing_frames": 10,
+    "match_iou_min": 0.5,
+    "fixed_sample_stride": 10,
+    "initialization_rule": "每片只看前段指定初始化帧/框，唯一IoU>=0.5匹配关联检测；三组同一选择。不按后段结果重选，不人工接续新ID。",
+    "reference_rule": "C从初始化后的因果合格观察建库：10样本/最多30帧/至少5，第一次缺失停止，冻结后不更新。每片独立建库，不共享开发裁剪。",
+    "sampling_rule": "从各片初始化帧起每10原帧固定抽样；追加重现、首个待评价返回/接受框和诊断关键帧单列。插值只在同一实体连续可见段逐帧人工复核，当前预演不做插值。",
+    "metrics": {
+      "return": "人工期待返回事件中，自人工可辨认重现帧起本帧同一物理实体且当前框IoU>=0.5；不要求RECOVERY_ACCEPTED。",
+      "mechanisms": "原生重关联/连续观察与C自定义接受分列。",
+      "no_opportunity": "原瓶子取走不再出现：返回机会0、成功率和延迟不适用。",
+      "unknown": "身份/框不足为UNEVALUATED，不能假成功/零延迟；明确错误身份另计。",
+      "latency": "原帧差和名义FPS为主，源时间差另列；更早输出缺身份时精确延迟未评价。",
+      "false_alarm": "人工清楚T1可见固定抽样中的UNKNOWN；诊断单列。未标注全片不报全片误报率。",
+      "candidate": "区分无检测/质量暂缓/证据不足/合格外观拒绝/歧义/接受；148合格候选帧是一替换事件，全程149另列，A/B外观不适用。"
+    },
+    "timing": {
+      "status": "UNVERIFIED",
+      "implemented": false,
+      "milliseconds_per_frame": null,
+      "scope": "B/C状态/外观处理含建库；排除模型推理、解码、绘图、编码与评价。",
+      "measurement_plan": "相同缓存/原像素，每片独立状态预热一次，再各3次，报告逐次和中位数、硬件与起止。",
+      "end_to_end_speed_status": "UNVERIFIED"
+    },
+    "independent_test_design": {
+      "status": "UNVERIFIED_NOT_STARTED",
+      "inputs_available": false,
+      "clips": [
+        {
+          "case_id": "holdout_return_01",
+          "expected_return": true
+        },
+        {
+          "case_id": "holdout_return_02",
+          "expected_return": true
+        },
+        {
+          "case_id": "holdout_replacement_01",
+          "expected_return": false
+        }
+      ],
+      "recording": "固定相机/背景持续可见/纸板只挡瓶子；前段充分初始化，正例改变遮挡时长和位移，负例仅留不同标签瓶子。先冻结再拍，不按结果筛片。",
+      "cache": "每片一次固定YOLO11n+ByteTrack，三组共享同一缓存/原像素/初始选择/处理区间。",
+      "identity": "拍摄者确认物理操作，原图标注身份/可辨认返回/可见与遮挡；uncertain与覆盖缺口保留。",
+      "freeze_rule": "00核对预演后保存最终代码/协议/依赖/权重/YAML/配置和计时边界；测试后不调参。需修正则保留失败，转开发并另拍保留片。"
+    }
+  },
+  "executed_code_sha256": {
+    "scripts/run_comparison.py": "6d4a0e7a13685b70f3447d4222ce126f72a51623fc52385ceafd3f8816581507",
+    "scripts/evaluate_comparison.py": "95fa60a7e405ec958182d35c420fd996e47f60d05b03d5acd287af4e3ba18db5",
+    "scripts/m3_common.py": "6b68cefd36ffbbad949beea431faf3c16ba177aebae4e92a7ea269c1c906293a",
+    "scripts/run_recovery.py": "0bdeb306c8059063eaf3a31a86c7cce3ef2e2087b9d82e9284c32fd6edb7ac37",
+    "scripts/appearance_recovery.py": "69789aa6129e61b5997de468bfb3441cd1fb703b2ab52ed903b841d267b74efd",
+    "scripts/run_target_state.py": "7d418880e9b5e7aeba78b44f1b22692940451b77a44b1950f7c66e8f182f5805",
+    "scripts/evaluate_offline.py": "d263d2c65a24c0aa50984c847c1f843f0b10f99bf94cd27a35a7ab405c636903",
+    "scripts/evaluation_sources.py": "6f42fbe09dc79ad6d2e76fd3d5fe6a5acf9434e5bfc9bf518f36040b7f25828e",
+    "scripts/review_recovery.py": "8dbcd4c305f2d1e1213cab3db72db02ffa84f1c52594fae8bbca5a32de6d71cc",
+    "scripts/validate_wrong_bottle.py": "a6040401ca89ace6c6c7129487b44fc08d43024b325562bd4122d98a911e5329",
+    "scripts/run_baseline.py": "7766dc11bb5d28a5b7838391634b4fcb8646b80d8ea0dcbd511366e6edd460be",
+    "scripts/review_baseline.py": "2a5e764e048193dba25aa9a3fc57afa062184c4da5cef20f1e28111a3d50e437"
+  },
+  "protocol": {
+    "path": "configs/m3_protocol_v1.json",
+    "sha256": "cb279ed9f52031550f1b3646952aaa581d13e3229df779806aed5bb5ab1e7139"
+  },
+  "recovery_configuration": {
+    "path": "configs/recovery_m3_v1.json",
+    "sha256": "3e66affe0fbac2bf3bb138bb81d515e54c4f37f2489108da182178d6e2989721"
+  },
+  "selected_configuration_source": {
+    "path": "configs/recovery_f180_dev.json",
+    "sha256": "3e66affe0fbac2bf3bb138bb81d515e54c4f37f2489108da182178d6e2989721"
+  },
+  "original_configuration": {
+    "path": "configs/recovery.json",
+    "sha256": "83540958e65f6337cd325930efd11a2821b333ddd10f0c3fe27421086cd77c18"
+  },
+  "all_recovery_parameters": {
+    "reference_target_samples": 10,
+    "reference_min_samples": 5,
+    "reference_wait_frames": 30,
+    "min_detection_score": 0.5,
+    "min_width": 20,
+    "min_height": 60,
+    "cap_region": [
+      0.15,
+      0.0,
+      0.85,
+      0.18
+    ],
+    "label_region": [
+      0.1,
+      0.42,
+      0.9,
+      0.82
+    ],
+    "h_bins": 16,
+    "s_bins": 16,
+    "min_saturation": 40,
+    "min_value": 40,
+    "min_color_fraction": 0.05,
+    "min_color_pixels": 20,
+    "texture_width": 64,
+    "texture_height": 96,
+    "min_gray_std": 5.0,
+    "cap_distance_max": 0.55,
+    "label_distance_max": 0.35,
+    "texture_ncc_min": 0.55,
+    "aspect_ratio_min": 0.65,
+    "aspect_ratio_max": 1.5,
+    "score_weights": [
+      0.3,
+      0.3,
+      0.4
+    ],
+    "score_min": 0.7,
+    "competition_margin": 0.1,
+    "confirmation_frames": 5,
+    "continuity_iou_min": 0.3,
+    "resize_interpolation": "INTER_AREA",
+    "pixel_rounding": "floor lower, ceil upper",
+    "texture_alignment_enabled": true,
+    "texture_max_shift_fraction_x": 0.1,
+    "texture_max_shift_fraction_y": 0.1,
+    "texture_min_overlap_fraction": 0.8
+  },
+  "requirements_sha256": {
+    "requirements.txt": "ff87053d94d09156db1981a63aecadcbd376b2198ba21c07ecbb0ee4f2327341",
+    "requirements-baseline.txt": "2227b304a09011a024b0be343c94feefa0165acbd53c5c1f25d19ba6cff2a02c"
+  },
+  "installed_dependencies": {
+    "path": "outputs/m3_development_preflight_v4/dependencies_snapshot.txt",
+    "sha256": "2304a74e556d98af946855e6398756880af32d3910c18250841c283eeda69d43"
+  },
+  "runtime": {
+    "python": "3.12.3",
+    "opencv": "4.12.0.88",
+    "platform": "Linux-6.8.0-142-generic-x86_64-with-glibc2.39",
+    "hardware": "x86_64"
+  },
+  "cases": [
+    {
+      "case_id": "positive",
+      "split": "development",
+      "source": {
+        "path": "data/tabletop_02.mp4",
+        "sha256": "5a6ca2cfcc5089cd1099815cf2bb0fa05468d9deae212cfb9821833a970fcaa5"
+      },
+      "baseline": {
+        "path": "outputs/tabletop_02_baseline_v2",
+        "sha256": {
+          "frames.jsonl": "dd8bace89902fc44111f63944bc71fd58c9e379bfe9412a7465e6b5fb7a2d34f",
+          "run_info.json": "2921e85c617006a18a0811060d17632af6489355e3249a33fe1aeb3fb59eb0b7",
+          "bytetrack.yaml": "ecb4b539b3f9bbb05415c99e63a2f69b76d1b8f524b67a49b2914a77f1255567"
+        }
+      },
+      "initialization": {
+        "frame_index": 600,
+        "bbox_xyxy": [
+          180,
+          450,
+          305,
+          870
+        ],
+        "match_iou_min": 0.5
+      },
+      "end_frame_exclusive": 984,
+      "model": {
+        "path": "weights/yolo11n.pt",
+        "sha256": "0ebbc80d4a7680d14987a577cd21342b65ecfd94632bd9a8da63ae6417644ee1"
+      },
+      "bytetrack_yaml": {
+        "path": "outputs/tabletop_02_baseline_v2/bytetrack.yaml",
+        "sha256": "ecb4b539b3f9bbb05415c99e63a2f69b76d1b8f524b67a49b2914a77f1255567"
+      },
+      "detection_conditions": {
+        "inference": {
+          "imgsz": 640,
+          "conf": 0.1,
+          "iou": 0.7,
+          "device": "0"
+        },
+        "tracker": "ultralytics.trackers.byte_tracker.BYTETracker",
+        "tracker_config": {
+          "tracker_type": "bytetrack",
+          "track_high_thresh": 0.25,
+          "track_low_thresh": 0.1,
+          "new_track_thresh": 0.25,
+          "track_buffer": 30,
+          "match_thresh": 0.8,
+          "fuse_score": true
+        },
+        "versions": {
+          "ultralytics": "8.3.221",
+          "torch": "2.8.0+cu128",
+          "torchvision": "0.23.0+cu128",
+          "opencv-python": "4.12.0.88",
+          "numpy": "2.2.6",
+          "lap": "0.5.12",
+          "scipy": "1.18.1",
+          "PyYAML": "6.0.3"
+        },
+        "tracker_constructor_frame_rate": 30,
+        "effective_max_time_lost_frames": 30
+      },
+      "identity_evidence": {
+        "path": "outputs/f180_alignment_dev/annotations/positive_identity.json",
+        "sha256": "dd94390881990f19f7d19793aff4d34b0821b8dbd39fc83e5678ffdcc94270a9"
+      },
+      "supplemental_labels": {
+        "path": "outputs/m3_development_annotations_v1/positive_labels.json",
+        "sha256": "a0aabbdc84f8662a218e4a0f2f8346ebac8dd49638fc3e542e353853851731fd"
+      }
+    },
+    {
+      "case_id": "negative",
+      "split": "development",
+      "source": {
+        "path": "data/tabletop_wrong_bottle_01.mp4",
+        "sha256": "585f9ba9048b672fd39acabdaa8b5164e1a2d45be965d741081e9e8e2322b51f"
+      },
+      "baseline": {
+        "path": "outputs/tabletop_wrong_bottle_01_baseline",
+        "sha256": {
+          "frames.jsonl": "902efd6f5ef840073042e03b855f8df7cf20290e2ca69274e24ce652e9d8a0e1",
+          "run_info.json": "acb95033e2923a96ff5658bb0c8f31450ef742dafab1b4dd170a757eb189edef",
+          "bytetrack.yaml": "ecb4b539b3f9bbb05415c99e63a2f69b76d1b8f524b67a49b2914a77f1255567"
+        }
+      },
+      "initialization": {
+        "frame_index": 0,
+        "bbox_xyxy": [
+          290,
+          280,
+          510,
+          1040
+        ],
+        "match_iou_min": 0.5
+      },
+      "end_frame_exclusive": 633,
+      "model": {
+        "path": "weights/yolo11n.pt",
+        "sha256": "0ebbc80d4a7680d14987a577cd21342b65ecfd94632bd9a8da63ae6417644ee1"
+      },
+      "bytetrack_yaml": {
+        "path": "outputs/tabletop_wrong_bottle_01_baseline/bytetrack.yaml",
+        "sha256": "ecb4b539b3f9bbb05415c99e63a2f69b76d1b8f524b67a49b2914a77f1255567"
+      },
+      "detection_conditions": {
+        "inference": {
+          "imgsz": 640,
+          "conf": 0.1,
+          "iou": 0.7,
+          "device": "0"
+        },
+        "tracker": "ultralytics.trackers.byte_tracker.BYTETracker",
+        "tracker_config": {
+          "tracker_type": "bytetrack",
+          "track_high_thresh": 0.25,
+          "track_low_thresh": 0.1,
+          "new_track_thresh": 0.25,
+          "track_buffer": 30,
+          "match_thresh": 0.8,
+          "fuse_score": true
+        },
+        "versions": {
+          "ultralytics": "8.3.221",
+          "torch": "2.8.0+cu128",
+          "torchvision": "0.23.0+cu128",
+          "opencv-python": "4.12.0.88",
+          "numpy": "2.2.6",
+          "lap": "0.5.12",
+          "scipy": "1.18.1",
+          "PyYAML": "6.0.3"
+        },
+        "tracker_constructor_frame_rate": 30,
+        "effective_max_time_lost_frames": 30
+      },
+      "identity_evidence": {
+        "path": "outputs/f180_alignment_dev/annotations/negative_identity.json",
+        "sha256": "014a5a69ab6609f3ebaedcc938f9f1eaa74ddb8fcbee30f7e760c189877af8c8"
+      },
+      "supplemental_labels": {
+        "path": "outputs/m3_development_annotations_v1/negative_labels.json",
+        "sha256": "fe438b44a28c79d9385eec3bfb11b764596c86cbd90095940dc193ea6b41775e"
+      }
+    }
+  ],
+  "missing_frames": 10,
+  "initialization_rule": "每片只看前段指定初始化帧/框，唯一IoU>=0.5匹配关联检测；三组同一选择。不按后段结果重选，不人工接续新ID。",
+  "reference_rule": "C从初始化后的因果合格观察建库：10样本/最多30帧/至少5，第一次缺失停止，冻结后不更新。每片独立建库，不共享开发裁剪。",
+  "sampling_rule": "从各片初始化帧起每10原帧固定抽样；追加重现、首个待评价返回/接受框和诊断关键帧单列。插值只在同一实体连续可见段逐帧人工复核，当前预演不做插值。",
+  "metrics": {
+    "return": "人工期待返回事件中，自人工可辨认重现帧起本帧同一物理实体且当前框IoU>=0.5；不要求RECOVERY_ACCEPTED。",
+    "mechanisms": "原生重关联/连续观察与C自定义接受分列。",
+    "no_opportunity": "原瓶子取走不再出现：返回机会0、成功率和延迟不适用。",
+    "unknown": "身份/框不足为UNEVALUATED，不能假成功/零延迟；明确错误身份另计。",
+    "latency": "原帧差和名义FPS为主，源时间差另列；更早输出缺身份时精确延迟未评价。",
+    "false_alarm": "人工清楚T1可见固定抽样中的UNKNOWN；诊断单列。未标注全片不报全片误报率。",
+    "candidate": "区分无检测/质量暂缓/证据不足/合格外观拒绝/歧义/接受；148合格候选帧是一替换事件，全程149另列，A/B外观不适用。"
+  },
+  "timing": {
+    "status": "UNVERIFIED",
+    "implemented": false,
+    "milliseconds_per_frame": null,
+    "scope": "B/C状态/外观处理含建库；排除模型推理、解码、绘图、编码与评价。",
+    "measurement_plan": "相同缓存/原像素，每片独立状态预热一次，再各3次，报告逐次和中位数、硬件与起止。",
+    "end_to_end_speed_status": "UNVERIFIED"
+  },
+  "independent_test_design": {
+    "status": "UNVERIFIED_NOT_STARTED",
+    "inputs_available": false,
+    "clips": [
+      {
+        "case_id": "holdout_return_01",
+        "expected_return": true
+      },
+      {
+        "case_id": "holdout_return_02",
+        "expected_return": true
+      },
+      {
+        "case_id": "holdout_replacement_01",
+        "expected_return": false
+      }
+    ],
+    "recording": "固定相机/背景持续可见/纸板只挡瓶子；前段充分初始化，正例改变遮挡时长和位移，负例仅留不同标签瓶子。先冻结再拍，不按结果筛片。",
+    "cache": "每片一次固定YOLO11n+ByteTrack，三组共享同一缓存/原像素/初始选择/处理区间。",
+    "identity": "拍摄者确认物理操作，原图标注身份/可辨认返回/可见与遮挡；uncertain与覆盖缺口保留。",
+    "freeze_rule": "00核对预演后保存最终代码/协议/依赖/权重/YAML/配置和计时边界；测试后不调参。需修正则保留失败，转开发并另拍保留片。"
+  },
+  "freeze_id": "m3_v1",
+  "approval": {
+    "reviewer": "00",
+    "date": "2026-10-03",
+    "reviewed_head": "3af410aee8cfdf6f7f888dd3b06219c322eb977e",
+    "execution_revision": "572de8fb5196d7873f6e7f41c33f178dc008ed9b",
+    "review_result": {
+      "path": "outputs/m3_preflight_00_review/checker_result.json",
+      "sha256": "41d5241833282bc121ba3e292099e93b42e85b291d694d65348f93363f102dbc"
+    },
+    "development_acceptance": {
+      "path": "outputs/m3_development_preflight_v4/acceptance_checks.json",
+      "sha256": "a607a72ca6f31a80fbd516de3d7d1b06c754f73e632d82d5978bd3934c80266a"
+    },
+    "pending_manifest": {
+      "path": "outputs/m3_development_preflight_v4/freeze_checklist.json",
+      "sha256": "6c4a6c62f8f982861d9645c557fb63a2c6f0d22266b63c6ec3213d9640959d70"
+    },
+    "tests_this_review": 28,
+    "historical_03_full_tests": 98,
+    "formal_holdout_started": false,
+    "decision": "共同入口与开发预演核对通过，冻结执行代码/配置/共同评价规则；允许随后采集三段新保留视频。开发输出不改为正式测试。"
+  },
+  "excluded_development_sources": [
+    {
+      "path": "data/tabletop_01.mp4",
+      "sha256": "2b620011fa6b79619d1faadde76400e23a798e1f88872e4e8bf938808bb3db5c"
+    },
+    {
+      "path": "data/tabletop_02.mp4",
+      "sha256": "5a6ca2cfcc5089cd1099815cf2bb0fa05468d9deae212cfb9821833a970fcaa5"
+    },
+    {
+      "path": "data/tabletop_wrong_bottle_01.mp4",
+      "sha256": "585f9ba9048b672fd39acabdaa8b5164e1a2d45be965d741081e9e8e2322b51f"
+    }
+  ],
+  "holdout_input_rules": {
+    "allowed_new_fields": "只另填每片case_id/新原视频与一次公共缓存校验/前段初始化帧框/处理区间/独立物理身份与事件标注；shared_policy逐项不变。",
+    "init_match_iou_min": 0.5,
+    "development_exclusion": "接手03须额外对照excluded_development_sources的全部三片SHA；入口自动保护两段预演来源，不能以其通过代替完整开发排除。",
+    "recording_plan": "前段清楚可见至少5秒；短遮挡约0.3—0.5秒原位返回、长遮挡约3—4秒移位返回、长遮挡约3—4秒同盖不同标签替换，后段清楚至少5秒。固定相机/背景持续可见/各片一次事件。实际时长另由画面标注。",
+    "review": "输入登记先定初始化并从原画面标注，再运行三组；保留第一条技术可用拍摄，不能按算法成功筛选、重选初始化或调参。"
+  },
+  "remaining_limits": [
+    "f850三组UNKNOWN及A/B f181标注不足保留为开发结果",
+    "全片误报率未评价，开发固定抽样只核对6/103",
+    "实际速度计时未实施，边界已冻结，禁止作速度结论",
+    "真实双瓶/相同包装与纹理独立贡献未验证"
+  ]
+}

@@ -1,5 +1,17 @@
 # M3 三组共同入口与冻结准备
 
+2026-10-03 更新：00已核对通过最终v4开发预演，并另存正式冻结 `configs/m3_freeze_v1.json`（m3_v1，执行版本572de8f）。本文件下方保留03交付时的开发记录，原 `configs/m3_protocol_v1.json` 与预演待冻结清单仍保持历史状态；它们不是正式测试输出。当前唯一任务是另拍三段新视频，操作与交接见 `docs/m3_holdout_recording.md`。
+
+正式冻结核查：
+
+```bash
+.venv/bin/python scripts/m3_common.py --check-freeze configs/m3_freeze_v1.json
+```
+
+独立测试使用另存的HOLDOUT协议，引用正式清单及SHA，保持全部 `shared_policy` 字段一致；新增每片来源、一次公共缓存、前段初始化与独立标注。接手03额外检查正式清单的全部三段 `excluded_development_sources`，初始化IoU固定0.5。计时规则已锁定但未实施，仍不报速度。开发f850等待、A/B f181缺框及覆盖缺口保留。00审查范围与证据见STATUS及 `outputs/m3_preflight_00_review/`。
+
+## 03交付时的开发记录（历史）
+
 依据 SPEC.md 2026-10-03 决策，目前只在已有两段开发视频预演。协议为 `configs/m3_protocol_v1.json`，状态 `PENDING_REVIEW_NOT_FROZEN`；不是独立测试或已冻结实验。C 配置 `configs/recovery_m3_v1.json` 与00采纳的 `recovery_f180_dev.json` 逐字节一致，原默认配置保留。
 
 ## 共同运行与复跑
