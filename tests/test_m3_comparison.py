@@ -198,6 +198,17 @@ class ComparisonProtocolTests(unittest.TestCase):
         self.assertIsNone(result['custom_acceptance']['correct_accepts'])
         self.assertIsNone(result['fixed_sample_visibility']['whole_video_false_alarm_rate'])
 
+    def test_current_position_audit_cannot_pass_unlabelled_observation(self):
+        rows,events=replay('B')
+        case={'case_id':'fixture','split':'development','initialization':{'frame_index':0},'end_frame_exclusive':4,'events':[event()]}
+        supplement={'frames':[]}
+        result=evaluate_group('B',{'nominal_fps':30},rows,events,case,{},supplement,
+                              {2:{'identity':'T1','bbox_xyxy':None}},
+                              {'match_iou_min':.5,'fixed_sample_stride':10})
+        self.assertEqual(result['incorrect_current_position']['status'],'UNEVALUATED')
+        self.assertEqual(result['incorrect_current_position']['unevaluated_observed_frames'],[2])
+        self.assertEqual(result['events'][0]['return_evaluation']['status'],'UNEVALUATED')
+
     def test_holdout_cannot_use_pending_freeze(self):
         protocol=json.loads(Path('configs/m3_protocol_v1.json').read_text())
         with tempfile.TemporaryDirectory() as directory:

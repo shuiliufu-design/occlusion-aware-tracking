@@ -220,6 +220,7 @@ def evaluate_group(group, info, rows, events, case, physical, supplemental, labe
     for i in sorted(absent | {i for i in labels if i in by_frame}):
         audited.append({'frame_index':i,**position_verdict(by_frame[i],labels,absent,match_iou_min=iou_min)})
     wrong=[item for item in audited if item['verdict']=='INCORRECT']
+    unevaluated=[item['frame_index'] for item in audited if item['verdict']=='UNEVALUATED']
     fixed=[k for k in supplemental['frames'] if k['origin']=='FIXED_SAMPLE']
     visible=[k['frame_index'] for k in fixed if k['identity']=='T1' and k['visibility']=='CLEAR']
     unknown=[i for i in visible if not by_frame[i]['position_known']]
@@ -245,9 +246,11 @@ def evaluate_group(group, info, rows, events, case, physical, supplemental, labe
                 'correct_accepts':counts['CORRECT'] if group=='C' else None,
                 'incorrect_accepts':counts['INCORRECT'] if group=='C' else None,
                 'unevaluated_accepts':counts['UNEVALUATED'] if group=='C' else None,'results':binding},
-            'incorrect_current_position':{'status':'FAIL' if wrong else 'PASS' if audited else 'UNEVALUATED',
+            'incorrect_current_position':{'status':'FAIL' if wrong else 'UNEVALUATED' if unevaluated or not audited else 'PASS',
                 'annotated_absent_frames':len(absent),'incorrect_absent_frames':[i for i in sorted(absent) if by_frame[i]['position_known']],
-                'incorrect_audited_frames':[v['frame_index'] for v in wrong],'whole_video_status':'UNEVALUATED'},
+                'annotated_absence_status':('FAIL' if any(by_frame[i]['position_known'] for i in absent) else 'PASS') if absent else 'UNEVALUATED',
+                'incorrect_audited_frames':[v['frame_index'] for v in wrong],
+                'unevaluated_observed_frames':unevaluated,'whole_video_status':'UNEVALUATED'},
             'fixed_sample_visibility':{'status':'FAIL' if unknown else 'PASS' if visible else 'UNEVALUATED',
                 'planned_samples':len(plan),'annotated_samples':len(fixed),'unreviewed_samples':[i for i in plan if i not in known_samples],
                 'clear_T1_samples':len(visible),'unknown_clear_T1_samples':unknown,
