@@ -1,6 +1,6 @@
 # 项目状态
 
-更新日期：2026-10-02（Asia/Shanghai）。协调聊天：00｜项目总控；统一离线评价交付已由00只读核对通过。唯一优先任务交03实施f180有界标签纹理平移并作开发回归；尚未修复f180，随后再决定冻结与M3启动。暂不启动正式保留测试；配置未冻结，真实困难例和M3独立测试未验证。接手聊天需重新读取记录与实际输出。
+更新日期：2026-10-03（Asia/Shanghai）。协调聊天：00｜项目总控；统一离线评价交付已由00只读核对通过。03已完成可关闭的有界标签纹理平移及开发回归：新开发配置下f180报告当前原瓶子位置，正负例与旧默认/关闭回归通过，70项测试通过。此为03实际运行证据，待00核对采纳与后续冻结决策；旧默认配置继续保留。配置未冻结，M3正式测试继续暂缓，真实困难例和全片误报率未验证/未评价。接手聊天需重新读取记录与实际输出。
 
 ## 当前结论
 
@@ -23,6 +23,8 @@ M2 第二步已按 SPEC.md 实现并运行，参数沿用起始值：冻结 f600
 
 00当前轮已核对通过该评价交付：从四组384/384/633/633条记录、独立标注与事件重算关键指标，362文件SHA与Git历史代码匹配，重跑新增19项评价测试通过。54项全套测试及源视频/状态/负例像素回放为03证据，本轮未重跑。f180原图仍可见；只读有界平移探查支持一种候选修正，尚未运行新状态策略。证据 `outputs/m2_evaluation_00_review/`，具体任务与验收已写入SPEC.md。
 
+03随后按该任务完成开发候选：在先行固定的f170—195原图诊断中，新规则清楚可见UNKNOWN由1/11降至0/11；f181—186局部质量不可靠与f188—195全遮挡仍全部UNKNOWN，f187边界不确定保留未评价。正例仍f852正确恢复1次，负例148帧合格候选仍全拒绝、0绑定/错误位置；旧默认与关闭逐字段/事件/视频SHA回归完全一致，366个旧文件保全。最终结果 `outputs/f180_alignment_dev/comparison_v2.json`、`verification_v2.json`；70项测试和原像素/历史来源核查均为03本轮运行证据，尚非00/04独立复核。详见本轮开发交付。
+
 ## 已完成与证据
 
 | 内容 | 状态与依据 |
@@ -39,6 +41,7 @@ M2 第二步已按 SPEC.md 实现并运行，参数沿用起始值：冻结 f600
 | M2 第二步初次开发验证 | 最终 v3 输出/重解码各 384 帧，开发正例尝试/程序接受/有独立依据正确接受各 1；挂包模块负例 2 拒绝、5 暂缓、0 接受；关闭恢复与第一步逐项一致；23 项 unittest 通过；v2 与第一步共 29 个文件校验一致 |
 | M2 真实不同瓶子验证 | 新片633帧；人工区间148个合格候选均拒绝，原像素逐帧重算一致，0绑定/错误当前位置；用户替换操作确认独立于分数；新旧固定条件一致，旧84文件保全，31项测试通过。见 `wrong_bottle_validation_v2.json` |
 | M2 统一离线评价 | 03提交8975df7的四组评价符合人工分母与范围要求；00独立记录/来源核对、362文件校验及新增19项评价测试通过，f180 FAIL与全片UNEVALUATED保留；54项全套及像素/视频回放属于03运行证据 |
+| f180有界纹理对齐开发回归 | 开发配置下f180当前位置通过；固定可见窗1/11 UNKNOWN降为0/11，邻近质量暂缓/全遮挡不回填；正例正确1、负例148合格拒绝且0绑定；旧默认/关闭完全一致、366旧文件保全、70项测试通过。默认未切换、配置未冻结、M3未启动 |
 | 基线依赖 | 接手时已有 torch 2.8.0+cu128、torchvision 0.23.0+cu128 和权重；本次补充 ultralytics 8.3.221、lap 0.5.12 等依赖，未重建环境或更换 OpenCV/NumPy；`pip check` 通过，固定核心版本见 `requirements-baseline.txt` |
 | 交接文件 | 00 已建立 `AGENTS.md`、`SPEC.md`、`STATUS.md` 并同步 README；02 接手时已重新读取并核对代码与实际输入 |
 | Git | 已有公开仓库与两段视频检查记录同步历史见下方；02 本轮按里程碑进行本地提交，不执行推送。视频、权重、环境、缓存与输出被忽略，保留本地 |
@@ -66,6 +69,7 @@ M2 第二步已按 SPEC.md 实现并运行，参数沿用起始值：冻结 f600
 - 新真实负例：`data/tabletop_wrong_bottle_01.mp4`；读取/原始预览/身份记录 `outputs/tabletop_wrong_bottle_01_input/`；原始模型结果 `outputs/tabletop_wrong_bottle_01_baseline/`；恢复结果 `outputs/tabletop_wrong_bottle_01_m2_step2/`；关闭结果 `outputs/tabletop_wrong_bottle_01_m2_disabled/`。
 - 真实负例核查：`scripts/validate_wrong_bottle.py`、`tests/test_wrong_bottle_validation.py`、`docs/wrong_bottle_m2_validation.md`；当前专项报告为 `wrong_bottle_validation_v2.json`，早期报告保留；汇总/关闭等价/旧84文件保全见 `comparison_and_preservation.json`。
 - 当前统一离线评价：`scripts/evaluate_offline.py`、`scripts/evaluation_sources.py`、`configs/m2_evaluation.json`、`tests/test_offline_evaluation.py`、`docs/offline_evaluation_m2.md`；结果 `outputs/m2_evaluation_v1/`，旧 `evaluation.json` 不参与新汇总。
+- 有界纹理对齐开发配置/复核：`configs/recovery_f180_dev.json`、两份 `configs/m2_evaluation_f180_*.json`、`scripts/review_alignment_development.py`、`tests/test_texture_alignment.py`、`docs/f180_alignment_development.md`；结果 `outputs/f180_alignment_dev/`，最终采用 `comparison_v2.json`、`verification_v2.json` 和两份 `evaluation_*_v2/`；首轮报告也保留。
 
 02 首次接手实际运行命令（历史；当时真实输入缺失）：
 
@@ -109,13 +113,13 @@ M0/M1 交付完成；没有添加恢复策略。尚无测试集与身份/事件�
 .venv/bin/python scripts/run_baseline.py --device cpu --source data/not_present.mp4 --output outputs/baseline_missing_input_check
 ```
 
-## 唯一优先任务：03实施f180有界标签纹理对齐与开发回归
+## 唯一优先任务：f180有界标签纹理对齐开发交付已完成，待00核对
 
 目的：减少检测框变化引起的可见目标UNKNOWN，同时保住错误候选拒绝与隐藏位置规则；不单纯降低NCC门槛。03接手先重新读取AGENTS.md、SPEC.md本轮唯一优先任务、STATUS.md、评价说明/协议与本轮核对证据。
 
 交付：原画面的固定f170—195诊断标注；可关闭的有界平移比较、新开发配置、分量与对齐记录；现有正负例旧/新规则和恢复开关的状态/评价对照；必要边界测试、准确命令与保全证据。新结果建议 `outputs/f180_alignment_dev/`，原配置/协议/输出/标注保留。原始检测/跟踪条件、参考因果冻结、NCC0.55与其他门槛/权重/差值/确认5帧/缺失10帧不变。
 
-设计已确定为仅标签纹理平移：在64×96上最大±6/±9像素（尺寸的10%向下取整），共同区域>=80%，两侧标准差>=5且NCC有限；活动与候选同一规则。仍对同一参考计算全部分量和S，全部合格竞争候选参与差值；详见SPEC.md。此为待实施开发候选，不是已修复或配置冻结。
+设计已确定并实施为仅标签纹理平移：在64×96上最大±6/±9像素（尺寸的10%向下取整），共同区域>=80%，两侧标准差>=5且NCC有限；活动与候选同一规则。仍对同一参考计算全部分量和S，全部合格竞争候选参与差值；详见SPEC.md。以下为00指定的验收要求，实际通过证据见本轮03交付；仍属开发候选，未切换旧默认或冻结配置。
 
 验收：f180从因果运行得到当前原瓶子的可靠观察/位置；邻近诊断窗可见误报改善、不回填隐藏位置，f181瓶盖质量无效仍UNKNOWN。现有正例仍正确恢复1、0错误/未评价接受并说明新延迟；负例人工148帧合格候选仍拒绝、0绑定/错误位置、无返回机会；挂包/构造歧义与旧默认模式/关闭等价回归保持，现有54项及必要新增测试通过。保存实际结果、更新STATUS并本地提交、不推送。不能同时满足时保留旧默认和失败证据交00决定，不强行放宽条件。
 
@@ -123,16 +127,54 @@ M0/M1 交付完成；没有添加恢复策略。尚无测试集与身份/事件�
 
 ## 待办与交接
 
-1. 统一评价交付已核对通过；下一项只有03按新SPEC实施f180有界纹理对齐与开发回归。本轮只做核对/探查/决策，尚未修改运行策略、冻结配置或启动M3。当前关闭统计用新disabled_v2目录，旧错误报告仅供溯源。
+1. 03已完成f180有界纹理对齐开发回归；下一项交00只读核对 `comparison_v2.json`、`verification_v2.json`、新开发配置及本轮说明，决定是否采纳，再安排冻结与M3入口。当前默认仍原规则，配置未冻结、M3未启动；不同时启动其他开发聊天。关闭统计用新disabled_v2目录，旧错误报告仅供溯源。
 2. 本轮 M1 代码、依赖与说明本地提交消息为 `feat: add verified YOLO11n ByteTrack baseline`，用 `git log -1 --oneline` 查看；后续每个可运行里程碑仍检查变更并提交。原视频、权重和输出不加入提交。
 3. GitHub 代码与两段视频检查说明均已上传并核对；用户已明确授权公开本次检查记录。视频、模型权重和虚拟环境保留本地。
 4. 03—05 在基线可检查后按需进入；01 可结合当前读取脚本学习。
 
-已知问题与限制：旧两组关闭报告错误零计数已另存新v2修复；旧通用evaluation固定PENDING_INPUT/整体验收false已由独立新评价入口替代，原文件保留，不参与新汇总。真实竞争歧义、同包装替换、背景持续可见的不同瓶子负例尚未验证；同外观实体可能误认；新片f180原目标仍可见时因检测框/纹理变化提前UNKNOWN，已明确记FAIL但未修；瓶盖门槛也失败，未隔离标签贡献；尚无独立保留测试或严格速度对比；全片可见/遮挡标注不足，误报率未评价；可辨认帧/区域为Codex画面核对，尚非用户逐帧标注；输出mp4v、无音频。
+已知问题与限制：旧两组关闭报告错误零计数已另存新v2修复；旧通用evaluation固定PENDING_INPUT/整体验收false已由独立新评价入口替代，原文件保留，不参与新汇总。真实竞争歧义、同包装替换、背景持续可见的不同瓶子负例尚未验证；同外观实体可能误认；旧默认f180 UNKNOWN失败保留，新开发配置仅在已标注诊断范围改善，未推广为全片零误报；负例瓶盖/标签门槛也失败，未隔离纹理贡献；新增搜索开销未做严格速度基准；尚无独立保留测试，全片误报率仍未评价；可辨认帧/区域为Codex画面核对，尚非用户逐帧标注；输出mp4v、无音频。
+
+## 03有界标签纹理对齐开发回归交付（2026-10-02—03）
+
+接手HEAD为 `92ef257`、工作区干净，重新读取规则、SPEC唯一任务、STATUS、旧评价协议/说明及00原图探查。先从原视频保存f170—195共26帧原图，固定人工诊断 `diagnosis/visibility_annotations.json`，再实现/运行。清楚可见11帧、局部不可靠6帧、不确定边界1帧、全遮挡8帧；f187保留UNEVALUATED，不用算法输出重写真值。旧身份依据来自用户无替换/取走替换确认，新身份副本与正例原f847/f852图再次核对，旧标注不改。
+
+实现候选先提交 `124dbcb`：`appearance_recovery.py`增加可关闭的有界标签纹理平移，活动与候选共用比较；`recovery_f180_dev.json`仅新增开关/位移上限/共同区域四项，原配置SHA和所有原门槛保持不变。零位移、位移、共同区域、两侧std、NCC及同一参考的S/门控均逐参考保存。没有修改检测/跟踪、参考因果冻结、状态转换代码或降低门槛。原默认不带新配置时逐字段行为保持一致。
+
+六组完整因果运行另存 `outputs/f180_alignment_dev/`：旧默认正/负例、新对齐正/负例、新配置关闭正/负例，均从原初始化帧复用原检测缓存和原视频。两份新评价协议共用固定人工事件/诊断与身份依据；每个开启/关闭对严格匹配自己的配置SHA与Git版本，不放松旧版本检查。旧协议和四组有效旧结果均保留。
+
+| 开发验收项 | 实际结果 |
+| --- | --- |
+| f180清楚可见 | 新规则OBSERVED，当前位置来自本帧检测，与人工框IoU0.945882；旧规则UNKNOWN失败保留 |
+| 固定26帧诊断 | 可见UNKNOWN由1/11降至0/11；局部6/6、全遮挡8/8仍UNKNOWN；边界1帧不计成正确/错误 |
+| 缺失/质量 | f181瓶盖质量无效仍UNKNOWN，首次缺失从180移至181；连续10帧后f190进入LOST（旧189），未强制固定时间 |
+| 正例 | 旧/新开启均f852正确恢复1，0错误/未评价接受；f847至852延迟5帧，名义FPS约0.17219秒/源时间约0.18999秒；关闭仍未恢复1 |
+| 真实负例 | 原瓶子无返回机会，延迟不适用；148帧合格候选全拒绝，1次替换事件，全程149候选另列；0绑定、0错误当前位置 |
+| 模块夹具 | 挂包2拒绝+5质量暂缓，等分6帧暂缓，均0接受；不作为真实双瓶证据 |
+| 默认/关闭/参考回归 | 两组旧默认与旧开启384/633帧全部字段/事件/视频SHA一致；两组新配置关闭与旧关闭v2也一致；参考采样/PNG/NPZ/冻结校验不变 |
+
+f180旧最佳S参考f3的NCC0.480005/S0.737272；新最佳S参考f5同一参考零位移NCC0.465362，经(-1,+5)平移得到NCC0.793803、重叠0.933105、std49.3363/47.4011、S0.799862，所有原门控通过。没有混合不同参考分量，没有借用f179历史框；原像素对全部参考重算与记录一致。关闭组不执行外观质量门控，因此f181仍有原生观察，其局部窗1帧有位置/5帧未知是原TargetState行为，不能写成外观质量通过；全遮挡8帧仍未知，详见 `disabled_diagnostic.json`。
+
+收尾发现并补齐相关评价边界：裁剪合格但无可计算参考的DEFERRED_QUALITY列为INSUFFICIENT_EVIDENCE，不当作拒绝/身份通过。新增1项测试；连同对齐边界15项和原54项，实际70项全套通过。评价修正、比较入口与两份新协议先提交 `bdc3587`，随后在空的新v2目录串行重跑评价，两份指标与首轮完全相同。核心运行版本严格核对 `124dbcb`，评价执行版本 `bdc3587`；旧关闭来源仍为 `a167bba`。不改旧SHA、不覆盖首轮报告，当时核查源码和69项历史验证保留。
+
+本轮成功命令（项目根目录；六组运行的完整命令同时保存在说明及 `run_manifest.json` / 各组run_info）：
+
+```bash
+.venv/bin/python -m unittest discover -s tests -v
+.venv/bin/python scripts/validate_recovery_fixture.py --source data/tabletop_02.mp4 --baseline outputs/tabletop_02_baseline_v2 --recovery-output outputs/f180_alignment_dev/aligned_positive --output outputs/f180_alignment_dev/module_fixture --negative-start 223 --negative-end 230 --negative-box 200 120 455 750
+.venv/bin/python scripts/evaluate_offline.py --protocol configs/m2_evaluation_f180_legacy.json --output outputs/f180_alignment_dev/evaluation_legacy_v2
+.venv/bin/python scripts/evaluate_offline.py --protocol configs/m2_evaluation_f180_aligned.json --output outputs/f180_alignment_dev/evaluation_aligned_v2
+.venv/bin/python scripts/review_alignment_development.py --root outputs/f180_alignment_dev --evaluation-legacy outputs/f180_alignment_dev/evaluation_legacy_v2 --evaluation-aligned outputs/f180_alignment_dev/evaluation_aligned_v2 --report outputs/f180_alignment_dev/comparison_v2.json
+.venv/bin/python -m compileall -q scripts tests
+git diff --check
+```
+
+来源核查使用实际Git历史核心逐字段/视频回放，两份评价各解码384/384/633/633帧，负例每种规则各从原视频重解码633帧、人工148帧逐像素重算；关闭TargetState逐字段回放一致。历史366个输出/配置/协议/原视频文件SHA保全；原检测、状态输入和审查证据不变。诊断标注及原图SHA、逐参考对齐分量、逐诊断帧结果、四组指标、来源与测试日志均可检查。最终验收 `comparison_v2.json` / `verification_v2.json` PASS；完整命令与口径 `docs/f180_alignment_development.md`。本轮没有重跑04/00独立审查。
+
+本任务受限开发验收通过，默认仍旧配置，是否采用新配置及冻结交00决定。最终验证记录提交消息为 `docs: record bounded alignment development regression`，本地提交不推送，输出/视频不入Git。全片误报率UNEVALUATED，困难真实输入/M3/严格速度对照UNVERIFIED；搜索增加NCC比较次数，单段负例其他门槛也失败，不能据此证明纹理独立贡献。下一项用户小任务：把本轮最终报告与说明交00，只读核对后决定采纳/冻结；交付物是00的核对结论，验收为明确配置选择与后续任务，暂不拍新片或启动M3。
 
 ## 00统一评价核对与f180开发决策（2026-10-02）
 
-03候选实施进度：接手HEAD为92ef257、工作区干净，已重新读取规则/新任务与00证据。原画面 `[170,196)` 标注先固定（清楚11、局部6、不确定1、全遮挡8），另存 `outputs/f180_alignment_dev/diagnosis/`；原输出/配置/协议/视频保全清单已保存。实现可关闭的有界标签纹理平移、开发配置及分量合法性核查，未改旧默认配置/门槛/状态代码；69项测试通过。单帧原像素检查f180合法(-1,+5)对齐NCC0.793803、S0.799862，f181仍瓶盖质量无效；这是候选分量检查，完整因果状态/拒绝回归尚未运行。先本地候选提交记录实现版本，再运行完整回归并追加实际结论；不推送、不冻结、不启动M3。
+03候选实施进度（历史，完整回归结论见上方）：接手HEAD为92ef257、工作区干净，已重新读取规则/新任务与00证据。原画面 `[170,196)` 标注先固定（清楚11、局部6、不确定1、全遮挡8），另存 `outputs/f180_alignment_dev/diagnosis/`；原输出/配置/协议/视频保全清单已保存。实现可关闭的有界标签纹理平移、开发配置及分量合法性核查，未改旧默认配置/门槛/状态代码；69项测试通过。单帧原像素检查f180合法(-1,+5)对齐NCC0.793803、S0.799862，f181仍瓶盖质量无效；这是候选分量检查，完整因果状态/拒绝回归尚未运行。先本地候选提交记录实现版本，再运行完整回归并追加实际结论；不推送、不冻结、不启动M3。
 
 接手HEAD为 `8975df7`、工作区干净；先只读重新读取规则/规格/状态、`docs/offline_evaluation_m2.md`、`configs/m2_evaluation.json`、summary/acceptance_checks、评价/来源核查代码与19项新增测试。接受该评价工具的受限开发交付，不能把f180 FAIL解释为评价工具失败，也不能把报告PASS解释为算法全片通过。
 

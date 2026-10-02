@@ -5,7 +5,7 @@
 面向机器人感知的视觉跟踪学习项目：逐步研究遮挡与物体位移后的
 跟踪失效判断和目标恢复。第一阶段使用固定相机、单个主要桌面目标。
 
-**当前阶段：04 已确认 M2 第二步满足受限开发“恢复与拒绝”验收；03 已修复关闭分支的丢失次数汇总，待 00 决定后续阶段。**
+**当前阶段：M2 受限开发恢复/拒绝与统一评价已核对；03 已完成 f180 有界纹理对齐开发回归，待 00 核对配置采纳与冻结。旧默认保留，M3 未启动。**
 真实双瓶歧义、同包装替换和独立对照评价尚未验证；3D 定位与机器人控制尚未实现。
 
 ## 快速开始
@@ -140,6 +140,8 @@ curl -fL https://github.com/ultralytics/assets/releases/download/v8.3.0/yolo11n.
 
 复跑换空的新目录。结果位于 `outputs/m2_evaluation_v1/summary.json` 与 `per_event_results.json`；本次没有修改恢复行为、冻结配置或启动M3。
 
+f180开发修正另提供 `configs/recovery_f180_dev.json`：在标签纹理真实共同区域上搜索最多±6/±9像素，原门槛不变，旧默认配置仍保留。诊断窗清楚可见UNKNOWN从1/11降为0/11，开启第2步的f181与8帧全遮挡仍UNKNOWN；正例仍f852正确接受，负例148帧合格候选仍拒绝。70项测试通过。准确命令、旧/新规则与关闭对照及限制见 [有界纹理对齐开发回归](docs/f180_alignment_development.md)，最终报告 `outputs/f180_alignment_dev/comparison_v2.json`；等待00核对采用与冻结，M3未启动。
+
 ## 学习路线
 
 - [x] 第 1 步：真实视频读取（首段 656 帧、补拍 984 帧；用户已确认补拍检查完成）
@@ -147,7 +149,7 @@ curl -fL https://github.com/ultralytics/assets/releases/download/v8.3.0/yolo11n.
 - [x] 第 3 步：跟踪基线，观察遮挡后的 ID 变化与误检轨迹
 - [x] 第 4a 步：指定目标、连续缺失判断与未经身份核验的恢复候选
 - [x] 第 4b 步：04确认受限开发恢复/拒绝验收，03修复关闭统计；困难例仍未验证
-- [ ] 第 5 步：由00核对评价交付，处理f180后确认冻结，再启动M3最小对照
+- [ ] 第 5 步：由00核对f180开发交付并决定配置采纳，再确认冻结与M3最小对照入口
 - [ ] 后续研究：可靠性估计、3D 位姿跟踪与机器人仿真验证
 
 ## 文件说明
@@ -174,6 +176,9 @@ curl -fL https://github.com/ultralytics/assets/releases/download/v8.3.0/yolo11n.
 | `scripts/evaluation_sources.py` | 严格核对历史Git代码SHA，在临时目录复核旧结果 |
 | `configs/m2_evaluation.json` | 当前两段开发视频的独立事件/标注适配与来源清单 |
 | `tests/test_offline_evaluation.py` | 无返回机会、缺标注接受、覆盖/区间与来源边界测试 |
+| `scripts/review_alignment_development.py` | 固定诊断窗、旧/新评价、默认/关闭回归与保全比较 |
+| `configs/recovery_f180_dev.json` | 可关闭的有界标签纹理平移开发配置，原门槛保持不变 |
+| `tests/test_texture_alignment.py` | 平移/共同区域/退化与对齐开启后的状态安全测试 |
 | `configs/recovery.json` | 外观/质量/竞争/确认参数，沿用 SPEC.md 起始值 |
 | `tests/test_appearance_recovery.py` | 外观与身份门控、参考冻结和再次丢失回归检查 |
 | `requirements-baseline.txt` | M1 核心依赖版本，包含原视频 I/O 依赖 |
@@ -181,6 +186,7 @@ curl -fL https://github.com/ultralytics/assets/releases/download/v8.3.0/yolo11n.
 | `docs/target_state_m2_step1.md` | 目标初始化、状态规则、实际结果与限制 |
 | `docs/appearance_recovery_m2_step2.md` | 第二步规则、实际验证、身份依据与待补负例 |
 | `docs/offline_evaluation_m2.md` | 统一评价口径、准确命令、四组开发结果与未评价范围 |
+| `docs/f180_alignment_development.md` | 有界标签纹理对齐、开发回归、准确命令与能力边界 |
 | `data/` | 本地输入视频，默认不上传 |
 | `outputs/` | 本地生成结果，默认不上传 |
 | `docs/lesson01.md` | 第一课讲解与操作步骤 |
@@ -190,7 +196,7 @@ curl -fL https://github.com/ultralytics/assets/releases/download/v8.3.0/yolo11n.
 
 `requirements.txt` 固定第一课依赖版本。实验视频、模型文件和输出不进入 Git。
 真实视频已运行原始检测与跟踪，并有受限开发身份/事件依据和四组评价；尚无独立保留测试或泛化性能结论。
-后续按SPEC.md收尾f180与冻结，再补独立小规模对照。
+后续由00按SPEC.md核对f180候选并决定配置采纳与冻结，再补独立小规模对照。
 
 ## 参考
 
