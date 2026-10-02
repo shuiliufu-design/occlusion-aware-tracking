@@ -157,7 +157,7 @@ def validate_labels(case, protocol):
         if interval.start < start or interval.stop > end:
             raise ValueError('人工事件越过共同处理范围')
         if event['expected_return'] is True and event['recognizable_reappearance_frame'] != physical.get('recognizable_reappearance_frame'):
-            raise ValueError('开发预演不得改变旧人工重现时刻')
+            raise ValueError('可辨认重现时刻须与独立人工依据一致')
         if event['expected_return'] is False:
             if not physical.get('original_target_removed') or physical.get('original_target_reappears') is not False or event['recognizable_reappearance_frame'] is not None:
                 raise ValueError('无返回机会缺少原目标取走确认')
@@ -237,7 +237,7 @@ def evaluate_group(group, info, rows, events, case, physical, supplemental, labe
         qualified=negative['qualified_candidate_observations']; rejected=negative['appearance_rejected_observations']
         rejection='FAIL' if wrong or counts['INCORRECT'] or qualified!=rejected else ('PASS' if qualified else 'UNVERIFIED')
     controls={i for event in case['events'] for control in event['visible_controls'] for i in interval_indices(control)}
-    return {'case_id':case['case_id'],'group':group,'split':'development',
+    return {'case_id':case['case_id'],'group':group,'split':case['split'],
             'events':[{'episode_id':event['episode_id'],'expected_return':event['expected_return'],
                        'return_evaluation':evaluate_return(group,rows,events,event,labels,absent,info['nominal_fps'],iou_min)} for event in case['events']],
             'custom_acceptance':{'status':'APPLICABLE' if group=='C' else 'NOT_APPLICABLE',
@@ -278,7 +278,7 @@ def evaluate(protocol_path, runs_root, output):
     write_json(output/'preservation_before.json',protected)
     common_events=[]; detailed=[]; source_checks=[]; label_checks=[]
     for case in protocol['cases']:
-        load_case(case)
+        load_case(case,protocol)
         physical,supplemental,labels,checks=validate_labels(case,protocol)
         label_checks.append({'case_id':case['case_id'],**checks,
                              'operator_confirmation':physical['operator_confirmation']})
@@ -322,9 +322,9 @@ def evaluate(protocol_path, runs_root, output):
             'manual_negative_coverage':{k:v for k,v in item['wrong_candidate_appearance_rejection']['coverage'].items() if k!='frames'}
                if item['wrong_candidate_appearance_rejection']['coverage'] else None,
             'whole_run_candidate_observations':item['whole_run_candidate_coverage'].get('candidate_observations')})
-    summary={'stage':'DEVELOPMENT_PREFLIGHT','status_meanings':STATUS_MEANINGS,'groups':groups,
+    summary={'stage':protocol['stage'],'status_meanings':STATUS_MEANINGS,'groups':groups,
              'independent_manual_events':len(common_events),'independent_return_opportunities':sum(e['expected_return'] is True for e in common_events),
-             'frozen':False,'M3_holdout_started':False,'timing':protocol['timing'],
+             'frozen':protocol['freeze_status']=='FROZEN','M3_holdout_started':protocol['stage']=='HOLDOUT','timing':protocol['timing'],
              'whole_video_false_alarm_rate':None,'whole_video_visibility_status':'UNEVALUATED',
              'unverified_scopes':protocol['unverified_scopes'],'annotation_limits':protocol['annotation_limits'],
              'note':'每组分别评价相同人工事件；不累加为三倍独立样本，不改变旧M2接受事件口径。'}
@@ -349,4 +349,4 @@ if __name__=='__main__':
     try: result=evaluate(args.protocol,args.runs,args.output)
     except (ValueError,OSError,KeyError,IndexError,subprocess.CalledProcessError) as exc:
         parser.exit(1,f'三组评价失败: {getattr(exc,"stderr",None) or str(exc)}\n保留旧输出。\n')
-    print(json.dumps({'completed':True,'groups':result['groups'],'frozen':False},ensure_ascii=False,indent=2))
+    print(json.dumps({'completed':True,'groups':result['groups'],'frozen':result['frozen']},ensure_ascii=False,indent=2))

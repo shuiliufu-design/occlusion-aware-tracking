@@ -22,6 +22,9 @@ EXECUTION_FILES = ('scripts/run_comparison.py', 'scripts/evaluate_comparison.py'
                    'scripts/appearance_recovery.py', 'scripts/run_target_state.py',
                    'scripts/evaluate_offline.py', 'scripts/evaluation_sources.py',
                    'scripts/review_recovery.py', 'scripts/validate_wrong_bottle.py')
+POLICY_KEYS = ('groups','recovery_configuration','selected_configuration_source','original_configuration',
+               'missing_frames','match_iou_min','fixed_sample_stride','initialization_rule','reference_rule',
+               'sampling_rule','metrics','timing','independent_test_design')
 
 
 def empty_output(path):
@@ -51,10 +54,23 @@ def committed_code():
 
 def load_protocol(path):
     protocol = read_json(path)
-    if (protocol.get('schema_version') != 1 or protocol.get('stage') != 'DEVELOPMENT_PREFLIGHT'
-            or protocol.get('freeze_status') != 'PENDING_REVIEW_NOT_FROZEN'
-            or protocol.get('groups') != list(GROUPS)):
-        raise ValueError('本入口仅执行三组开发预演；协议尚未正式冻结')
+    if protocol.get('schema_version') != 1 or protocol.get('groups') != list(GROUPS):
+        raise ValueError('共同协议版本/组别无效')
+    if protocol.get('stage') == 'DEVELOPMENT_PREFLIGHT':
+        if protocol.get('freeze_status') != 'PENDING_REVIEW_NOT_FROZEN':
+            raise ValueError('开发预演不可冒充正式冻结测试')
+    elif protocol.get('stage') == 'HOLDOUT':
+        if not protocol.get('frozen_manifest'):
+            raise ValueError('正式测试缺少已核对冻结清单')
+        approved=checked_file(protocol['frozen_manifest'])
+        checks=check_freeze_manifest(approved)
+        if protocol.get('freeze_status')!='FROZEN' or not checks['frozen']:
+            raise ValueError('正式测试须先由00核对并记录FROZEN清单')
+        manifest=read_json(approved)
+        if {k:protocol[k] for k in POLICY_KEYS}!=manifest['shared_policy']:
+            raise ValueError('正式协议改变了冻结的共同规则/配置/计时/抽样口径')
+    else:
+        raise ValueError('只支持开发预演或已有冻结依据的独立测试')
     if (type(protocol['missing_frames']) is not int or protocol['missing_frames'] < 1
             or not 0 < protocol['match_iou_min'] <= 1
             or type(protocol['fixed_sample_stride']) is not int or protocol['fixed_sample_stride'] < 1):
@@ -66,8 +82,9 @@ def load_protocol(path):
     checked_file(protocol['original_configuration'])
     cases, episodes = set(), set()
     for case in protocol['cases']:
-        if case['case_id'] in cases or case['split'] != 'development':
-            raise ValueError('开发片ID重复或混入独立测试')
+        expected_split='development' if protocol['stage']=='DEVELOPMENT_PREFLIGHT' else 'holdout'
+        if case['case_id'] in cases or case['split'] != expected_split:
+            raise ValueError('片ID重复或混用开发/测试划分')
         cases.add(case['case_id'])
         for event in case['events']:
             if not event['episode_id'] or event['episode_id'] in episodes:
@@ -80,7 +97,7 @@ def load_protocol(path):
     return protocol
 
 
-def load_case(case):
+def load_case(case, protocol=None):
     info, rows = load_baseline(Path(case['baseline']['path']), Path(case['source']))
     if info['source_sha256'] != case['source_sha256']:
         raise ValueError('公共原视频校验不一致')
@@ -93,6 +110,15 @@ def load_case(case):
     box = case['initialization']['bbox_xyxy']
     if len(box) != 4 or not (0 <= box[0] < box[2] <= info['width'] and 0 <= box[1] < box[3] <= info['height']):
         raise ValueError('公共人工初始化框无效')
+    if protocol and protocol['stage']=='HOLDOUT':
+        manifest=read_json(checked_file(protocol['frozen_manifest']))
+        reference=manifest['cases'][0]
+        actual={k:info[k] for k in reference['detection_conditions']}
+        if (actual!=reference['detection_conditions'] or info['model_sha256']!=reference['model']['sha256']
+                or sha256(Path(case['baseline']['path'])/'bytetrack.yaml')!=reference['bytetrack_yaml']['sha256']):
+            raise ValueError('独立缓存改变了冻结检测/跟踪/依赖条件')
+        if case['source_sha256'] in {c['source']['sha256'] for c in manifest['cases']}:
+            raise ValueError('已用开发原视频不得冒充独立测试')
     return info, rows
 
 
@@ -141,6 +167,7 @@ def freeze_checklist(protocol, protocol_path, runs_root):
                       'identity_evidence': case['physical_identity_annotation'],
                       'supplemental_labels': case['evaluation_labels']})
     return {'status': 'PENDING_REVIEW_NOT_FROZEN', 'git_revision': revision,
+            'shared_policy': {k:protocol[k] for k in POLICY_KEYS},
             'executed_code_sha256': code, 'protocol': {'path': str(protocol_path), 'sha256': sha256(protocol_path)},
             'recovery_configuration': protocol['recovery_configuration'],
             'selected_configuration_source': protocol['selected_configuration_source'],
@@ -159,6 +186,8 @@ def freeze_checklist(protocol, protocol_path, runs_root):
 
 def check_freeze_manifest(path):
     manifest = read_json(path)
+    if manifest['status'] not in ('PENDING_REVIEW_NOT_FROZEN','FROZEN'):
+        raise ValueError('冻结状态无效')
     for name, digest in manifest['executed_code_sha256'].items():
         blob = subprocess.check_output(['git','show',f"{manifest['git_revision']}:{name}"])
         if sha256(Path(name)) != digest or hashlib.sha256(blob).hexdigest() != digest:
@@ -169,14 +198,18 @@ def check_freeze_manifest(path):
     for name, digest in manifest['requirements_sha256'].items():
         if sha256(Path(name)) != digest:
             raise ValueError('依赖清单已改变')
+    installed=subprocess.run([sys.executable,'-m','pip','freeze'],capture_output=True,text=True,check=True).stdout
+    if installed != Path(manifest['installed_dependencies']['path']).read_text(encoding='utf-8'):
+        raise ValueError('实际安装依赖已改变')
     for case in manifest['cases']:
         for key in ('source', 'model', 'bytetrack_yaml', 'identity_evidence', 'supplemental_labels'):
             checked_file(case[key])
         for name, digest in case['baseline']['sha256'].items():
             if sha256(Path(case['baseline']['path']) / name) != digest:
                 raise ValueError('待冻结缓存已改变')
-    return {'checks_passed': True, 'status': manifest['status'], 'frozen': False,
-            'note': '校验通过仅表示准备内容未改变，不表示已正式冻结。'}
+    return {'checks_passed': True, 'status': manifest['status'], 'frozen': manifest['status']=='FROZEN',
+            'note': '待冻结内容未改变，仍需00复核。' if manifest['status']!='FROZEN' else
+                    '已记录冻结版本未改变；运行结果仍需独立评价。'}
 
 
 if __name__ == '__main__':

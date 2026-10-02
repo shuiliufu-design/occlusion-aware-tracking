@@ -5,11 +5,12 @@ import json
 from pathlib import Path
 import tempfile
 import unittest
+from unittest.mock import patch
 
 from scripts.evaluate_comparison import (evaluate_group, evaluate_return, position_verdict)
-from scripts.m3_common import load_protocol, verify_shared
+from scripts.m3_common import POLICY_KEYS, load_case, load_protocol, verify_shared
 from scripts.run_comparison import NativeTarget, run
-from scripts.run_target_state import TargetState
+from scripts.run_target_state import TargetState,sha256
 from test_target_state import BOX, row
 
 
@@ -186,7 +187,7 @@ class ComparisonProtocolTests(unittest.TestCase):
     def test_return_keyframe_excluded_from_fixed_sample_rate_and_AB_appearance_NA(self):
         rows,events=replay('B')
         for r in rows:r['recovery_candidates']=[]
-        case={'case_id':'fixture','initialization':{'frame_index':0},'end_frame_exclusive':4,'events':[event()]}
+        case={'case_id':'fixture','split':'development','initialization':{'frame_index':0},'end_frame_exclusive':4,'events':[event()]}
         supplement={'frames':[{'frame_index':0,'identity':'T1','visibility':'CLEAR','origin':'FIXED_SAMPLE'},
                               {'frame_index':2,'identity':'T1','visibility':'CLEAR','origin':'RETURN_KEYFRAME'}]}
         labels={0:{'identity':'T1','bbox_xyxy':BOX},**LABEL}
@@ -196,6 +197,39 @@ class ComparisonProtocolTests(unittest.TestCase):
         self.assertEqual(result['wrong_candidate_appearance_rejection']['status'],'NOT_APPLICABLE')
         self.assertIsNone(result['custom_acceptance']['correct_accepts'])
         self.assertIsNone(result['fixed_sample_visibility']['whole_video_false_alarm_rate'])
+
+    def test_holdout_cannot_use_pending_freeze(self):
+        protocol=json.loads(Path('configs/m3_protocol_v1.json').read_text())
+        with tempfile.TemporaryDirectory() as directory:
+            manifest=Path(directory)/'pending.json'; manifest.write_text('{}')
+            protocol.update(stage='HOLDOUT',freeze_status='FROZEN',
+                            frozen_manifest={'path':str(manifest),'sha256':sha256(manifest)})
+            p=Path(directory)/'protocol.json'; p.write_text(json.dumps(protocol))
+            with patch('scripts.m3_common.check_freeze_manifest',return_value={'frozen':False}):
+                with self.assertRaises(ValueError):load_protocol(p)
+
+    def test_holdout_cannot_change_frozen_shared_policy(self):
+        protocol=json.loads(Path('configs/m3_protocol_v1.json').read_text())
+        with tempfile.TemporaryDirectory() as directory:
+            manifest=Path(directory)/'frozen_fixture.json'
+            manifest.write_text(json.dumps({'shared_policy':{k:protocol[k] for k in POLICY_KEYS}}))
+            protocol.update(stage='HOLDOUT',freeze_status='FROZEN',match_iou_min=.7,
+                            frozen_manifest={'path':str(manifest),'sha256':sha256(manifest)})
+            p=Path(directory)/'protocol.json';p.write_text(json.dumps(protocol))
+            with patch('scripts.m3_common.check_freeze_manifest',return_value={'frozen':True}):
+                with self.assertRaises(ValueError):load_protocol(p)
+
+    def test_holdout_cannot_relabel_used_development_video(self):
+        protocol=json.loads(Path('configs/m3_protocol_v1.json').read_text())
+        case=protocol['cases'][0]
+        info=json.loads((Path(case['baseline']['path'])/'run_info.json').read_text())
+        condition_keys=['inference','tracker','tracker_config','versions','tracker_constructor_frame_rate','effective_max_time_lost_frames']
+        record={'source':{'sha256':case['source_sha256']},'detection_conditions':{k:info[k] for k in condition_keys},
+                'model':{'sha256':info['model_sha256']},'bytetrack_yaml':{'sha256':sha256(Path(case['baseline']['path'])/'bytetrack.yaml')}}
+        with tempfile.TemporaryDirectory() as directory:
+            manifest=Path(directory)/'frozen_fixture.json';manifest.write_text(json.dumps({'cases':[record]}))
+            protocol.update(stage='HOLDOUT',frozen_manifest={'path':str(manifest),'sha256':sha256(manifest)})
+            with self.assertRaises(ValueError):load_case(case,protocol)
 
 
 if __name__=='__main__':unittest.main()

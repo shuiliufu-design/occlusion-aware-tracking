@@ -87,7 +87,7 @@ def draw_native(frame, row):
 
 def run_native(case, protocol, output):
     empty_output(output)
-    info, rows = load_case(case)
+    info, rows = load_case(case,protocol)
     initial = case['initialization']
     machine = NativeTarget(rows[initial['frame_index']], initial['bbox_xyxy'], initial['match_iou_min'])
     output.mkdir(parents=True)
@@ -146,9 +146,11 @@ def run(protocol_path, output):
     output.mkdir(parents=True,exist_ok=True)
     write_json(output/'protocol.json',protocol)
     write_json(output/'preservation_before.json',protected)
-    manifest = {'stage':protocol['stage'],'frozen':False,'protocol_sha256':sha256(protocol_path),
+    frozen=protocol['freeze_status']=='FROZEN'
+    manifest = {'stage':protocol['stage'],'frozen':frozen,'protocol_sha256':sha256(protocol_path),
                 'code_revision':revision,'code_sha256':code,'cases':[]}
     for case in protocol['cases']:
+        load_case(case,protocol)
         initial=case['initialization']; infos={}
         for group in GROUPS:
             destination=output/case['case_id']/group
@@ -174,11 +176,14 @@ def run(protocol_path, output):
     except ImportError:
         from evaluate_comparison import evaluate
     summary=evaluate(protocol_path,output,output/'evaluation')
-    write_json(output/'freeze_checklist.json',freeze_checklist(protocol,protocol_path,output))
+    if frozen:
+        write_json(output/'freeze_reference.json',json.loads(Path(protocol['frozen_manifest']['path']).read_text()))
+    else:
+        write_json(output/'freeze_checklist.json',freeze_checklist(protocol,protocol_path,output))
     verify_snapshot(protected)
     write_json(output/'preservation_after.json',{p:sha256(Path(p)) for p in protected})
     write_json(output/'run_info.json',{'completed':True,'command':shlex.join(sys.orig_argv),
-               'stage':protocol['stage'],'frozen':False,'execution_revision':revision,'code_sha256':code,
+               'stage':protocol['stage'],'frozen':frozen,'execution_revision':revision,'code_sha256':code,
                'protocol_sha256':sha256(protocol_path),'old_files_preserved':len(protected),
                'timing_status':'UNVERIFIED','note':'三组顺序解码同一原视频/缓存，未重跑检测；没有速度对照结论。'})
     return summary
@@ -192,4 +197,4 @@ if __name__=='__main__':
     try: result=run(args.protocol,args.output)
     except (ValueError,OSError,KeyError,IndexError) as exc:
         parser.exit(1,f'三组开发预演失败: {exc}\n保留部分输出，复跑换新路径。\n')
-    print(json.dumps({'completed':True,'groups':result['groups'],'frozen':False},ensure_ascii=False,indent=2))
+    print(json.dumps({'completed':True,'groups':result['groups'],'frozen':result['frozen']},ensure_ascii=False,indent=2))
