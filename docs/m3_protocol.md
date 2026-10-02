@@ -7,8 +7,8 @@
 在项目根目录，沿用 `.venv`，无需新依赖、GPU或重跑检测：
 
 ```bash
-.venv/bin/python scripts/run_comparison.py --protocol configs/m3_protocol_v1.json --output outputs/m3_development_preflight_v1
-.venv/bin/python scripts/m3_common.py --check-freeze outputs/m3_development_preflight_v1/freeze_checklist.json
+.venv/bin/python scripts/run_comparison.py --protocol configs/m3_protocol_v1.json --output outputs/m3_development_preflight_v4
+.venv/bin/python scripts/m3_common.py --check-freeze outputs/m3_development_preflight_v4/freeze_checklist.json
 .venv/bin/python -m unittest discover -s tests -v
 .venv/bin/python -m compileall -q scripts tests
 ```
@@ -18,7 +18,7 @@
 单独复跑评价（用新空目录）：
 
 ```bash
-.venv/bin/python scripts/evaluate_comparison.py --protocol configs/m3_protocol_v1.json --runs outputs/m3_development_preflight_v1 --output outputs/m3_development_evaluation_recheck_v1
+.venv/bin/python scripts/evaluate_comparison.py --protocol configs/m3_protocol_v1.json --runs outputs/m3_development_preflight_v4 --output outputs/m3_development_evaluation_recheck_v1
 ```
 
 | 组别 | 运行机制 | 不适用项 |
@@ -55,4 +55,43 @@ B/C新增处理计时计划包含参考建库，排除推理、解码、绘图/�
 
 同一入口已经支持后续 `HOLDOUT` 输入：须引用经00复核记录为 `FROZEN` 的清单及SHA，代码/实际安装依赖/共同规则必须匹配，检测缓存的参数、模型、YAML与版本须匹配冻结条件。只允许另填每片来源、早期初始化和独立人工标注；旧开发视频不能换名当保留测试。这些保护有构造边界测试，本轮没有创建真实FROZEN清单或运行HOLDOUT输入。当前协议仍为开发预演。
 
-真实双瓶/同包装、背景持续可见新负例、纹理独立贡献、全片误报率与严格速度仍未验证/未评价。本轮运行结果、来源回放与验收说明在预演完成后补充。
+真实双瓶/同包装、背景持续可见新负例、纹理独立贡献、全片误报率与严格速度仍未验证/未评价。
+
+## 实际开发预演（2026-10-03）
+
+首次提交 `a2e1d59` 保存共同入口/配置/协议。首轮 `outputs/m3_development_preflight_v1/` 已生成六组和评价，但调用者把正在写的日志放入被保全的输出树；pip诊断写日志后保全检查正确拒绝（退出1）。保留失败目录、日志及原SHA，没有把该次主运行记为成功。随后日志改先写 `/tmp`，`v2/` 完整成功；再补齐正式冻结输入保护，提交 `e614d61` 并另存 `v3/` 完整成功。收尾发现负例A/B f181有当前框却缺人工完整框，汇总应记未评价；提交评价统计修正 `572de8f` 后在最终 `v4/` 完整成功。各版算法/阈值均未修改，v2/v3/v4六组全部记录/事件/视频SHA一致。
+
+最终实际运行命令（日志先写临时路径，完成后复制到新结果目录；不要预先向被保全输入树中的文件重定向）：
+
+```bash
+.venv/bin/python scripts/run_comparison.py --protocol configs/m3_protocol_v1.json --output outputs/m3_development_preflight_v4 > /tmp/m3_preflight_execution_v4.log 2>&1
+.venv/bin/python scripts/m3_common.py --check-freeze outputs/m3_development_preflight_v4/freeze_checklist.json
+.venv/bin/python -m unittest discover -s tests -v > /tmp/m3_tests_98.log 2>&1
+.venv/bin/python -m compileall -q scripts tests
+git diff --check
+```
+
+| 开发事件 | A 原始原生ID | B 状态与候选 | C 身份恢复 |
+| --- | --- | --- | --- |
+| 原瓶子返回，人工机会1 | 未返回1；无延迟 | 未返回1；无延迟 | 正确返回1，f852；5帧延迟 |
+| 不同瓶子替换，人工机会0 | 返回/延迟不适用 | 返回/延迟不适用 | 返回/延迟不适用 |
+| 替代瓶子人工148帧 | 148帧有匹配检测；无M2候选/外观机制 | 148帧候选；外观核验不适用 | 148帧合格候选均外观拒绝；一次替换事件 |
+| 自定义接受 | 不适用，null | 不适用，null | 正例1次人工正确；负例0次，0错误/未评价接受 |
+
+两片共2个人工事件，其中期待返回机会只有1，不能累加三组制造更多独立样本。正例5帧延迟仍从人工f847计算：名义FPS0.1721898148秒，源时间0.1899888889秒。A/B初始原生ID消失后没有接续新ID；当前长遮挡片中未成功返回。短时同ID、无接受事件仍能正确返回的口径，由小规模构造记录验证，未声称已有真实短遮挡效果结果。
+
+固定抽样计划正例39帧/负例64帧，共103；本轮分别核对2/4帧，共6，未核对97帧。正例两帧清楚T1样本为600/850，三组均在850 UNKNOWN；C的连续确认等待成本保留，不假报零误报。负例清楚T1固定样本0/170/180均有位置；500为T2，不充当可见T1分母。后补847/852等关键帧不扩大固定抽样。旧11帧诊断控制三组均0 UNKNOWN，但只能说明该诊断范围；原目标缺席的148替换帧与8全遮挡帧均0错误当前位置，全片仍未评价。负例A/B在f181有当前框，但原图诊断只有部分可见且没有可核对完整人工框，因此位置审查列UNEVALUATED/[181]；不能借缺席范围156帧通过掩盖该项缺口。C该帧没有当前位置，仍保持UNKNOWN。
+
+最终来源核查使用 `572de8f` 对应Git快照：A只读选择逐字段回放384/633帧，B原TargetState逐字段回放384/633帧，C记录/参考/分量/事件核查；六个视频各重解码384/384/384/633/633/633帧。C负例重新解码原视频633帧并从原像素重算148帧；B/C四组记录、事件与视频SHA全部匹配先前采纳的开发结果。旧核查器的 `disabled_matches_step1=False` 因本入口没有传入第一步目录，不表示回放失败；新来源证据中的 `historical_target_state_replayed_frames` 与逐字段/事件对照才是B等价依据。12张补充标注原图逐像素匹配源视频，原身份确认与旧事件/诊断SHA未改。
+
+98项测试通过（原70+三组评价/冻结保护28）；compileall、共同输入/代码/配置核查与非空运行/评价保护均通过。原366文件再次匹配，接手保全清单589文件未变，最终主入口保全881个既有文件；实际清单可检查，不改旧SHA。新配置与采纳配置逐字节相同，M2四个核心/旧评价文件SHA保留。
+
+最终结果 `outputs/m3_development_preflight_v4/`：
+
+- `positive/`、`negative/` 下各有 `A/ B/ C/`：视频、完整逐帧记录、机制事件、运行来源；B/C另含冻结参考/配置。
+- `evaluation/common_manual_events.json`、`per_event_results.json`、`summary.json`：共同事件与六组评价；人工返回、候选/拒绝、固定抽样缺口和机制不适用分别报告。
+- `evaluation/source_checks/`、`annotation_checks.json`：Git历史回放、负例像素重算与原图核查。
+- `freeze_checklist.json`、`dependencies_snapshot.txt`：最终执行版本与待冻结清单，实际核查PASS，仍 `PENDING_REVIEW_NOT_FROZEN`。
+- `acceptance_checks.json`、`run_manifest.json`、`tests_final.log`、`execution.log`、前后保全清单：本轮交付证据。
+
+共同入口与开发预演验收通过；A/B在本长遮挡开发事件的未返回、C f850未知和覆盖缺口保留为结果，不将工具验收升级为全片算法通过。下一步仅交00只读核对三组口径/待冻结清单，核对通过后才正式冻结、另拍3段独立片。本轮未冻结、未拍片、未执行HOLDOUT、未推送。

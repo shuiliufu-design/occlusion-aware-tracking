@@ -5,7 +5,7 @@
 面向机器人感知的视觉跟踪学习项目：逐步研究遮挡与物体位移后的
 跟踪失效判断和目标恢复。第一阶段使用固定相机、单个主要桌面目标。
 
-**当前阶段：M2 受限开发恢复/拒绝与统一评价已核对；03 已完成 f180 有界纹理对齐开发回归，待 00 核对配置采纳与冻结。旧默认保留，M3 未启动。**
+**当前阶段：00 已采纳有界纹理对齐；03 已完成 A/B/C 共同入口、两片开发预演与冻结准备，待 00 核对后正式冻结。旧默认保留，M3 独立测试未启动。**
 真实双瓶歧义、同包装替换和独立对照评价尚未验证；3D 定位与机器人控制尚未实现。
 
 ## 快速开始
@@ -140,16 +140,26 @@ curl -fL https://github.com/ultralytics/assets/releases/download/v8.3.0/yolo11n.
 
 复跑换空的新目录。结果位于 `outputs/m2_evaluation_v1/summary.json` 与 `per_event_results.json`；本次没有修改恢复行为、冻结配置或启动M3。
 
-f180开发修正另提供 `configs/recovery_f180_dev.json`：在标签纹理真实共同区域上搜索最多±6/±9像素，原门槛不变，旧默认配置仍保留。诊断窗清楚可见UNKNOWN从1/11降为0/11，开启第2步的f181与8帧全遮挡仍UNKNOWN；正例仍f852正确接受，负例148帧合格候选仍拒绝。70项测试通过。准确命令、旧/新规则与关闭对照及限制见 [有界纹理对齐开发回归](docs/f180_alignment_development.md)，最终报告 `outputs/f180_alignment_dev/comparison_v2.json`；等待00核对采用与冻结，M3未启动。
+f180开发修正另提供 `configs/recovery_f180_dev.json`：在标签纹理真实共同区域上搜索最多±6/±9像素，原门槛不变，旧默认配置仍保留。诊断窗清楚可见UNKNOWN从1/11降为0/11，开启第2步的f181与8帧全遮挡仍UNKNOWN；正例仍f852正确接受，负例148帧合格候选仍拒绝。70项测试通过。准确命令、旧/新规则与关闭对照及限制见 [有界纹理对齐开发回归](docs/f180_alignment_development.md)，最终报告 `outputs/f180_alignment_dev/comparison_v2.json`；00已采纳该配置，三组协议待核对冻结；M3独立测试未启动。
 
 ## 学习路线
+
+M3 共同入口与开发预演说明见 [M3协议](docs/m3_protocol.md)。当前只跑已有开发输入，复跑必须换新的空目录：
+
+```bash
+.venv/bin/python scripts/run_comparison.py --protocol configs/m3_protocol_v1.json --output outputs/m3_development_preflight_v4
+.venv/bin/python scripts/m3_common.py --check-freeze outputs/m3_development_preflight_v4/freeze_checklist.json
+```
+
+最终六组结果和评价在 `outputs/m3_development_preflight_v4/`。正例A/B未返回，C在f852正确返回；负例无返回机会，C148帧合格候选均拒绝。98项测试通过。冻结清单仍待00核对，固定抽样只核对6/103帧；f850三组均UNKNOWN，负例A/B f181缺少人工完整框，位置核对未评价。全片误报率和速度仍未评价/验证。
 
 - [x] 第 1 步：真实视频读取（首段 656 帧、补拍 984 帧；用户已确认补拍检查完成）
 - [x] 第 2 步：预训练目标检测基线，保存逐帧检测结果
 - [x] 第 3 步：跟踪基线，观察遮挡后的 ID 变化与误检轨迹
 - [x] 第 4a 步：指定目标、连续缺失判断与未经身份核验的恢复候选
 - [x] 第 4b 步：04确认受限开发恢复/拒绝验收，03修复关闭统计；困难例仍未验证
-- [ ] 第 5 步：由00核对f180开发交付并决定配置采纳，再确认冻结与M3最小对照入口
+- [x] 第 4c 步：00采纳f180对齐；03完成三组共同入口/开发预演/冻结准备
+- [ ] 第 5 步：00核对三组交付并冻结，再另拍3段独立视频进行M3最小对照
 - [ ] 后续研究：可靠性估计、3D 位姿跟踪与机器人仿真验证
 
 ## 文件说明
@@ -177,6 +187,12 @@ f180开发修正另提供 `configs/recovery_f180_dev.json`：在标签纹理真�
 | `configs/m2_evaluation.json` | 当前两段开发视频的独立事件/标注适配与来源清单 |
 | `tests/test_offline_evaluation.py` | 无返回机会、缺标注接受、覆盖/区间与来源边界测试 |
 | `scripts/review_alignment_development.py` | 固定诊断窗、旧/新评价、默认/关闭回归与保全比较 |
+| `scripts/run_comparison.py` | 同一缓存/初始化运行A/B/C并调用共同人工事件评价 |
+| `scripts/evaluate_comparison.py` | 以人工身份/本帧框评价三组正确返回，不依赖A/B接受事件 |
+| `scripts/m3_common.py` | 共同输入、待冻结清单核查与正式输入冻结保护 |
+| `configs/m3_protocol_v1.json` | 现有开发片预演、未来三片设计及共同指标/抽样/计时口径 |
+| `configs/recovery_m3_v1.json` | 与00采纳对齐配置逐字节一致的C配置副本 |
+| `tests/test_m3_comparison.py` | 三组选择/返回、物理身份、未知标注与冻结保护28项边界测试 |
 | `configs/recovery_f180_dev.json` | 可关闭的有界标签纹理平移开发配置，原门槛保持不变 |
 | `tests/test_texture_alignment.py` | 平移/共同区域/退化与对齐开启后的状态安全测试 |
 | `configs/recovery.json` | 外观/质量/竞争/确认参数，沿用 SPEC.md 起始值 |
@@ -187,6 +203,7 @@ f180开发修正另提供 `configs/recovery_f180_dev.json`：在标签纹理真�
 | `docs/appearance_recovery_m2_step2.md` | 第二步规则、实际验证、身份依据与待补负例 |
 | `docs/offline_evaluation_m2.md` | 统一评价口径、准确命令、四组开发结果与未评价范围 |
 | `docs/f180_alignment_development.md` | 有界标签纹理对齐、开发回归、准确命令与能力边界 |
+| `docs/m3_protocol.md` | 三组共同入口、开发预演结果、标注缺口及冻结/正式输入约定 |
 | `data/` | 本地输入视频，默认不上传 |
 | `outputs/` | 本地生成结果，默认不上传 |
 | `docs/lesson01.md` | 第一课讲解与操作步骤 |
@@ -196,7 +213,7 @@ f180开发修正另提供 `configs/recovery_f180_dev.json`：在标签纹理真�
 
 `requirements.txt` 固定第一课依赖版本。实验视频、模型文件和输出不进入 Git。
 真实视频已运行原始检测与跟踪，并有受限开发身份/事件依据和四组评价；尚无独立保留测试或泛化性能结论。
-后续由00按SPEC.md核对f180候选并决定配置采纳与冻结，再补独立小规模对照。
+后续由00按SPEC.md核对三组共同口径与清单并正式冻结，再另拍独立输入完成小规模对照。
 
 ## 参考
 
