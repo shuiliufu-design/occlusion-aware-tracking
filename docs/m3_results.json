@@ -1,0 +1,474 @@
+{
+  "scope": "2026-10-03 three-clip restricted holdout; static transcription, not a new experiment",
+  "freeze_execution_revision": "572de8fb5196d7873f6e7f41c33f178dc008ed9b",
+  "holdout_execution_revision": "e7b028cf16c7f506152a2c35cdf6b23b6e286825",
+  "source_artifacts": [
+    {
+      "path": "configs/m3_freeze_v1.json",
+      "sha256": "0562cedc68e79fcd4a8e2e5dca02c3c3d79917a294154845590bab131a8505ce"
+    },
+    {
+      "path": "configs/m3_holdout_v2.json",
+      "sha256": "9dbebca61b8b3d5f42fff09425828d5fd243409dcbaaec67c126fd7a4bae308c"
+    },
+    {
+      "path": "outputs/m3_holdout_comparison_v2/group_totals.json",
+      "sha256": "55e1022149ae8558a7943a6622d49421ac1b2396dc10ba4b144606bbc0f514f9"
+    },
+    {
+      "path": "outputs/m3_holdout_comparison_v2/acceptance_checks.json",
+      "sha256": "682c4587a186bb61112160935da16655095427cc9356a2c30e7ec2531d2fbe5e"
+    },
+    {
+      "path": "outputs/m3_holdout_comparison_v2/run_manifest.json",
+      "sha256": "c44d734990849e8e12eb0d4f33f4cd6e61ed2d4a9d0ea89d34688ad1c880670b"
+    },
+    {
+      "path": "outputs/m3_holdout_comparison_v2/failure_analysis.json",
+      "sha256": "65aef83f1bd04fc166dfe04c43beb67a58bc5f5fe71b1ea030e3676b474b4d4a"
+    },
+    {
+      "path": "outputs/m3_holdout_comparison_v2/evaluation/summary.json",
+      "sha256": "68bbfb018fee0349acdc5b8fca50e4b432cfc762dde8abd890a1c64f6cc92d27"
+    }
+  ],
+  "groups": {
+    "A": {
+      "expected_return_opportunities": 2,
+      "correct_returns": 0,
+      "unreturned": 2,
+      "unevaluated_return_events": 0,
+      "clear_T1_fixed_samples": 88,
+      "unknown_clear_T1_fixed_samples": 34,
+      "incorrect_audited_positions": 0,
+      "incorrect_absent_positions": 0,
+      "program_accepts": null,
+      "correct_accepts": null,
+      "incorrect_accepts": null,
+      "unevaluated_accepts": null,
+      "correct_return_fraction_of_two_opportunities": 0.0,
+      "fixed_sample_UNKNOWN_fraction": 0.38636363636363635,
+      "whole_video_false_alarm_rate": null,
+      "whole_video_status": "UNEVALUATED"
+    },
+    "B": {
+      "expected_return_opportunities": 2,
+      "correct_returns": 0,
+      "unreturned": 2,
+      "unevaluated_return_events": 0,
+      "clear_T1_fixed_samples": 88,
+      "unknown_clear_T1_fixed_samples": 34,
+      "incorrect_audited_positions": 0,
+      "incorrect_absent_positions": 0,
+      "program_accepts": null,
+      "correct_accepts": null,
+      "incorrect_accepts": null,
+      "unevaluated_accepts": null,
+      "correct_return_fraction_of_two_opportunities": 0.0,
+      "fixed_sample_UNKNOWN_fraction": 0.38636363636363635,
+      "whole_video_false_alarm_rate": null,
+      "whole_video_status": "UNEVALUATED"
+    },
+    "C": {
+      "expected_return_opportunities": 2,
+      "correct_returns": 2,
+      "unreturned": 0,
+      "unevaluated_return_events": 0,
+      "clear_T1_fixed_samples": 88,
+      "unknown_clear_T1_fixed_samples": 2,
+      "incorrect_audited_positions": 0,
+      "incorrect_absent_positions": 0,
+      "program_accepts": 2,
+      "correct_accepts": 2,
+      "incorrect_accepts": 0,
+      "unevaluated_accepts": 0,
+      "correct_return_fraction_of_two_opportunities": 1.0,
+      "fixed_sample_UNKNOWN_fraction": 0.022727272727272728,
+      "whole_video_false_alarm_rate": null,
+      "whole_video_status": "UNEVALUATED"
+    }
+  },
+  "independent_clips": 3,
+  "manual_events": 3,
+  "return_opportunities_per_group": 2,
+  "fixed_samples_total": 141,
+  "clear_T1_fixed_samples_per_group": 88,
+  "original_labels": 179,
+  "supplementary_labels": 2,
+  "cases": [
+    {
+      "case_id": "holdout_return_01",
+      "source": "data/m3_holdout_return_01.mp4",
+      "source_sha256": "0e04498b2189f8dac4d697ba3248b5b760f7bee35bb4c1471627a9212e5f59e7",
+      "frames": 341,
+      "initialization": {
+        "frame_index": 0,
+        "bbox_xyxy": [
+          148,
+          474,
+          252,
+          824
+        ],
+        "match_iou_min": 0.5
+      },
+      "return_anchor": 204,
+      "clear_T1_fixed_samples": 31,
+      "recording_protocol_deviations": [
+        "较短遮挡长于约0.3—0.5秒目标",
+        "完全露出后控制段约4.4秒，少于5秒"
+      ],
+      "groups": [
+        {
+          "group": "A",
+          "return": {
+            "expected_return_opportunities": 1,
+            "correct_return_events": 0,
+            "unreturned_events": 1,
+            "unevaluated_return_events": 0,
+            "correct_return_frame": null,
+            "mechanism": null,
+            "latency_frames": null,
+            "latency_seconds_frame_fps": null,
+            "latency_seconds_source_time": null,
+            "latency_status": "NOT_APPLICABLE",
+            "success_rate": 0.0,
+            "unknown_observation_frames_before_verified_return": [],
+            "evaluated_observations": [],
+            "status": "FAIL"
+          },
+          "fixed_unknown_frames": [
+            210,
+            220,
+            230,
+            240,
+            250,
+            260,
+            270,
+            280,
+            290,
+            300,
+            310,
+            320,
+            330,
+            340
+          ]
+        },
+        {
+          "group": "B",
+          "return": {
+            "expected_return_opportunities": 1,
+            "correct_return_events": 0,
+            "unreturned_events": 1,
+            "unevaluated_return_events": 0,
+            "correct_return_frame": null,
+            "mechanism": null,
+            "latency_frames": null,
+            "latency_seconds_frame_fps": null,
+            "latency_seconds_source_time": null,
+            "latency_status": "NOT_APPLICABLE",
+            "success_rate": 0.0,
+            "unknown_observation_frames_before_verified_return": [],
+            "evaluated_observations": [],
+            "status": "FAIL"
+          },
+          "fixed_unknown_frames": [
+            210,
+            220,
+            230,
+            240,
+            250,
+            260,
+            270,
+            280,
+            290,
+            300,
+            310,
+            320,
+            330,
+            340
+          ]
+        },
+        {
+          "group": "C",
+          "return": {
+            "expected_return_opportunities": 1,
+            "correct_return_events": 1,
+            "unreturned_events": 0,
+            "unevaluated_return_events": 0,
+            "correct_return_frame": 214,
+            "mechanism": "CUSTOM_RECOVERY_ACCEPTANCE",
+            "latency_frames": 10,
+            "latency_seconds_frame_fps": 0.33327794069729555,
+            "latency_seconds_source_time": 0.33333333333333304,
+            "latency_status": "PASS",
+            "success_rate": 1.0,
+            "unknown_observation_frames_before_verified_return": [],
+            "evaluated_observations": [
+              {
+                "frame_index": 214,
+                "verdict": "CORRECT",
+                "reason": "人工同一目标与本帧框核对",
+                "annotation_iou": 0.9427875381249647
+              }
+            ],
+            "status": "PASS"
+          },
+          "fixed_unknown_frames": [
+            210
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "holdout_return_02",
+      "source": "data/m3_holdout_return_02.mp4",
+      "source_sha256": "6749da6f1cc34d928c293702862bff5421966b9811b1ba8a7c8931c6704e4529",
+      "frames": 476,
+      "initialization": {
+        "frame_index": 0,
+        "bbox_xyxy": [
+          148,
+          474,
+          245,
+          826
+        ],
+        "match_iou_min": 0.5
+      },
+      "return_anchor": 279,
+      "clear_T1_fixed_samples": 37,
+      "recording_protocol_deviations": [],
+      "groups": [
+        {
+          "group": "A",
+          "return": {
+            "expected_return_opportunities": 1,
+            "correct_return_events": 0,
+            "unreturned_events": 1,
+            "unevaluated_return_events": 0,
+            "correct_return_frame": null,
+            "mechanism": null,
+            "latency_frames": null,
+            "latency_seconds_frame_fps": null,
+            "latency_seconds_source_time": null,
+            "latency_status": "NOT_APPLICABLE",
+            "success_rate": 0.0,
+            "unknown_observation_frames_before_verified_return": [],
+            "evaluated_observations": [],
+            "status": "FAIL"
+          },
+          "fixed_unknown_frames": [
+            280,
+            290,
+            300,
+            310,
+            320,
+            330,
+            340,
+            350,
+            360,
+            370,
+            380,
+            390,
+            400,
+            410,
+            420,
+            430,
+            440,
+            450,
+            460,
+            470
+          ]
+        },
+        {
+          "group": "B",
+          "return": {
+            "expected_return_opportunities": 1,
+            "correct_return_events": 0,
+            "unreturned_events": 1,
+            "unevaluated_return_events": 0,
+            "correct_return_frame": null,
+            "mechanism": null,
+            "latency_frames": null,
+            "latency_seconds_frame_fps": null,
+            "latency_seconds_source_time": null,
+            "latency_status": "NOT_APPLICABLE",
+            "success_rate": 0.0,
+            "unknown_observation_frames_before_verified_return": [],
+            "evaluated_observations": [],
+            "status": "FAIL"
+          },
+          "fixed_unknown_frames": [
+            280,
+            290,
+            300,
+            310,
+            320,
+            330,
+            340,
+            350,
+            360,
+            370,
+            380,
+            390,
+            400,
+            410,
+            420,
+            430,
+            440,
+            450,
+            460,
+            470
+          ]
+        },
+        {
+          "group": "C",
+          "return": {
+            "expected_return_opportunities": 1,
+            "correct_return_events": 1,
+            "unreturned_events": 0,
+            "unevaluated_return_events": 0,
+            "correct_return_frame": 283,
+            "mechanism": "CUSTOM_RECOVERY_ACCEPTANCE",
+            "latency_frames": 4,
+            "latency_seconds_frame_fps": 0.13331148459383754,
+            "latency_seconds_source_time": 0.13328888888888812,
+            "latency_status": "PASS",
+            "success_rate": 1.0,
+            "unknown_observation_frames_before_verified_return": [],
+            "evaluated_observations": [
+              {
+                "frame_index": 283,
+                "verdict": "CORRECT",
+                "reason": "人工同一目标与本帧框核对",
+                "annotation_iou": 0.9449691816194948
+              }
+            ],
+            "status": "PASS"
+          },
+          "fixed_unknown_frames": [
+            280
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "holdout_replacement_01",
+      "source": "data/m3_holdout_replacement_01.mp4",
+      "source_sha256": "e69630d7661ddbac85993d7b75d3ec3d47975a409f096abe0d35246e0b73f952",
+      "frames": 573,
+      "initialization": {
+        "frame_index": 0,
+        "bbox_xyxy": [
+          235,
+          492,
+          327,
+          792
+        ],
+        "match_iou_min": 0.5
+      },
+      "return_anchor": null,
+      "clear_T1_fixed_samples": 20,
+      "recording_protocol_deviations": [
+        "替换遮挡长于约3—4秒目标",
+        "完全露出后控制段约4.3秒，少于5秒"
+      ],
+      "groups": [
+        {
+          "group": "A",
+          "return": {
+            "expected_return_opportunities": 0,
+            "correct_return_events": 0,
+            "unreturned_events": 0,
+            "unevaluated_return_events": 0,
+            "correct_return_frame": null,
+            "mechanism": null,
+            "latency_frames": null,
+            "latency_seconds_frame_fps": null,
+            "latency_seconds_source_time": null,
+            "latency_status": "NOT_APPLICABLE",
+            "success_rate": null,
+            "unknown_observation_frames_before_verified_return": [],
+            "evaluated_observations": [],
+            "status": "NOT_APPLICABLE"
+          },
+          "fixed_unknown_frames": []
+        },
+        {
+          "group": "B",
+          "return": {
+            "expected_return_opportunities": 0,
+            "correct_return_events": 0,
+            "unreturned_events": 0,
+            "unevaluated_return_events": 0,
+            "correct_return_frame": null,
+            "mechanism": null,
+            "latency_frames": null,
+            "latency_seconds_frame_fps": null,
+            "latency_seconds_source_time": null,
+            "latency_status": "NOT_APPLICABLE",
+            "success_rate": null,
+            "unknown_observation_frames_before_verified_return": [],
+            "evaluated_observations": [],
+            "status": "NOT_APPLICABLE"
+          },
+          "fixed_unknown_frames": []
+        },
+        {
+          "group": "C",
+          "return": {
+            "expected_return_opportunities": 0,
+            "correct_return_events": 0,
+            "unreturned_events": 0,
+            "unevaluated_return_events": 0,
+            "correct_return_frame": null,
+            "mechanism": null,
+            "latency_frames": null,
+            "latency_seconds_frame_fps": null,
+            "latency_seconds_source_time": null,
+            "latency_status": "NOT_APPLICABLE",
+            "success_rate": null,
+            "unknown_observation_frames_before_verified_return": [],
+            "evaluated_observations": [],
+            "status": "NOT_APPLICABLE"
+          },
+          "fixed_unknown_frames": []
+        }
+      ]
+    }
+  ],
+  "negative_qualified_region": {
+    "case_id": "holdout_replacement_01",
+    "interval": [
+      443,
+      573
+    ],
+    "replacement_events": 1,
+    "qualified_candidate_frames": 130,
+    "appearance_rejected_frames": 130,
+    "bindings": 0,
+    "return_opportunities": 0,
+    "latency": "NOT_APPLICABLE",
+    "all_event_candidates": 133,
+    "all_event_program_rejections": 131,
+    "all_event_quality_deferrals": 2,
+    "local_geometry_unevaluated_frames": [
+      390,
+      391,
+      442
+    ]
+  },
+  "unverified": [
+    "speed",
+    "end-to-end overhead",
+    "real two-bottle ambiguity",
+    "same packaging replacement",
+    "hard cases",
+    "generalization",
+    "independent contribution of texture alignment"
+  ],
+  "unevaluated": [
+    "whole-video exact false-alarm rate",
+    "insufficient local geometry"
+  ],
+  "annotation_review": "operator physical confirmation; Codex raw-image boxes/visibility; no second human frame-by-frame review"
+}
