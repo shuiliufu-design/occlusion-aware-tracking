@@ -69,3 +69,5 @@ Git 包含代码、配置、依赖清单和静态说明；视频、权重、`.ve
 教学与开发历史：[视频 I/O](docs/lesson01.md) · [基线](docs/baseline_m1.md) · [仅候选状态](docs/target_state_m2_step1.md) · [外观恢复](docs/appearance_recovery_m2_step2.md) · [真实开发负例](docs/wrong_bottle_m2_validation.md) · [统一评价](docs/offline_evaluation_m2.md) · [纹理对齐](docs/f180_alignment_development.md) · [三组协议](docs/m3_protocol.md) · [学习记录](docs/learning_log.md)。历史文档中的参数、结果和待办属于当时版本，当前实测以冻结 C 与有效 v2 为准。
 
 仓库：[shuiliufu-design/occlusion-aware-tracking](https://github.com/shuiliufu-design/occlusion-aware-tracking)。
+
+项目提交身份已按账号修正，完整工程历史保留；原实验SHA与当前公开版本的对应关系及本地档案用法见[提交身份与实验档案](docs/git_history_identity.md)。

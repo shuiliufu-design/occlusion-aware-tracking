@@ -48,6 +48,8 @@ A 不改 ByteTrack，仅沿人工初始化选定的原生 ID 输出本帧检测�
 
 冻结执行版本：`572de8fb5196d7873f6e7f41c33f178dc008ed9b`（12 文件）；HOLDOUT v2 实测执行版本：`e7b028cf16c7f506152a2c35cdf6b23b6e286825`。当前 M4 仅改发布文档，不改变这些算法来源。
 
+上述SHA保留为原实验依据。项目历史提交身份修正后的公开代码版本见[版本对应表](git_commit_map.json)；每对版本tree一致。新克隆做严格历史核查须导入[本地原始Git档案](git_history_identity.md)，原参数、标注、结果和来源SHA不改写。
+
 - 正式冻结清单 `configs/m3_freeze_v1.json` SHA：`0562cedc68e79fcd4a8e2e5dca02c3c3d79917a294154845590bab131a8505ce`。
 - 有效协议 `configs/m3_holdout_v2.json` SHA：`9dbebca61b8b3d5f42fff09425828d5fd243409dcbaaec67c126fd7a4bae308c`。
 - C 配置 `configs/recovery_m3_v1.json` SHA：`3e66affe0fbac2bf3bb138bb81d515e54c4f37f2489108da182178d6e2989721`；旧默认 `configs/recovery.json` 没有切换。

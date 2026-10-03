@@ -1,0 +1,232 @@
+{
+  "schema_version": 1,
+  "purpose": "Commit attribution correction; all 44 historical trees/messages/parent ordering/dates preserved",
+  "identity": {
+    "name": "shuiliufu-design",
+    "email": "232509668+shuiliufu-design@users.noreply.github.com"
+  },
+  "original_head": "69a9c3d710bc70b37b16f02a37e4c95f7b376292",
+  "corrected_head": "c5d549764232398fb8ffbe468f57b8ccb1afe67a",
+  "commits": [
+    {
+      "original_revision": "bb7cc53b2bb66bd279973db9bd2cc076fb1252af",
+      "published_revision": "52701c912e4e46b61f35f00c6edd8e9ffb756742",
+      "tree": "43231bd7243daec789423814912ce5ce506c32e8"
+    },
+    {
+      "original_revision": "c2491da1c46c432a65d4f6c352047106b941b8c1",
+      "published_revision": "bcb72af9f2923194ca59ad12f3ecb9434d2f35cc",
+      "tree": "45fe25525452a6357ec51667808e9194d4cfae19"
+    },
+    {
+      "original_revision": "f51130e4cd8f899e896615bac58423e010e80c87",
+      "published_revision": "4e655cc0b5be88c2b2df291d46cb0d3386924c44",
+      "tree": "cb5f492d65e4165034a6ebdcfc90536b6c181915"
+    },
+    {
+      "original_revision": "380841e98bfabe2a876414ce773215e35c18f97f",
+      "published_revision": "37561fd5bfb65a509219911e57ebe50f91d16768",
+      "tree": "5d5c3ce7ea55569671d03b7161e052ed8b9f0bc9"
+    },
+    {
+      "original_revision": "ef017c15bf342807b7a4f34ffbf5f3771a697676",
+      "published_revision": "889f968cfc7098982a9c499147328784785cb8e9",
+      "tree": "03b523f659b153af9ed85a0c2dd69cfe72c371bf"
+    },
+    {
+      "original_revision": "003e6530a1de89eb09373a17efc88785035db993",
+      "published_revision": "23f03d34cc3bd6b0d69be1376b38ed8c55bd8067",
+      "tree": "da372d78292c2a923bf6e77146edc5e17cae4afd"
+    },
+    {
+      "original_revision": "926b10b12118ca64256f093a9fa7bedf8b81a5c6",
+      "published_revision": "393569e8179afd94ebf15ae62c175e2750a9065c",
+      "tree": "f9453d6a141f156908be2349d585d5c56f6440a0"
+    },
+    {
+      "original_revision": "813a52250dfe669d89251cb3ffd320d94829e2c4",
+      "published_revision": "d9b8d76a7c09e6f59feaeae4d07802d37bbc4e52",
+      "tree": "1199304697c1a85ea26bdcb20fea0ca89f356ac4"
+    },
+    {
+      "original_revision": "12736e2f55304b843e146f26d379d5b2503470b8",
+      "published_revision": "bcfd2c62f333d6b9a48bc43b6cbb6ec192c76836",
+      "tree": "5626ae018ea4b97387d7903fbff84884a9848a51"
+    },
+    {
+      "original_revision": "948f8c7b2c68390cbafa7f35c5217c05dffaa68d",
+      "published_revision": "c09fdf02b3d3581ba0b75da666c69e17a52f6c0f",
+      "tree": "cb70f708eaa90f288bce5a50ee1cccdfe233c842"
+    },
+    {
+      "original_revision": "a7029b517ed869a12ce43a0a50c318d998e75496",
+      "published_revision": "aeb34207040dd0d9b8c135dbe07c6767469859f1",
+      "tree": "47945ee8f8e26da8fc855f5f7c634cf91df4291b"
+    },
+    {
+      "original_revision": "577cce9cb165ada8cab8374f7ac7f99197b2f226",
+      "published_revision": "8ae220627c793dac7dd8c175816678667a72a021",
+      "tree": "6d863d5191ee7c012c97cdf66f0efb2829c224f5"
+    },
+    {
+      "original_revision": "5d5f6fda3f08f50a17b0df842dbec0787851dd8f",
+      "published_revision": "617a983399ef39fc0ceba6bf17d8831c83014803",
+      "tree": "d1049a686de3bca62aa34f8ea9c928d9aae84a81"
+    },
+    {
+      "original_revision": "3b2dc052c471e7f7f905ac5673f1baa3028c3f97",
+      "published_revision": "74dd2e80e22a849422a50fee6f241ab0d6915a55",
+      "tree": "bed81f6f21828bb0f90c33c87e3196f4b0d36de3"
+    },
+    {
+      "original_revision": "28d3add5a6e51e7e30c49742673f608d0acb344f",
+      "published_revision": "1a15c033892df4e2d8a7495203bbceb27b2ea5c7",
+      "tree": "2394275a3908376be297da37d0d78e1c535e8e41"
+    },
+    {
+      "original_revision": "002c98dc09464b6165db98c7d18cde7784f6bd89",
+      "published_revision": "786eb907c51029bde0868b656cf67741f2ed04af",
+      "tree": "b2f559dec4fce6ae9c00268e9bebbe52a375acc8"
+    },
+    {
+      "original_revision": "4c7a2d670ca6656dcd3c249436d4c9f36b7738a8",
+      "published_revision": "1a8cdcbc7121d722ac71df4ed4e780a004ad4442",
+      "tree": "dc3ecbc42117bef2d0fff991f5bd3eb8e0450d98"
+    },
+    {
+      "original_revision": "3163e39f8c438201b4917558f6f16116aebf3f79",
+      "published_revision": "f886a733616f01a99c289f9a5d8721bc31126957",
+      "tree": "653fc27ca8027a1ab435ffbc962db1d09234c1ff"
+    },
+    {
+      "original_revision": "3e557e62ca5b6d056fa245b78e3e1a6c8eeff417",
+      "published_revision": "d41a186c0d74fc3fb21491b55bd873571a9bfe32",
+      "tree": "72ea66ff64ef3a034d93c8c30a5a1b350298a0e0"
+    },
+    {
+      "original_revision": "5edd3426181313bfb51dc4bc64c576e21158836c",
+      "published_revision": "64ed74ac44b6aa64b0d70790a68014f6d700fe0f",
+      "tree": "ec31e736bf8d71ef26d33657d48d4f205b2c5d67"
+    },
+    {
+      "original_revision": "a167bbaa3382497e40c9b559030234e983a07a4b",
+      "published_revision": "2bbc4aea487bf63d10f59dbcc384fb3e11057487",
+      "tree": "fc6797f7cef6eb489894377cbecbcf450109872a"
+    },
+    {
+      "original_revision": "a5185dfe56cb88aa89a363791d18f16acfcb639a",
+      "published_revision": "3e7b6680919145385bf32e21fceda435bd4a9882",
+      "tree": "66a5a8f7e2665a38426c118db1b9ea4b1aa750c4"
+    },
+    {
+      "original_revision": "8975df7f671d664f81514692f6c0ba4afa04503b",
+      "published_revision": "2299f5097daf7bfa18f247b531d81044a80595f0",
+      "tree": "c4ad7564538086b714edf13a93e552208f6d88b1"
+    },
+    {
+      "original_revision": "92ef2578dea70e1522bd952ed45332959fa3e0d8",
+      "published_revision": "3465d654e927d408f6d9ebc55c50012138db73d2",
+      "tree": "2165afc2ea594744bb45f2d631b53f2a135e9401"
+    },
+    {
+      "original_revision": "124dbcb455de1a1ab00480c6a87daf89cceb13fe",
+      "published_revision": "f9d3747b9917abfb9a06d5e6b36f676ccc9fdfc2",
+      "tree": "f1ef7e77e5263a60cacaf64ad44c7d9d64b06690"
+    },
+    {
+      "original_revision": "bdc35875cccbedb86818bd79a68fe01704f30b26",
+      "published_revision": "512faa6c8020e702d8bbf1dcac436e9390341315",
+      "tree": "5c518eb230d3cb7ff84ed603caf323c1d610a131"
+    },
+    {
+      "original_revision": "88172f140b5b547090e250ce32db2374981f8457",
+      "published_revision": "5d812ef25f3056b1ee318fcf9825b8f4f9425919",
+      "tree": "6c7f65e45a459332ef55e94118e9a751cb1cce37"
+    },
+    {
+      "original_revision": "5bdfe8f4513acaf1383c928108f773299a06895c",
+      "published_revision": "783ad420bc969011ed13db742f821fc5465ca979",
+      "tree": "dcc10aa3307b8d830a806242137a2e196921e9f8"
+    },
+    {
+      "original_revision": "a2e1d59787c0159ec4d277d857f54c3cce471625",
+      "published_revision": "a56863b339e67f9ff803c5f710dc894a1dd2346a",
+      "tree": "9dcf4e86ef946e6c4a9065bae91673c74479e295"
+    },
+    {
+      "original_revision": "e614d61e8fe61836d82d00848a6afe047742127f",
+      "published_revision": "4d4c3d859e41b28ad67c06ab8b6c36f09ecac732",
+      "tree": "79b68af9be99b2b91e5d1b1162976eeddc2ee26e"
+    },
+    {
+      "original_revision": "572de8fb5196d7873f6e7f41c33f178dc008ed9b",
+      "published_revision": "dca8b424a922b773ce1d65a9f5a019d43a792196",
+      "tree": "fe3b95800caaa7ac483b1b0c2652f39752d36703"
+    },
+    {
+      "original_revision": "3af410aee8cfdf6f7f888dd3b06219c322eb977e",
+      "published_revision": "6ef9dd36ba04ecd6299fde24a6eb553a9cbe7dba",
+      "tree": "76c31afbb48fa089f01c2951148899133717c2b1"
+    },
+    {
+      "original_revision": "1cafbcab392eccb1dbaf8f4ba080b5b8fd85dc51",
+      "published_revision": "e22b63f7f7c52f961e910548f0f94e415caab632",
+      "tree": "ff9b5c959951071ebdbd43b101316da51b44c910"
+    },
+    {
+      "original_revision": "e373a7de2ef28544018c1e33bf404073868058e5",
+      "published_revision": "a3eb838a9242f6bee23d785eb65da78c45d69e31",
+      "tree": "e60bbd01043d88f8b2d893ed7ffbc767d5bee90a"
+    },
+    {
+      "original_revision": "ff48d002fde82f2f0057e00cbc84cbb51065f07a",
+      "published_revision": "5979ba0cccf029481e3df158a29673f4c918a33d",
+      "tree": "6c0fed6fa650670de26808820cb74d3d53f29c27"
+    },
+    {
+      "original_revision": "c0c7503b7076c723c93ce3d0f93f890c4d0ff9f4",
+      "published_revision": "63446c52e5c3c5eebba2043a6f34e9acaff34506",
+      "tree": "5f0d5e6c8c84a944a578c0ffd7c7abcb40d22df3"
+    },
+    {
+      "original_revision": "97a22a0dcbfb8bc0d0b808e6f55a82ffe655a7e3",
+      "published_revision": "b046d50d6e7674056b9821fcef7d11c0895bc6a0",
+      "tree": "454b815c179f539b6062ec17aa132a0dc2029a91"
+    },
+    {
+      "original_revision": "3bc338b890ac5b96b3ea39b02e08ec77c3399587",
+      "published_revision": "aa0180488782005e316578c248e7d46f1cef5c2b",
+      "tree": "748761f853f83fdb8ed4bcc9984343b816726c8d"
+    },
+    {
+      "original_revision": "e7b028cf16c7f506152a2c35cdf6b23b6e286825",
+      "published_revision": "e90ee5eb47dcbf37592513a57e64c7c988f92ec6",
+      "tree": "73fa8bc09762a0a462713d2d116c09362c93a21e"
+    },
+    {
+      "original_revision": "bd02916c4f42e4691c5633450580ef24cf07f84a",
+      "published_revision": "29784d32a39f1e20c3a920fea8f3b4563568c525",
+      "tree": "96ed6d3aaa58237cf2d0a09df888cf75a6b09f05"
+    },
+    {
+      "original_revision": "5006d9695c5fe991e34e9ab8ee210d00d62b20e2",
+      "published_revision": "8815d0dcb33b04f483b5dda88c7d6985fd690a52",
+      "tree": "fa6da82c1d44d47e0f3b7012d7791d10dcdef871"
+    },
+    {
+      "original_revision": "579baf3fd1a1ffa9104940c0d65a61a6b2d95976",
+      "published_revision": "093f05b86d30cdd03c6da7065a0951aa8e9a02c2",
+      "tree": "385999aab6c86bab1fb47c5c27f2dbea309aac35"
+    },
+    {
+      "original_revision": "c2be7f87c32beb88c3a53dfdcef63b964e56de23",
+      "published_revision": "4e1675b47ef433f1d8428b588c4d0305c6c07811",
+      "tree": "a63829a9107a65c645bc5043c834dce6f5c60144"
+    },
+    {
+      "original_revision": "69a9c3d710bc70b37b16f02a37e4c95f7b376292",
+      "published_revision": "c5d549764232398fb8ffbe468f57b8ccb1afe67a",
+      "tree": "9d08fd1fb840846bc899212f08d9acfe06a9f56e"
+    }
+  ]
+}

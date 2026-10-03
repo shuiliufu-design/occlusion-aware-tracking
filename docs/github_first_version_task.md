@@ -1,5 +1,7 @@
 # 下一项任务：同步第一版到GitHub
 
+本任务已正常完成，原同步记录保留在STATUS。用户随后明确授权修正整个项目的历史提交身份；该项按[提交身份与实验档案](git_history_identity.md)执行，覆盖本文件对该次操作的“不改写历史”限制。未来日常提交仍按正常推送处理。
+
 目的：让用户确认的仓库保存已验收的第一版工程与说明。M4已由00验收，不需要再次调参、拍片或跑模型。
 
 接手05或沿用03，先重读AGENTS/SPEC/STATUS、README、`docs/m4_acceptance_00.md`，检查实际Git状态、当前分支、远程地址与待推送提交。用户已明确要求项目上传GitHub；该任务只同步代码与文档，远程为 `https://github.com/shuiliufu-design/occlusion-aware-tracking.git`。
