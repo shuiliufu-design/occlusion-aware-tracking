@@ -1,12 +1,12 @@
 # 项目状态
 
-更新日期：2026-10-03（Asia/Shanghai）。协调聊天：00｜项目总控；M4交付579baf3已由00验收，第一版在SPEC受限范围内完成。当前唯一任务为同步GitHub代码与文档。M3有效v2与冻结12文件保持；00新证据 outputs/m4_release_00_review/。本轮验收仅本地提交、未推送，其他聊天未提交讨论/学习记录保持并排除。接手需重新读取记录。
+更新日期：2026-10-03（Asia/Shanghai）。协调聊天：00｜项目总控；第一版M0—M4已验收，05已正常同步GitHub main，线上包含验收c2be7f8与M4交付，README/运行说明/实验表/验收说明实际核对一致。证据 outputs/github_first_version_sync_v1/，状态记录亦按本任务正常同步；其他聊天未提交讨论/学习记录保持并排除。新研究范围待00决定，原冻结与限制保持。
 
 ## 当前结论
 
 2026-10-03三片独立输入分别341/476/573帧、约11.365/15.864/19.097秒，均720×1280；原件/副本/全部三片开发排除、缓存与前段初始化不变。人工每组两个期待返回及一次零机会替换：C f214相对保守锚点f204延迟10帧（名义0.333278秒/源0.333333秒），C f283相对f279延迟4帧（名义0.133311秒/源0.133289秒）；A/B均未返回。C整瓶可见时仍在f210—213/f280—282等待连续确认，固定样本f210/f280计UNKNOWN。替换片原瓶未再入镜，C完整区域130合格拒绝/0绑定；手持与f442局部完整框未评价。179原标签不改，追加2张原图不扩141固定样本或88清楚T1分母；没有第二位人类逐帧复核。第一/第三片拍摄偏差保持，完整率/速度/困难例限制保留。先前13-21-42原片仍作补充记录。
 
-00已复核确认以上主要实测与来源/补标/失败边界，支持所测范围内的工程改进。第一片实际连续无检测31帧超过缓冲30，不证明短于缓冲的优势；不能将三片结果写成普遍100%恢复或130次独立拒绝实验。05的第一版整理与实际运行核查现已由00验收，M0—M4受限交付完成；全新安装、速度及泛化仍未验证。当前不继续修补外观规则、不新增困难例或速度工程；唯一下一项为同步GitHub代码与文档。
+00已复核确认以上主要实测与来源/补标/失败边界，支持所测范围内的工程改进。第一片实际连续无检测31帧超过缓冲30，不证明短于缓冲的优势；不能将三片结果写成普遍100%恢复或130次独立拒绝实验。05的第一版整理与实际运行核查现已由00验收，M0—M4受限交付完成；全新安装、速度及泛化仍未验证。当前不继续修补外观规则、不新增困难例或速度工程；第一版代码与文档现已同步GitHub，下一项范围由00另行决定。
 
 M0 已验收：02 重新读取两段视频并核对本次首帧，用户明确说明“补拍视频已检查”，作为补拍方向与内容确认。补拍后半段包含背景持续可见的瓶子遮挡与位移。
 M1 已实际跑通并通过输出核查：YOLO11n + 未修改的 Ultralytics ByteTrack，补拍视频的 984 帧均处理、记录并重新解码检查一致。有效结果为 `outputs/tabletop_02_baseline_v2/`。
@@ -127,9 +127,9 @@ M0/M1 交付完成；没有添加恢复策略。尚无测试集与身份/事件�
 .venv/bin/python scripts/run_baseline.py --device cpu --source data/not_present.mp4 --output outputs/baseline_missing_input_check
 ```
 
-## 当前唯一任务：同步第一版代码与文档到GitHub
+## 第一版同步完成：后续范围待00决定
 
-三片实测与M4第一版整理已由00验收，见 `docs/m4_acceptance_00.md`。按 `docs/github_first_version_task.md` 同步已提交代码与文档到用户确认仓库；目的为保存可查看的验收版本，交付为实际远程SHA/页面核对和状态记录，验收为线上包含00验收及第一版工程、原历史保留、本地媒体/资源未入Git。先核对待推送提交，不强制推送，其他聊天未提交记录保持。当前不新增方法、调参、计时或困难例；本轮00验收尚未推送，不把下一任务计划写成线上完成。
+05已按 `docs/github_first_version_task.md` 正常同步已验收工程与说明。实际远程main包含00验收c2be7f8，线上README/运行说明/实验表/验收说明与已提交内容一致；证据与准确命令见下方同步记录及 `outputs/github_first_version_sync_v1/`。原历史与本地媒体/资源保持，其他聊天未提交内容保留；本任务自身状态提交亦正常同步。第一版当前范围已完成，下一项范围由00根据用户目标确定，不自动启动新研究。
 
 原拍摄计划与技术目标保留如下供溯源；不是当前补拍要求，实际偏差按SPEC最新决策与输入检查记录报告：
 
@@ -141,12 +141,40 @@ M0/M1 交付完成；没有添加恢复策略。尚无测试集与身份/事件�
 
 ## 待办与交接
 
-1. M4已验收，唯一下一项由05或沿用03按docs/github_first_version_task.md同步第一版代码与文档。C2/88等待误报及其他限制保留，不开新方法/计时/困难例，不上传媒体。本轮00验收仅本地提交，尚未执行同步。
+1. 第一版代码与文档已同步GitHub并核对线上内容；将同步结果交00，下一项范围另行确定。C2/88等待误报及其他限制保留，本地媒体/资源不上传，本任务不启动新方法、计时或困难例。
 2. 本轮 M1 代码、依赖与说明本地提交消息为 `feat: add verified YOLO11n ByteTrack baseline`，用 `git log -1 --oneline` 查看；后续每个可运行里程碑仍检查变更并提交。原视频、权重和输出不加入提交。
 3. GitHub 代码与两段视频检查说明均已上传并核对；用户已明确授权公开本次检查记录。视频、模型权重和虚拟环境保留本地。
 4. 03—05 在基线可检查后按需进入；01 可结合当前读取脚本学习。
 
 已知问题与限制：旧两组关闭报告错误零计数已另存新v2修复；旧通用evaluation固定PENDING_INPUT/整体验收false已由独立新评价入口替代，原文件保留，不参与新汇总。真实竞争歧义、同包装替换未验证；新背景持续可见的不同瓶子已在130合格区域验证拒绝，但局部完整几何/困难例未评价；同外观实体可能误认；旧默认f180 UNKNOWN失败保留，新开发配置仅在已标注诊断范围改善，未推广为全片零误报；开发负例瓶盖/标签门槛也失败，未隔离纹理贡献；新增搜索开销未做严格速度基准；三片冻结对照已完成，但小样本不支持泛化，全片误报率仍未评价；两片拍摄偏差、局部完整框不足、保守边界及Codex标注无第二人类逐帧复核保留；输出mp4v、无音频。
+
+## 05 已验收第一版GitHub同步（2026-10-03）
+
+接手HEAD及00验收提交 `c2be7f87c32beb88c3a53dfdcef63b964e56de23`。重新读取AGENTS/SPEC/STATUS、00验收说明及GitHub同步任务，核对实际远程、分支、待推送提交与文件。起始远程main实际为 `12736e2f55304b843e146f26d379d5b2503470b8`；获取后确认远程是本地祖先，0个远程独有提交、本地领先34提交，累计64个变化路径。待同步历史包含基线、恢复、评价、正式冻结、三片对照、M4整理579baf3与00验收c2be7f8；72份HEAD文件与全部72条历史路径只有代码/配置/文档及占位文件，不含媒体、模型、环境、缓存、真值包或结果文件。
+
+实际执行正常 `git push origin main`，退出0，远程main从12736e2前进至c2be7f8；随后 `git ls-remote origin refs/heads/main` 实际返回完整验收SHA，与本地当时HEAD一致，包含M4及验收。没有强制推送、重写历史、自动标签或GitHub Release；没有新模型运行/调参/测试/范围扩展。
+
+实际线上核对PASS：用GitHub Contents API读取main的README、docs/run_demo.md、docs/m3_results.md和docs/m4_acceptance_00.md，逐字节与c2be7f8的四份Git文件一致；直接GET四份验收提交页面均HTTP200，页面正文包含相应标题。通用网页读取工具对这四个请求返回Cache miss，已另用上述真实API及公开HTML核对，不把工具索引缓存当成线上证据。本次只同步已验收的代码/文档，本地媒体链接仍需要本地包，不为GitHub缺少本地媒体而上传视频。
+
+仓库：`https://github.com/shuiliufu-design/occlusion-aware-tracking`；分支main。同步证据保存在 `outputs/github_first_version_sync_v1/`：initial_git/initial_diff和两份状态初始副本、pending_commits.json、tracked_content_check.json、push/远程SHA日志、online_accepted_checks.json、四份线上原文/API元数据/HTML，以及最终SHA核对报告。接手1812份旧输入/权重/输出文件SHA保持，冻结12执行文件保持。其他聊天已有及同步期间新增的STATUS讨论26行、learning15行保留且排除本次状态提交，不执行git add .。
+
+项目根目录实际命令（输出留本地，网络和Git元数据写入按本任务授权执行）：
+
+```bash
+env GIT_TERMINAL_PROMPT=0 git ls-remote origin refs/heads/main
+env GIT_TERMINAL_PROMPT=0 git fetch origin main
+git rev-list --left-right --count origin/main...HEAD
+git log --reverse --format='%h %s' origin/main..HEAD
+git merge-base --is-ancestor origin/main HEAD
+env GIT_TERMINAL_PROMPT=0 git push origin main
+env GIT_TERMINAL_PROMPT=0 git ls-remote origin refs/heads/main
+.venv/bin/python outputs/github_first_version_sync_v1/check_online.py
+git diff --check
+```
+
+线上脚本实际用 `gh api repos/shuiliufu-design/occlusion-aware-tracking/git/ref/heads/main` 与 `gh api repos/shuiliufu-design/occlusion-aware-tracking/contents/<文件>?ref=main`，另用urllib只读GET验收提交页面。准确请求、SHA与HTTP结果见online_accepted_checks.json；文件占位写法只概述请求，四个实际文件路径由脚本与报告保存。
+
+本状态更新只提交本任务自身差异，随后正常同步状态提交并再次核对最终本地/远程SHA；最终完整提交号和线上STATUS匹配结果保存在 `outputs/github_first_version_sync_v1/final_checks.json` 及任务完成报告。未修改SPEC决策或已验收工程/文档。第一版同步交付完成后，由00决定下一项范围；速度/全片精确率/全新安装/困难例/泛化等原限制保留，没有启动VLA、仿真或世界模型。
 
 ## 00 M4验收与第一版完成决策（2026-10-03）
 
