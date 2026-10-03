@@ -1,6 +1,6 @@
 # 项目状态
 
-更新日期：2026-10-03（Asia/Shanghai）。协调聊天：00｜项目总控；第一版M0—M4及正常GitHub同步已完成。用户明确要求修正整个项目的历史提交与贡献者身份；00已准备44条身份修正历史及私有原档案，尚待本轮验证与更新远程。证据outputs/git_identity_rewrite_v1/，原冻结/参数/结果与未提交讨论保持，不启动新研究。
+更新日期：2026-10-03（Asia/Shanghai）。协调聊天：00｜项目总控；第一版M0—M4及GitHub同步已完成，整个项目44条开发历史作者/提交者已修正为shuiliufu-design。线上提交API、Contributors及首页实际核查通过，原始实验Git档案仅本地保留，完整74份工程文件保持。证据outputs/git_identity_rewrite_v1/，冻结/参数/结果与其他聊天未提交讨论保持；本次状态记录正常同步，下一项新范围尚未安排。
 
 ## 当前结论
 
@@ -127,9 +127,11 @@ M0/M1 交付完成；没有添加恢复策略。尚无测试集与身份/事件�
 .venv/bin/python scripts/run_baseline.py --device cpu --source data/not_present.mp4 --output outputs/baseline_missing_input_check
 ```
 
-## 第一版同步完成：后续范围待00决定
+## 第一版同步与提交身份修正完成
 
 05已按 `docs/github_first_version_task.md` 正常同步已验收工程与说明。实际远程main包含00验收c2be7f8，线上README/运行说明/实验表/验收说明与已提交内容一致；证据与准确命令见下方同步记录及 `outputs/github_first_version_sync_v1/`。原历史与本地媒体/资源保持，其他聊天未提交内容保留；本任务自身状态提交亦正常同步。第一版当前范围已完成，下一项范围由00根据用户目标确定，不自动启动新研究。
+
+随后按用户明确授权完成整个项目的历史提交身份修正；上述c2be7f8等原SHA仍是当时真实证据，公开对应版本见docs/git_commit_map.json。本机私有档案及新克隆导入后均能复查原SHA。GitHub所有公开提交author/committer已关联本人账号，Contributors只含shuiliufu-design，首页不含旧身份；该项已完成，不自动启动后续研究。
 
 原拍摄计划与技术目标保留如下供溯源；不是当前补拍要求，实际偏差按SPEC最新决策与输入检查记录报告：
 
@@ -141,7 +143,7 @@ M0/M1 交付完成；没有添加恢复策略。尚无测试集与身份/事件�
 
 ## 待办与交接
 
-1. 第一版代码与文档已同步GitHub并核对线上内容；将同步结果交00，下一项范围另行确定。C2/88等待误报及其他限制保留，本地媒体/资源不上传，本任务不启动新方法、计时或困难例。
+1. 第一版代码/文档及历史提交身份修正已完成，线上Contributors已仅显示shuiliufu-design。用户下一项小任务：刷新仓库首页，亲自确认贡献者头像/名称为自己的账号；交付为页面观察，验收为与00的实际API/首页核查一致。研究下一项范围另行确定，原性能边界保留。
 2. 本轮 M1 代码、依赖与说明本地提交消息为 `feat: add verified YOLO11n ByteTrack baseline`，用 `git log -1 --oneline` 查看；后续每个可运行里程碑仍检查变更并提交。原视频、权重和输出不加入提交。
 3. GitHub 代码与两段视频检查说明均已上传并核对；用户已明确授权公开本次检查记录。视频、模型权重和虚拟环境保留本地。
 4. 03—05 在基线可检查后按需进入；01 可结合当前读取脚本学习。
@@ -156,7 +158,22 @@ M0/M1 交付完成；没有添加恢复策略。尚无测试集与身份/事件�
 
 原历史已保存至私有refs/archive/identity-before-20261003及outputs/git_identity_rewrite_v1/original_history.bundle，bundle核查通过；原始工作区与未提交差异亦备份，记录1857旧本地数据/权重/输出SHA。公开docs/git_commit_map.json保留原始/公开SHA及相同tree，不改写原冻结/结果来源。严格实验复查在本机使用原对象；新克隆导入本地档案后恢复原SHA查找，说明docs/git_history_identity.md。
 
-本轮准备完成不等于远程已完成。下一步核对原SHA/冻结/新克隆兼容和公共历史，再以精确force-with-lease更新main并实际核查Contributors。用户本次授权覆盖此前正常同步不改写历史的限制，未删除重建仓库、不公开私有档案、不更改算法/参数/结果。其他聊天未提交讨论/学习记录保留；Contributors缓存可能约24小时刷新，未刷新时如实报告。
+最终实际验证与发布完成：本机及新的临时克隆冻结检查均FROZEN/PASS；45条公开历史author/committer均为正确身份，74份工程文件与提交逐字节一致。新克隆先验证44原始作者提交对象不存在，再导入本地bundle，44原版本tree可复查且main不变；1857旧本地文件SHA与全局配置均保持。没有重新推理模型/重跑算法全套或新装环境，原效果与限制保持。
+
+按精确lease实际更新远程main：69a9c3d → 61d3078fd9d2ab6e7fe727bb3d8b505b6461ae0a。在线核对PASS：该远程SHA与本地一致，45条完整提交的author/committer账号均为shuiliufu-design，9份工程/说明通过GitHub Contents API逐字节一致；Contributors API只返回shuiliufu-design，首页HTTP200且HTML不含旧身份名称。只推送main，私有archive/prepared引用没有公开；未删除重建仓库，没有篡改冻结果或算法。
+
+准确主要命令（根目录；准备脚本/报告在本地证据目录，原输出不可覆盖）：
+
+```bash
+PYTHONDONTWRITEBYTECODE=1 .venv/bin/python outputs/git_identity_rewrite_v1/prepare_history.py
+git update-ref refs/heads/main c5d549764232398fb8ffbe468f57b8ccb1afe67a 69a9c3d710bc70b37b16f02a37e4c95f7b376292
+PYTHONDONTWRITEBYTECODE=1 .venv/bin/python scripts/m3_common.py --check-freeze configs/m3_freeze_v1.json
+PYTHONDONTWRITEBYTECODE=1 .venv/bin/python outputs/git_identity_rewrite_v1/verify_fresh_clone.py
+env GIT_TERMINAL_PROMPT=0 git push --force-with-lease=refs/heads/main:69a9c3d710bc70b37b16f02a37e4c95f7b376292 origin refs/heads/main:refs/heads/main
+PYTHONDONTWRITEBYTECODE=1 .venv/bin/python outputs/git_identity_rewrite_v1/check_online.py
+```
+
+身份修正公开文档提交61d3078包含版本表/档案说明/自身记录；其他聊天STATUS讨论及learning内容保留且排除。此状态随后正常提交/推送并再次核对最终SHA、所有提交身份及贡献者，最终报告outputs/git_identity_rewrite_v1/final_online_checks.json；不再次改写工程历史。用户本次授权覆盖此前正常同步不改写的限制，任务已完成，下一项只需刷新页面亲自观察，不另开新方法或研究范围。
 
 ## 05 已验收第一版GitHub同步（2026-10-03）
 
