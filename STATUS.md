@@ -1,6 +1,6 @@
 # 项目状态
 
-更新日期：2026-10-03（Asia/Shanghai）。协调聊天：00｜项目总控；第一版M0—M4及GitHub同步已完成，整个项目44条开发历史作者/提交者已修正为shuiliufu-design。线上提交API、Contributors及首页实际核查通过，原始实验Git档案仅本地保留，完整74份工程文件保持。证据outputs/git_identity_rewrite_v1/，冻结/参数/结果与其他聊天未提交讨论保持；本次状态记录正常同步，下一项新范围尚未安排。
+更新日期：2026-10-03（Asia/Shanghai）。协调聊天：00｜项目总控；第一版M0—M4及GitHub代码同步已完成，44条开发历史作者/提交者已修正。19:41远程main为dbb9734，46条公开提交身份全部正确；贡献者统计图表只显示本人46条提交，但实际首页侧栏仍有两个账号。此前以API及初始HTML宣告显示完成过早，本轮更正为侧栏刷新待验收。证据outputs/github_contributors_display_check_v1/；原算法、冻结、数据与其他聊天未提交记录保持。
 
 ## 当前结论
 
@@ -127,11 +127,11 @@ M0/M1 交付完成；没有添加恢复策略。尚无测试集与身份/事件�
 .venv/bin/python scripts/run_baseline.py --device cpu --source data/not_present.mp4 --output outputs/baseline_missing_input_check
 ```
 
-## 第一版同步与提交身份修正完成
+## 第一版同步完成、贡献者侧栏待刷新
 
 05已按 `docs/github_first_version_task.md` 正常同步已验收工程与说明。实际远程main包含00验收c2be7f8，线上README/运行说明/实验表/验收说明与已提交内容一致；证据与准确命令见下方同步记录及 `outputs/github_first_version_sync_v1/`。原历史与本地媒体/资源保持，其他聊天未提交内容保留；本任务自身状态提交亦正常同步。第一版当前范围已完成，下一项范围由00根据用户目标确定，不自动启动新研究。
 
-随后按用户明确授权完成整个项目的历史提交身份修正；上述c2be7f8等原SHA仍是当时真实证据，公开对应版本见docs/git_commit_map.json。本机私有档案及新克隆导入后均能复查原SHA。GitHub所有公开提交author/committer已关联本人账号，Contributors只含shuiliufu-design，首页不含旧身份；该项已完成，不自动启动后续研究。
+随后按用户明确授权完成整个项目的历史提交身份修正；上述c2be7f8等原SHA仍是当时真实证据，公开对应版本见docs/git_commit_map.json。本机私有档案及新克隆导入后均能复查原SHA。GitHub所有公开提交author/committer已关联本人账号，REST Contributors和贡献者图表只含本人；实际首页侧栏仍显示旧账号，显示目标尚未验收。不自动启动后续研究。
 
 原拍摄计划与技术目标保留如下供溯源；不是当前补拍要求，实际偏差按SPEC最新决策与输入检查记录报告：
 
@@ -143,7 +143,7 @@ M0/M1 交付完成；没有添加恢复策略。尚无测试集与身份/事件�
 
 ## 待办与交接
 
-1. 第一版代码/文档及历史提交身份修正已完成，线上Contributors已仅显示shuiliufu-design。用户下一项小任务：刷新仓库首页，亲自确认贡献者头像/名称为自己的账号；交付为页面观察，验收为与00的实际API/首页核查一致。研究下一项范围另行确定，原性能边界保留。
+1. 第一版代码/文档及历史提交身份修正已完成，首页Contributors侧栏仍待刷新。下一项小任务：在历史更新约24小时后（建议2026-10-04 19:30后）核对加载后的真实侧栏；交付为页面观察，验收为仅显示本人且无旧账号。若仍错误，按GitHub官方说明准备Support工单，发送需用户明确授权。研究范围另行确定，原性能边界保留。
 2. 本轮 M1 代码、依赖与说明本地提交消息为 `feat: add verified YOLO11n ByteTrack baseline`，用 `git log -1 --oneline` 查看；后续每个可运行里程碑仍检查变更并提交。原视频、权重和输出不加入提交。
 3. GitHub 代码与两段视频检查说明均已上传并核对；用户已明确授权公开本次检查记录。视频、模型权重和虚拟环境保留本地。
 4. 03—05 在基线可检查后按需进入；01 可结合当前读取脚本学习。
@@ -160,7 +160,7 @@ M0/M1 交付完成；没有添加恢复策略。尚无测试集与身份/事件�
 
 最终实际验证与发布完成：本机及新的临时克隆冻结检查均FROZEN/PASS；45条公开历史author/committer均为正确身份，74份工程文件与提交逐字节一致。新克隆先验证44原始作者提交对象不存在，再导入本地bundle，44原版本tree可复查且main不变；1857旧本地文件SHA与全局配置均保持。没有重新推理模型/重跑算法全套或新装环境，原效果与限制保持。
 
-按精确lease实际更新远程main：69a9c3d → 61d3078fd9d2ab6e7fe727bb3d8b505b6461ae0a。在线核对PASS：该远程SHA与本地一致，45条完整提交的author/committer账号均为shuiliufu-design，9份工程/说明通过GitHub Contents API逐字节一致；Contributors API只返回shuiliufu-design，首页HTTP200且HTML不含旧身份名称。只推送main，私有archive/prepared引用没有公开；未删除重建仓库，没有篡改冻结果或算法。
+按精确lease实际更新远程main：69a9c3d → 61d3078fd9d2ab6e7fe727bb3d8b505b6461ae0a。当轮提交/REST及初始HTML核对PASS，未验证异步侧栏：该远程SHA与本地一致，45条完整提交的author/committer账号均为shuiliufu-design，9份工程/说明通过GitHub Contents API逐字节一致；Contributors API只返回shuiliufu-design，首页HTTP200且HTML不含旧身份名称。只推送main，私有archive/prepared引用没有公开；未删除重建仓库，没有篡改冻结果或算法。
 
 准确主要命令（根目录；准备脚本/报告在本地证据目录，原输出不可覆盖）：
 
@@ -173,7 +173,17 @@ env GIT_TERMINAL_PROMPT=0 git push --force-with-lease=refs/heads/main:69a9c3d710
 PYTHONDONTWRITEBYTECODE=1 .venv/bin/python outputs/git_identity_rewrite_v1/check_online.py
 ```
 
-身份修正公开文档提交61d3078包含版本表/档案说明/自身记录；其他聊天STATUS讨论及learning内容保留且排除。此状态随后正常提交/推送并再次核对最终SHA、所有提交身份及贡献者，最终报告outputs/git_identity_rewrite_v1/final_online_checks.json；不再次改写工程历史。用户本次授权覆盖此前正常同步不改写的限制，任务已完成，下一项只需刷新页面亲自观察，不另开新方法或研究范围。
+身份修正公开文档提交61d3078包含版本表/档案说明/自身记录；其他聊天STATUS讨论及learning内容保留且排除。此状态随后正常提交/推送并再次核对最终SHA、所有提交身份及贡献者，最终报告outputs/git_identity_rewrite_v1/final_online_checks.json；不再次改写工程历史。用户本次授权覆盖此前正常同步不改写的限制。该轮提交身份修正完成；其显示完成结论由下方实际浏览器核查更正，不另开新方法或研究范围。
+
+## 00 首页贡献者显示重新核查（2026-10-03）
+
+用户提供实际首页截图，指出侧栏仍显示本人及旧账号。00通过现有浏览器核对加载后的首页，确认两个贡献者；进入Contributors图表等待计算完成后只显示本人46条提交，再返回首页等待侧栏加载仍有两个。此前API/初始HTML结果真实，但不足以证明异步侧栏显示，已更正SPEC、当前状态和学习记录，不覆盖旧核查报告。
+
+本轮19:41实际远程HEAD/main均dbb973438fb82fa4d363a36961290ee48da010db，无其他公开分支或标签；46条提交的author/committer姓名、noreply邮箱及GitHub账号全部正确。REST Contributors只返回本人（该接口贡献计数45），stats/contributors返回本人total=46；图表显示46。接口与侧栏尚未同步的表现符合GitHub所述历史改写后约24小时的统计刷新延迟，不能据接口宣布侧栏已修复。历史更新日志时间约2026-10-03 19:24，首次观察距更新约20分钟。
+
+证据outputs/github_contributors_display_check_v1/remote_check.json及原始API/引用响应；命令`.venv/bin/python outputs/github_contributors_display_check_v1/check_remote.py`，首次因本机gh不支持--slurp退出，改用现有--paginate解析后核查完成。浏览器页面来源为实际首页与graphs/contributors；网页观察另存browser_observations.json。本輪不修改算法/参数、不运行新实验、不重复force-push、不改仓库设置；只更正记录并本地提交/正常同步。其他聊天未提交讨论完整保留并排除。
+
+唯一下一项：历史更新约24小时后复核真实首页侧栏，建议2026-10-04 19:30后；只有仅显示本人且无旧账号才完成显示验收。若仍错误，按GitHub官方说明准备Support工单，发送需用户明确授权。当前未承诺自动定时复查。
 
 ## 05 已验收第一版GitHub同步（2026-10-03）
 
