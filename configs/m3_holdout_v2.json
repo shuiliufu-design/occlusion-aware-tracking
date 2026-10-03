@@ -1,0 +1,466 @@
+{
+  "schema_version": 1,
+  "stage": "HOLDOUT",
+  "freeze_status": "FROZEN",
+  "frozen_manifest": {
+    "path": "configs/m3_freeze_v1.json",
+    "sha256": "0562cedc68e79fcd4a8e2e5dca02c3c3d79917a294154845590bab131a8505ce"
+  },
+  "groups": [
+    "A",
+    "B",
+    "C"
+  ],
+  "recovery_configuration": {
+    "path": "configs/recovery_m3_v1.json",
+    "sha256": "3e66affe0fbac2bf3bb138bb81d515e54c4f37f2489108da182178d6e2989721"
+  },
+  "selected_configuration_source": {
+    "path": "configs/recovery_f180_dev.json",
+    "sha256": "3e66affe0fbac2bf3bb138bb81d515e54c4f37f2489108da182178d6e2989721"
+  },
+  "original_configuration": {
+    "path": "configs/recovery.json",
+    "sha256": "83540958e65f6337cd325930efd11a2821b333ddd10f0c3fe27421086cd77c18"
+  },
+  "missing_frames": 10,
+  "match_iou_min": 0.5,
+  "fixed_sample_stride": 10,
+  "initialization_rule": "每片只看前段指定初始化帧/框，唯一IoU>=0.5匹配关联检测；三组同一选择。不按后段结果重选，不人工接续新ID。",
+  "reference_rule": "C从初始化后的因果合格观察建库：10样本/最多30帧/至少5，第一次缺失停止，冻结后不更新。每片独立建库，不共享开发裁剪。",
+  "sampling_rule": "从各片初始化帧起每10原帧固定抽样；追加重现、首个待评价返回/接受框和诊断关键帧单列。插值只在同一实体连续可见段逐帧人工复核，当前预演不做插值。",
+  "metrics": {
+    "return": "人工期待返回事件中，自人工可辨认重现帧起本帧同一物理实体且当前框IoU>=0.5；不要求RECOVERY_ACCEPTED。",
+    "mechanisms": "原生重关联/连续观察与C自定义接受分列。",
+    "no_opportunity": "原瓶子取走不再出现：返回机会0、成功率和延迟不适用。",
+    "unknown": "身份/框不足为UNEVALUATED，不能假成功/零延迟；明确错误身份另计。",
+    "latency": "原帧差和名义FPS为主，源时间差另列；更早输出缺身份时精确延迟未评价。",
+    "false_alarm": "人工清楚T1可见固定抽样中的UNKNOWN；诊断单列。未标注全片不报全片误报率。",
+    "candidate": "区分无检测/质量暂缓/证据不足/合格外观拒绝/歧义/接受；148合格候选帧是一替换事件，全程149另列，A/B外观不适用。"
+  },
+  "timing": {
+    "status": "UNVERIFIED",
+    "implemented": false,
+    "milliseconds_per_frame": null,
+    "scope": "B/C状态/外观处理含建库；排除模型推理、解码、绘图、编码与评价。",
+    "measurement_plan": "相同缓存/原像素，每片独立状态预热一次，再各3次，报告逐次和中位数、硬件与起止。",
+    "end_to_end_speed_status": "UNVERIFIED"
+  },
+  "independent_test_design": {
+    "status": "UNVERIFIED_NOT_STARTED",
+    "inputs_available": false,
+    "clips": [
+      {
+        "case_id": "holdout_return_01",
+        "expected_return": true
+      },
+      {
+        "case_id": "holdout_return_02",
+        "expected_return": true
+      },
+      {
+        "case_id": "holdout_replacement_01",
+        "expected_return": false
+      }
+    ],
+    "recording": "固定相机/背景持续可见/纸板只挡瓶子；前段充分初始化，正例改变遮挡时长和位移，负例仅留不同标签瓶子。先冻结再拍，不按结果筛片。",
+    "cache": "每片一次固定YOLO11n+ByteTrack，三组共享同一缓存/原像素/初始选择/处理区间。",
+    "identity": "拍摄者确认物理操作，原图标注身份/可辨认返回/可见与遮挡；uncertain与覆盖缺口保留。",
+    "freeze_rule": "00核对预演后保存最终代码/协议/依赖/权重/YAML/配置和计时边界；测试后不调参。需修正则保留失败，转开发并另拍保留片。"
+  },
+  "group_definitions": {
+    "A": "只读唯一初始化原生ID；本帧实际检测框；无M2状态/外观/自动新ID接续。",
+    "B": "已验证TargetState，确认丢失后仅候选，不自动恢复。",
+    "C": "已采纳有界纹理对齐配置、冻结因果参考、多门控与连续确认恢复。"
+  },
+  "input_preparation_status": "ANNOTATIONS_AND_PUBLIC_CACHE_READY_COMPARISON_NOT_STARTED",
+  "excluded_development_sources": [
+    {
+      "path": "data/tabletop_01.mp4",
+      "sha256": "2b620011fa6b79619d1faadde76400e23a798e1f88872e4e8bf938808bb3db5c"
+    },
+    {
+      "path": "data/tabletop_02.mp4",
+      "sha256": "5a6ca2cfcc5089cd1099815cf2bb0fa05468d9deae212cfb9821833a970fcaa5"
+    },
+    {
+      "path": "data/tabletop_wrong_bottle_01.mp4",
+      "sha256": "585f9ba9048b672fd39acabdaa8b5164e1a2d45be965d741081e9e8e2322b51f"
+    }
+  ],
+  "confirmed_input_registry": {
+    "path": "outputs/m3_holdout_input_confirmed_20261003/input_registry.json",
+    "sha256": "5c120b0e0a3c6686d3084c0af210fc1522d0a944c27869ca42b1e30a6505156c"
+  },
+  "annotation_manifest_before_cache": {
+    "path": "outputs/m3_holdout_annotations_v1/annotation_manifest_before_cache.json",
+    "sha256": "354f4ff57deeafaaf3afad262ecf764c1bcf5eac8574ec89f040d710bc8715d2"
+  },
+  "unverified_scopes": [
+    "本三片A/B/C实际对照尚未运行",
+    "严格新增开销计时未实施",
+    "真实双瓶/同包装困难例",
+    "大样本泛化",
+    "标签独立贡献"
+  ],
+  "annotation_limits": [
+    "标注者为Codex原图目视核对，物理操作由用户确认；无第二位人工逐帧复核者。",
+    "所有141固定样本有原PNG与标签；局部/模糊/边界缺完整框时明确UNEVALUATED，不补隐藏轮廓。",
+    "每10原帧抽样与关键帧以外无逐帧精确框；未来首个返回/接受帧追加原图不进入固定抽样分母。",
+    "负例T2首次可辨认为389，手持局部/边缘截断过程完整几何未评价；完整静止区间443—572以独立固定人工区域匹配，非130逐帧精确框。",
+    "第一/第三片原粗略时长偏差与新的明确视觉口径分别保留；不能由纸板时长推定连续无检测或缓冲能力。"
+  ],
+  "comparison_status": "NOT_STARTED",
+  "cases": [
+    {
+      "case_id": "holdout_return_01",
+      "split": "holdout",
+      "source": "data/m3_holdout_return_01.mp4",
+      "source_sha256": "0e04498b2189f8dac4d697ba3248b5b760f7bee35bb4c1471627a9212e5f59e7",
+      "baseline": {
+        "path": "outputs/m3_holdout_cache_v1/holdout_return_01",
+        "sha256": {
+          "frames.jsonl": "10807722bc271ae0413186e22d165a19ace3d92b2bda3f737aa32e05637b883f",
+          "run_info.json": "0371e629b0638e8496e726a0b5af5da6677d894fd93c59da92a95280ed2e6f7a",
+          "bytetrack.yaml": "ecb4b539b3f9bbb05415c99e63a2f69b76d1b8f524b67a49b2914a77f1255567"
+        }
+      },
+      "initialization": {
+        "frame_index": 0,
+        "bbox_xyxy": [
+          148,
+          474,
+          252,
+          824
+        ],
+        "match_iou_min": 0.5
+      },
+      "end_frame_exclusive": 341,
+      "physical_identity_annotation": {
+        "path": "outputs/m3_holdout_annotations_v1/holdout_return_01/physical_identity.json",
+        "sha256": "a2f194030990426aa818955738800df30038ad42e7051ea946ce0b4a92786dbb"
+      },
+      "evaluation_labels": {
+        "path": "outputs/m3_holdout_annotations_v2/holdout_return_01/evaluation_labels.json",
+        "sha256": "77e77e743155b4b95e9b64602fe90b4f343c392a3db0cf658af92aff95428985"
+      },
+      "events": [
+        {
+          "episode_id": "holdout_return_01_event_1",
+          "event_type": "ORIGINAL_RETURN",
+          "expected_return": true,
+          "physical_identity": "T1",
+          "evaluation_interval": {
+            "start_frame": 0,
+            "end_frame_exclusive": 341
+          },
+          "interval_basis": "每片从固定前段初始化至片尾仅一个人工遮挡/返回或替换事件；分母不是算法丢失次数。",
+          "recognizable_reappearance_frame": 204,
+          "target_absent_intervals": [
+            {
+              "start_frame": 176,
+              "end_frame_exclusive": 201,
+              "basis": "原图确定完全不可见（当前位置不可报告）；替换片随后用户确认原瓶已取走且未返回。",
+              "evidence": "outputs/m3_holdout_annotations_v1/holdout_return_01/visibility_intervals.json",
+              "evidence_sha256": "e6cbcea4a5fb3ed92dbb63ea28fa1b39c662fd9ebdec3243752a5ef1de990f8a"
+            }
+          ],
+          "visible_controls": [],
+          "visual_occlusion_onset_frame": 169,
+          "first_post_clear_frame": 210,
+          "evidence": {
+            "path": "outputs/m3_holdout_annotations_v1/holdout_return_01/visibility_intervals.json",
+            "sha256": "e6cbcea4a5fb3ed92dbb63ea28fa1b39c662fd9ebdec3243752a5ef1de990f8a"
+          }
+        }
+      ],
+      "recording_protocol_deviations": [
+        "较短遮挡长于约0.3—0.5秒目标",
+        "完全露出后控制段约4.4秒，少于5秒"
+      ],
+      "prior_coarse_timing_observations": {
+        "approx_occlusion_seconds": 1.0,
+        "clear_post_observation_seconds": 4.4,
+        "deviations": [
+          "较短遮挡长于约0.3—0.5秒目标",
+          "完全露出后控制段约4.4秒，少于5秒"
+        ]
+      },
+      "refined_visual_timing": {
+        "partial_occlusion_start_frame": 169,
+        "first_post_clear_frame": 210,
+        "span_with_any_occlusion_or_uncertainty_frames": 41,
+        "span_nominal_seconds": 1.3664395568589118,
+        "clear_post_frames": 131,
+        "clear_post_nominal_seconds": 4.365941023134572,
+        "note": "宽口径从部分遮挡至整瓶完全可见，含边界不确定；不等同检测连续缺失或ByteTrack丢失时限。原粗略偏差值原样保留。"
+      },
+      "annotation_provenance": {
+        "initialization": {
+          "path": "outputs/m3_holdout_annotations_v1/holdout_return_01/initialization.json",
+          "sha256": "21112a1f85899773daf43bc3029e7974cfffc5627c8edbd61612fc2ce97ca3f8"
+        },
+        "timeline": {
+          "path": "outputs/m3_holdout_annotations_v1/holdout_return_01/timeline.json",
+          "sha256": "52a21969b8233c6ca8a964bf74df128e6f10e6b33fa60d4237787f5db5a5a721"
+        },
+        "visibility_intervals": {
+          "path": "outputs/m3_holdout_annotations_v1/holdout_return_01/visibility_intervals.json",
+          "sha256": "e6cbcea4a5fb3ed92dbb63ea28fa1b39c662fd9ebdec3243752a5ef1de990f8a"
+        },
+        "coverage": {
+          "path": "outputs/m3_holdout_annotations_v1/holdout_return_01/coverage.json",
+          "sha256": "ff351eb08d6f8925fafc98fba111726093f4f3a01980db88e9b11d237e6f527c"
+        },
+        "post_run_return_labels": {
+          "original_labels": {
+            "path": "outputs/m3_holdout_annotations_v1/holdout_return_01/evaluation_labels.json",
+            "sha256": "38daf762a757a903d201222fc32a532a8b0fa587af4e86c12910d94881a38bb2"
+          },
+          "added_frames": [
+            214
+          ],
+          "fixed_samples_unchanged": true
+        }
+      }
+    },
+    {
+      "case_id": "holdout_return_02",
+      "split": "holdout",
+      "source": "data/m3_holdout_return_02.mp4",
+      "source_sha256": "6749da6f1cc34d928c293702862bff5421966b9811b1ba8a7c8931c6704e4529",
+      "baseline": {
+        "path": "outputs/m3_holdout_cache_v1/holdout_return_02",
+        "sha256": {
+          "frames.jsonl": "669b630d150aa62015a241ecb141cdb2e81f9c0d152cc777ede8b95be6fb3bcb",
+          "run_info.json": "74283e08c07e4b82a865f4ae15ba8f833cbee004fdace1dfee26279f64c750c1",
+          "bytetrack.yaml": "ecb4b539b3f9bbb05415c99e63a2f69b76d1b8f524b67a49b2914a77f1255567"
+        }
+      },
+      "initialization": {
+        "frame_index": 0,
+        "bbox_xyxy": [
+          148,
+          474,
+          245,
+          826
+        ],
+        "match_iou_min": 0.5
+      },
+      "end_frame_exclusive": 476,
+      "physical_identity_annotation": {
+        "path": "outputs/m3_holdout_annotations_v1/holdout_return_02/physical_identity.json",
+        "sha256": "55d3ba67c01bc9d94e336968b64cc847df06a0f6b62be52f5b35f02a150c4ca1"
+      },
+      "evaluation_labels": {
+        "path": "outputs/m3_holdout_annotations_v2/holdout_return_02/evaluation_labels.json",
+        "sha256": "787f4ee7151b158d333439dec7ad96c1e1123c06e3a3c229b7f6e2ec5478e0e8"
+      },
+      "events": [
+        {
+          "episode_id": "holdout_return_02_event_1",
+          "event_type": "ORIGINAL_RETURN",
+          "expected_return": true,
+          "physical_identity": "T1",
+          "evaluation_interval": {
+            "start_frame": 0,
+            "end_frame_exclusive": 476
+          },
+          "interval_basis": "每片从固定前段初始化至片尾仅一个人工遮挡/返回或替换事件；分母不是算法丢失次数。",
+          "recognizable_reappearance_frame": 279,
+          "target_absent_intervals": [
+            {
+              "start_frame": 183,
+              "end_frame_exclusive": 275,
+              "basis": "原图确定完全不可见（当前位置不可报告）；替换片随后用户确认原瓶已取走且未返回。",
+              "evidence": "outputs/m3_holdout_annotations_v1/holdout_return_02/visibility_intervals.json",
+              "evidence_sha256": "8b780661fa13ddab7f649d0cad9603157cf4774de16465eaaa4e9f02500b6052"
+            }
+          ],
+          "visible_controls": [],
+          "visual_occlusion_onset_frame": 168,
+          "first_post_clear_frame": 280,
+          "evidence": {
+            "path": "outputs/m3_holdout_annotations_v1/holdout_return_02/visibility_intervals.json",
+            "sha256": "8b780661fa13ddab7f649d0cad9603157cf4774de16465eaaa4e9f02500b6052"
+          }
+        }
+      ],
+      "recording_protocol_deviations": [],
+      "prior_coarse_timing_observations": {
+        "approx_occlusion_seconds": 3.5,
+        "clear_post_observation_seconds": 6.3,
+        "deviations": []
+      },
+      "refined_visual_timing": {
+        "partial_occlusion_start_frame": 168,
+        "first_post_clear_frame": 280,
+        "span_with_any_occlusion_or_uncertainty_frames": 112,
+        "span_nominal_seconds": 3.732721568627451,
+        "clear_post_frames": 196,
+        "clear_post_nominal_seconds": 6.5322627450980395,
+        "note": "宽口径从部分遮挡至整瓶完全可见，含边界不确定；不等同检测连续缺失或ByteTrack丢失时限。原粗略偏差值原样保留。"
+      },
+      "annotation_provenance": {
+        "initialization": {
+          "path": "outputs/m3_holdout_annotations_v1/holdout_return_02/initialization.json",
+          "sha256": "d1654dcd11f14c5c332e163515f4f547cdaa466f057cd9ccf7849050e2e5a6ac"
+        },
+        "timeline": {
+          "path": "outputs/m3_holdout_annotations_v1/holdout_return_02/timeline.json",
+          "sha256": "0be926a3fada9318e0ff28580266223244ea6b00a4a19a9b16fd5c7bb036ccb6"
+        },
+        "visibility_intervals": {
+          "path": "outputs/m3_holdout_annotations_v1/holdout_return_02/visibility_intervals.json",
+          "sha256": "8b780661fa13ddab7f649d0cad9603157cf4774de16465eaaa4e9f02500b6052"
+        },
+        "coverage": {
+          "path": "outputs/m3_holdout_annotations_v1/holdout_return_02/coverage.json",
+          "sha256": "f52542ef7e0550741bf4fd46e8cc1ad0b7b19a5b74b045b740e3cfd804560029"
+        },
+        "post_run_return_labels": {
+          "original_labels": {
+            "path": "outputs/m3_holdout_annotations_v1/holdout_return_02/evaluation_labels.json",
+            "sha256": "15fbd4c35ce1b287f79dfc158f82519a5d3c1e4efe2ed85406542eee151d2650"
+          },
+          "added_frames": [
+            283
+          ],
+          "fixed_samples_unchanged": true
+        }
+      }
+    },
+    {
+      "case_id": "holdout_replacement_01",
+      "split": "holdout",
+      "source": "data/m3_holdout_replacement_01.mp4",
+      "source_sha256": "e69630d7661ddbac85993d7b75d3ec3d47975a409f096abe0d35246e0b73f952",
+      "baseline": {
+        "path": "outputs/m3_holdout_cache_v1/holdout_replacement_01",
+        "sha256": {
+          "frames.jsonl": "297e5da96ca1c4567bac568151de3d920e6a86de5dca8520137b83a195d02016",
+          "run_info.json": "5a2597e9b7efc5b0331995738ee5f2268cfb898807994d965902203d390617a6",
+          "bytetrack.yaml": "ecb4b539b3f9bbb05415c99e63a2f69b76d1b8f524b67a49b2914a77f1255567"
+        }
+      },
+      "initialization": {
+        "frame_index": 0,
+        "bbox_xyxy": [
+          235,
+          492,
+          327,
+          792
+        ],
+        "match_iou_min": 0.5
+      },
+      "end_frame_exclusive": 573,
+      "physical_identity_annotation": {
+        "path": "outputs/m3_holdout_annotations_v1/holdout_replacement_01/physical_identity_for_evaluator.json",
+        "sha256": "c99a693093f92c69df0913958bcbdd2ff61f881b28659201aa13c82c3b0045b2"
+      },
+      "evaluation_labels": {
+        "path": "outputs/m3_holdout_annotations_v1/holdout_replacement_01/evaluation_labels.json",
+        "sha256": "65d80e5f5d7dffbc86e59304f89fc75c5b2934302ddf46760ebdfdb0973ab71e"
+      },
+      "events": [
+        {
+          "episode_id": "holdout_replacement_01_event_1",
+          "event_type": "DIFFERENT_BOTTLE_REPLACEMENT",
+          "expected_return": false,
+          "physical_identity": "T1 removed; T2 visible",
+          "evaluation_interval": {
+            "start_frame": 0,
+            "end_frame_exclusive": 573
+          },
+          "interval_basis": "每片从固定前段初始化至片尾仅一个人工遮挡/返回或替换事件；分母不是算法丢失次数。",
+          "recognizable_reappearance_frame": null,
+          "target_absent_intervals": [
+            {
+              "start_frame": 198,
+              "end_frame_exclusive": 573,
+              "basis": "原瓶先完全被遮挡，取走的精确隐藏时刻未知；拍摄者确认之后未返回。整个区间无可报告T1当前观察，不推测幕后位置。",
+              "evidence": "outputs/m3_holdout_annotations_v1/holdout_replacement_01/visibility_intervals.json",
+              "evidence_sha256": "1ac815c56ebe1a68809ebf0b39f0882d2ff533d869a93aedca75dfa5ac559b88"
+            }
+          ],
+          "visible_controls": [],
+          "visual_occlusion_onset_frame": 195,
+          "first_post_clear_frame": 443,
+          "evidence": {
+            "path": "outputs/m3_holdout_annotations_v1/holdout_replacement_01/visibility_intervals.json",
+            "sha256": "1ac815c56ebe1a68809ebf0b39f0882d2ff533d869a93aedca75dfa5ac559b88"
+          },
+          "first_other_visible_frame": 388,
+          "first_other_recognizable_frame": 389,
+          "other_visible_intervals": [
+            {
+              "start_frame": 389,
+              "end_frame_exclusive": 394,
+              "visibility": "PARTIAL_HANDHELD",
+              "bbox_status": "UNEVALUATED"
+            },
+            {
+              "start_frame": 442,
+              "end_frame_exclusive": 443,
+              "visibility": "PARTIAL",
+              "bbox_status": "UNEVALUATED"
+            },
+            {
+              "start_frame": 443,
+              "end_frame_exclusive": 573,
+              "visibility": "CLEAR",
+              "bbox_status": "PER_ANNOTATED_FRAME_ONLY"
+            }
+          ]
+        }
+      ],
+      "recording_protocol_deviations": [
+        "替换遮挡长于约3—4秒目标",
+        "完全露出后控制段约4.3秒，少于5秒"
+      ],
+      "prior_coarse_timing_observations": {
+        "approx_occlusion_seconds": 8.0,
+        "clear_post_observation_seconds": 4.3,
+        "deviations": [
+          "替换遮挡长于约3—4秒目标",
+          "完全露出后控制段约4.3秒，少于5秒"
+        ]
+      },
+      "refined_visual_timing": {
+        "partial_occlusion_start_frame": 195,
+        "first_post_clear_frame": 443,
+        "span_with_any_occlusion_or_uncertainty_frames": 248,
+        "span_nominal_seconds": 8.265315338375025,
+        "clear_post_frames": 130,
+        "clear_post_nominal_seconds": 4.332624975761101,
+        "note": "宽口径从部分遮挡至整瓶完全可见，含边界不确定；不等同检测连续缺失或ByteTrack丢失时限。原粗略偏差值原样保留。"
+      },
+      "annotation_provenance": {
+        "initialization": {
+          "path": "outputs/m3_holdout_annotations_v1/holdout_replacement_01/initialization.json",
+          "sha256": "ddcac7d7d2e7e25d603a4302e3303ee5daa3cdaa384f31c907102f5082415c98"
+        },
+        "timeline": {
+          "path": "outputs/m3_holdout_annotations_v1/holdout_replacement_01/timeline.json",
+          "sha256": "e490aa7f46140d8ae89edf23f5ec58ac6d4949083dae20b300633c189e3174b8"
+        },
+        "visibility_intervals": {
+          "path": "outputs/m3_holdout_annotations_v1/holdout_replacement_01/visibility_intervals.json",
+          "sha256": "1ac815c56ebe1a68809ebf0b39f0882d2ff533d869a93aedca75dfa5ac559b88"
+        },
+        "coverage": {
+          "path": "outputs/m3_holdout_annotations_v1/holdout_replacement_01/coverage.json",
+          "sha256": "47c0b545ad3e37aa8e9760f763d6c7df15dead9ac57af0a371c63dc959671133"
+        }
+      }
+    }
+  ],
+  "post_run_label_supplement": {
+    "original_protocol": {
+      "path": "configs/m3_holdout_v1.json",
+      "sha256": "7ffa7b5e3b4ad57cf1cf283db039d0372a5932a15c0ac27d63e74336c34cef21"
+    },
+    "added_keyframes": 2,
+    "purpose": "独立核对C首次观察/接受；不改任何既有标签、事件锚点、固定分母或算法输入。"
+  }
+}
