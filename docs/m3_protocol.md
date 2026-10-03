@@ -1,6 +1,6 @@
 # M3 三组共同入口与冻结准备
 
-2026-10-03 更新：00已核对通过最终v4开发预演，并另存正式冻结 `configs/m3_freeze_v1.json`（m3_v1，执行版本572de8f）。三片新输入现已确认，03完成HOLDOUT登记/独立标注/一次公共缓存核查，待00复核输入准备；A/B/C效果对照与速度测量尚未运行。新协议 `configs/m3_holdout_v1.json`，实际覆盖、偏差与不确定项见 `docs/m3_holdout_annotations.md`。本文件下方保留03交付时的开发记录，原 `configs/m3_protocol_v1.json` 与预演待冻结清单仍保持历史状态；它们不是正式测试输出。
+2026-10-03 更新：正式冻结 `configs/m3_freeze_v1.json`（m3_v1，核心版本572de8f）保持。00复核新输入准备后，03已实际完成三片HOLDOUT A/B/C；最终 `configs/m3_holdout_v2.json` / `outputs/m3_holdout_comparison_v2/`，初轮v1保留。C两个正确返回和一次130合格候选拒绝，A/B各两次未返回；固定UNKNOWN与拍摄偏差、未评价项如实保留，速度未验证。实测/失败与补标版本绑定见 `docs/m3_holdout_comparison.md`，原标注见 `docs/m3_holdout_annotations.md`。本文件下方保留开发记录，原 `configs/m3_protocol_v1.json` 与预演待冻结清单仍是历史状态；它们不是正式测试输出。
 
 正式冻结核查：
 

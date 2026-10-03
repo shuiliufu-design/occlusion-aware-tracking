@@ -1,5 +1,7 @@
 # M3 HOLDOUT 输入与独立标注
 
+本文件保留输入准备阶段记录。随后已完成的三片冻结A/B/C实测、两个接受帧补标与失败结果见 `docs/m3_holdout_comparison.md`；原v1标注与报告不变。
+
 2026-10-03，本轮仅完成三片输入准备。来源为已确认登记 `outputs/m3_holdout_input_confirmed_20261003/input_registry.json`，用户在本聊天再次确认三项物理操作。正式冻结仍为 `configs/m3_freeze_v1.json`，SHA `0562cedc68e79fcd4a8e2e5dca02c3c3d79917a294154845590bab131a8505ce`；12个冻结执行文件、算法、阈值和全部 shared_policy 不变。没有运行 A/B/C 对照、恢复效果评价或速度测量。
 
 ## 独立依据与输入

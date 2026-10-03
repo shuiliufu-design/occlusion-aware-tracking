@@ -5,7 +5,7 @@
 面向机器人感知的视觉跟踪学习项目：逐步研究遮挡与物体位移后的
 跟踪失效判断和目标恢复。第一阶段使用固定相机、单个主要桌面目标。
 
-**当前阶段：m3_v1 已正式冻结。03 已完成三片 HOLDOUT 输入登记、独立标注与公共缓存核查，待 00 核对输入准备；A/B/C 独立效果对照和速度测量尚未运行。** 标注来源、覆盖与拍摄偏差见 [HOLDOUT 标注说明](docs/m3_holdout_annotations.md)，协议为 `configs/m3_holdout_v1.json`。
+**当前阶段：三片冻结 HOLDOUT A/B/C 已实际完成，待 00 核对实测。C 正确返回 2/2、替换事件 130 个合格候选全拒绝；A/B 各两次未返回。C 仍有可见 UNKNOWN，全片精确误报率未评价，速度未验证。** 最终协议 `configs/m3_holdout_v2.json`；逐事件结果、拍摄偏差与失败见 [HOLDOUT 对照说明](docs/m3_holdout_comparison.md)。
 真实双瓶歧义、同包装替换和独立对照评价尚未验证；3D 定位与机器人控制尚未实现。
 
 ## 快速开始
@@ -140,18 +140,20 @@ curl -fL https://github.com/ultralytics/assets/releases/download/v8.3.0/yolo11n.
 
 复跑换空的新目录。结果位于 `outputs/m2_evaluation_v1/summary.json` 与 `per_event_results.json`；本次没有修改恢复行为、冻结配置或启动M3。
 
-f180开发修正另提供 `configs/recovery_f180_dev.json`：在标签纹理真实共同区域上搜索最多±6/±9像素，原门槛不变，旧默认配置仍保留。诊断窗清楚可见UNKNOWN从1/11降为0/11，开启第2步的f181与8帧全遮挡仍UNKNOWN；正例仍f852正确接受，负例148帧合格候选仍拒绝。70项测试通过。准确命令、旧/新规则与关闭对照及限制见 [有界纹理对齐开发回归](docs/f180_alignment_development.md)，最终报告 `outputs/f180_alignment_dev/comparison_v2.json`；00已采纳该配置，三组协议待核对冻结；M3独立测试未启动。
+f180开发修正另提供 `configs/recovery_f180_dev.json`：在标签纹理真实共同区域上搜索最多±6/±9像素，原门槛不变，旧默认配置仍保留。诊断窗清楚可见UNKNOWN从1/11降为0/11，开启第2步的f181与8帧全遮挡仍UNKNOWN；正例仍f852正确接受，负例148帧合格候选仍拒绝。70项测试为当时开发证据。准确命令、旧/新规则与关闭对照及限制见 [有界纹理对齐开发回归](docs/f180_alignment_development.md)，报告 `outputs/f180_alignment_dev/comparison_v2.json`；00随后采纳该配置并正式冻结m3_v1，新片实测见下方。
 
 ## 学习路线
 
-M3 共同入口与开发预演说明见 [M3协议](docs/m3_protocol.md)。当前只跑已有开发输入，复跑必须换新的空目录：
+M3 共同入口与开发预演说明见 [M3协议](docs/m3_protocol.md)。以下为已有开发输入的历史预演命令，复跑必须换新的空目录：
 
 ```bash
 .venv/bin/python scripts/run_comparison.py --protocol configs/m3_protocol_v1.json --output outputs/m3_development_preflight_v4
 .venv/bin/python scripts/m3_common.py --check-freeze outputs/m3_development_preflight_v4/freeze_checklist.json
 ```
 
-最终六组结果和评价在 `outputs/m3_development_preflight_v4/`。正例A/B未返回，C在f852正确返回；负例无返回机会，C148帧合格候选均拒绝。98项测试通过。冻结清单仍待00核对，固定抽样只核对6/103帧；f850三组均UNKNOWN，负例A/B f181缺少人工完整框，位置核对未评价。全片误报率和速度仍未评价/验证。
+历史六组开发结果在 `outputs/m3_development_preflight_v4/`。正例A/B未返回，C在f852正确返回；负例无返回机会，C148帧合格候选均拒绝。98项测试为当时证据。00随后核对并建立正式冻结清单 `configs/m3_freeze_v1.json`；开发固定抽样6/103、f850三组UNKNOWN和负例A/B f181缺框等旧限制保留。
+
+三片新HOLDOUT实测最终位于 `outputs/m3_holdout_comparison_v2/`，原v1保留。每组共用两次返回机会：A/B各0/2，C在f214/f283正确返回，延迟10/4原帧；一次替换事件C130合格候选均拒绝、0绑定。清楚T1固定样本UNKNOWN为A/B各34/88、C2/88。110项全套测试与九组核查通过；标签补两接受关键帧后，v1/v2状态/事件/视频解码像素完全一致。详情和准确命令见 [实测说明](docs/m3_holdout_comparison.md)。复跑只复用已有缓存，换新的空结果目录；速度、全片精确率与困难例继续未验证/未评价。
 
 - [x] 第 1 步：真实视频读取（首段 656 帧、补拍 984 帧；用户已确认补拍检查完成）
 - [x] 第 2 步：预训练目标检测基线，保存逐帧检测结果
@@ -159,7 +161,8 @@ M3 共同入口与开发预演说明见 [M3协议](docs/m3_protocol.md)。当前
 - [x] 第 4a 步：指定目标、连续缺失判断与未经身份核验的恢复候选
 - [x] 第 4b 步：04确认受限开发恢复/拒绝验收，03修复关闭统计；困难例仍未验证
 - [x] 第 4c 步：00采纳f180对齐；03完成三组共同入口/开发预演/冻结准备
-- [ ] 第 5 步：00核对三组交付并冻结，再另拍3段独立视频进行M3最小对照
+- [x] 第 5 步：正式冻结后采集三片独立输入，完成A/B/C实测；等待00核对成败/覆盖边界
+- [ ] 第 6 步：00核对后决定M4演示与整理或后续处理
 - [ ] 后续研究：可靠性估计、3D 位姿跟踪与机器人仿真验证
 
 ## 文件说明
@@ -191,6 +194,8 @@ M3 共同入口与开发预演说明见 [M3协议](docs/m3_protocol.md)。当前
 | `scripts/evaluate_comparison.py` | 以人工身份/本帧框评价三组正确返回，不依赖A/B接受事件 |
 | `scripts/m3_common.py` | 共同输入、待冻结清单核查与正式输入冻结保护 |
 | `configs/m3_protocol_v1.json` | 现有开发片预演、未来三片设计及共同指标/抽样/计时口径 |
+| `configs/m3_freeze_v1.json` | 00正式FROZEN清单，锁定12个执行文件及共同规则 |
+| `configs/m3_holdout_v1.json`、`configs/m3_holdout_v2.json` | 三片新输入来源；v2只追加两个接受帧评价标签及来源，算法/分母不变 |
 | `configs/recovery_m3_v1.json` | 与00采纳对齐配置逐字节一致的C配置副本 |
 | `tests/test_m3_comparison.py` | 三组选择/返回、物理身份、未知标注与冻结保护28项边界测试 |
 | `configs/recovery_f180_dev.json` | 可关闭的有界标签纹理平移开发配置，原门槛保持不变 |
@@ -204,6 +209,8 @@ M3 共同入口与开发预演说明见 [M3协议](docs/m3_protocol.md)。当前
 | `docs/offline_evaluation_m2.md` | 统一评价口径、准确命令、四组开发结果与未评价范围 |
 | `docs/f180_alignment_development.md` | 有界标签纹理对齐、开发回归、准确命令与能力边界 |
 | `docs/m3_protocol.md` | 三组共同入口、开发预演结果、标注缺口及冻结/正式输入约定 |
+| `docs/m3_holdout_annotations.md` | 原图独立标注、141固定样本覆盖、物理确认与拍摄偏差 |
+| `docs/m3_holdout_comparison.md` | 三片冻结实测、逐事件成败、复跑命令与未评价范围 |
 | `data/` | 本地输入视频，默认不上传 |
 | `outputs/` | 本地生成结果，默认不上传 |
 | `docs/lesson01.md` | 第一课讲解与操作步骤 |
@@ -212,8 +219,8 @@ M3 共同入口与开发预演说明见 [M3协议](docs/m3_protocol.md)。当前
 ## 复现与结果
 
 `requirements.txt` 固定第一课依赖版本。实验视频、模型文件和输出不进入 Git。
-真实视频已运行原始检测与跟踪，并有受限开发身份/事件依据和四组评价；尚无独立保留测试或泛化性能结论。
-后续由00按SPEC.md核对三组共同口径与清单并正式冻结，再另拍独立输入完成小规模对照。
+真实视频已运行原始检测/跟踪、开发回归与三片冻结HOLDOUT对照，身份/事件/原图依据可追溯。三片有拍摄时长偏差，固定抽样不能代替全片逐帧精确标注，不声称泛化性能或速度结论。
+后续由00按SPEC.md重新读取实际实测/失败证据并核对，再决定M4整理或后续处理。
 
 ## 参考
 
